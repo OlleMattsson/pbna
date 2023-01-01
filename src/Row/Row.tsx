@@ -177,4 +177,8 @@ class Row implements RowInterface {
   setDescription = (d: string) => (this.description = d);
 }
 
-export { Row, RowType, RowObject };
+
+export type {RowObject}
+
+export { Row, RowType };
+
