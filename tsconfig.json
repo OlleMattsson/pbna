@@ -2,6 +2,7 @@
   "include": [
     "./src/**/*"
   ],
+
   "compilerOptions": {
     "esModuleInterop": true,
     "lib": [
@@ -21,6 +22,10 @@
     "isolatedModules": true,
     "noEmit": true,
     "strict": true,
-    "noEmitOnError": false
+    "noEmitOnError": false,
+    "noImplicitAny": true,
+    "typeRoots": [
+      "./node_modules/@types/"
+    ]
   }
 }

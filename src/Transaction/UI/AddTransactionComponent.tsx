@@ -5,8 +5,6 @@ import { Transaction } from "../Transaction";
 import { AccountManager } from "./../../Account/AccountManager";
 import "react-datepicker/dist/react-datepicker.css";
 import sv from "date-fns/locale/sv";
-
-// @ts-ignore
 import DatePicker, { registerLocale } from "react-datepicker";
 
 registerLocale("sv", sv);
