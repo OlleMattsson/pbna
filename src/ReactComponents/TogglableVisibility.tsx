@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, FunctionComponent } from "react";
+
 
 /*
 Components displays a button for displaying / hiding wrapped component.
@@ -9,7 +10,7 @@ Components displays a button for displaying / hiding wrapped component.
 
 */
 
-export const TogglableVisibility = (props) => {
+export const TogglableVisibility: FunctionComponent<{ children: Element }> = (props) => {
   const [display, setDisplay] = useState(false);
   const handler = () => {
     setDisplay(!display);
