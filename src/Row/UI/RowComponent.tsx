@@ -17,7 +17,7 @@ export const AccountDropdown = ({
     <select
       onChange={(e) => {
         row.setAccount(e.target.value);
-        setSelectedAccount(e.target.value);
+        setSelectedAccount(parseInt(e.target.value, 10)); // parseInt() because selectedAccount is initialized as a number
       }}
       value={selectedAccount}
     >
@@ -49,9 +49,15 @@ export const RowComponent: Function = ({
   );
 };
 
-export const EditableRowComponent: Function = ({ row, accountManager }) => {
+export const EditableRowComponent: Function = ({ 
+  row, 
+  accountManager 
+}: {
+  row: Row, 
+  accountManager: AccountManager
+}) => {
   const type = row.getType();
-  const value = row.getAmount();
+  const value = row.getAmount() || ""
   const debitVal = type === RowType.Debit ? value : "";
   const creditVal = type === RowType.Credit ? value : "";
 
@@ -69,7 +75,7 @@ export const EditableRowComponent: Function = ({ row, accountManager }) => {
         <input
           defaultValue={debitVal}
           onChange={(e) => {
-            setAmountAndType(e.target.value, RowType.Debit);
+            setAmountAndType(parseInt(e.target.value, 10), RowType.Debit);
           }}
         />
       </td>
@@ -77,7 +83,7 @@ export const EditableRowComponent: Function = ({ row, accountManager }) => {
         <input
           defaultValue={creditVal}
           onChange={(e) => {
-            setAmountAndType(e.target.value, RowType.Credit);
+            setAmountAndType(parseInt(e.target.value, 10), RowType.Credit);
           }}
         />
       </td>
