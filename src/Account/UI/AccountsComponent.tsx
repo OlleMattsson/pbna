@@ -103,17 +103,17 @@ const AccountTypeUI = ({ account }: { account: Account }) => {
   return (
     <select
       onChange={(e) => {
-        setSelectedAccountType(e.target.value);
+        setSelectedAccountType(e.target.value as unknown as AccountType);
         account.put({ type: (e.target.value as unknown) as AccountType });
         console.log(account.get());
       }}
       value={selectedAccountType}
     >
-      <option value={AccountType.noop}>Group Header</option>
-      <option value={AccountType.asset}>Asset</option>
-      <option value={AccountType.liability}>Liability</option>
-      <option value={AccountType.vat}>VAT</option>
-      <option value={AccountType.incomeStatement}>Income Statement</option>
+      <option value={AccountType.Noop}>Group Header</option>
+      <option value={AccountType.Asset}>Asset</option>
+      <option value={AccountType.Liability}>Liability</option>
+      <option value={AccountType.Vat}>VAT</option>
+      <option value={AccountType.IncomeStatement}>Income Statement</option>
     </select>
   );
 };
@@ -182,7 +182,7 @@ export const AccountsComponent = ({
             AccountManager.put(
               new Account({
                 id: 99999,
-                type: AccountType.liability,
+                type: AccountType.Liability,
                 name: "",
                 description: "",
                 vatAccountId: 0

@@ -13,19 +13,11 @@ interface AccountInterface {
 }
 
 export enum AccountType {
-  asset,
-  liability,
-  vat,
-  incomeStatement,
-  noop
-}
-
-export enum AccountType2 {
-  Asset = "asset",
-  Liability = "liability",
-  VAT = "vat",
-  IncomeStatement = "incomeStatement",
-  NoOp = "noop"
+  Asset,
+  Liability,
+  Vat,
+  IncomeStatement,
+  Noop
 }
 
 class Account implements AccountInterface {

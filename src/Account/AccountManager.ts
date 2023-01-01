@@ -72,7 +72,7 @@ export class AccountManager implements AMInterface {
     return this.accounts.filter((account) => {
       const { type } = account.get();
 
-      if (type == AccountType.incomeStatement) {
+      if (type == AccountType.IncomeStatement) {
         return account;
       }
     });
@@ -82,7 +82,7 @@ export class AccountManager implements AMInterface {
     return this.accounts.filter((account) => {
       const { type } = account.get();
 
-      if (type == AccountType.liability) {
+      if (type == AccountType.Liability) {
         return account;
       }
     });
@@ -92,7 +92,7 @@ export class AccountManager implements AMInterface {
     return this.accounts.filter((account) => {
       const { type } = account.get();
 
-      if (type == AccountType.asset) {
+      if (type == AccountType.Asset) {
         return account;
       }
     });

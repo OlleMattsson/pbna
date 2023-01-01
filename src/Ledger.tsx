@@ -79,7 +79,7 @@ export class Ledger implements LedgerInterface {
   */
   getSignedValue = (a: Account, r: Row): number => {
     const amount = r.getAmount();
-    if (a.getType() == AccountType.asset) {
+    if (a.getType() == AccountType.Asset) {
       if (r.getType() === RowType.Debit) {
         return amount;
       } else {
@@ -108,7 +108,7 @@ export const LedgerUI = ({ ledger }: { ledger: Ledger }) => {
         const accountName = account.getName();
         const balance = balances[accountId];
 
-        if (account.getType() == AccountType.noop) {
+        if (account.getType() == AccountType.Noop) {
           return (
             <div key={accountId}>
               <p style={{ fontSize: "20pt" }}>{account.getName()}</p>

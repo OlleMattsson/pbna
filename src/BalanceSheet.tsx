@@ -43,7 +43,7 @@ export const BalanceSheetUI = ({ ledger }: { ledger: Ledger }) => {
   const temporaryIncomeAccount = new Account({
     name: "resultat",
     id: INCOME_ACCOUNT_ID,
-    type: AccountType.liability
+    type: AccountType.Liability
   }) as Object;
 
   /**
