@@ -1,26 +1,26 @@
 import { Account } from "./Account/Account";
 
 import { Ledger } from "./Ledger";
+import {AccountWithRows} from "./BalanceSheet"
 
 const getIncomeStatementAccountsAndRows = ({ ledger }: { ledger: Ledger }) => {
-  const accountsWithRows = [];
+  const accountsWithRows: AccountWithRows[] = [];
 
   // retrieve all income statement accounts and their rows
-  ledger.accountManager.getIncomeStatementAccounts().forEach((a: Account) => {
-    const accountRows = ledger.getRowsForAccount(a);
-    const accountWithRowsObject = { ...a, rows: accountRows };
-    accountsWithRows.push(accountWithRowsObject);
+  ledger.accountManager.getIncomeStatementAccounts().forEach((account: Account) => {
+    const accountRows = ledger.getRowsForAccount(account);
+    accountsWithRows.push({ account, rows: accountRows });
   });
 
   return accountsWithRows;
 };
 
-export const getBalancesForAccounts = ({ accountsWithRows, ledger }) => {
+export const getBalancesForAccounts = ({ accountsWithRows, ledger }: {accountsWithRows: AccountWithRows[], ledger: Ledger}) => {
   const balancesObj = {};
   const balancesArr = [];
 
   // calculate balance (saldo) for each account
-  accountsWithRows.forEach((account) => {
+  accountsWithRows.forEach(({account}) => {
     const id = account.getId();
     const balance = ledger.getBalanceForAccount(account);
     balancesObj[id] = balance;
@@ -68,7 +68,7 @@ export const IncomeStatementUI = ({ ledger }: { ledger: Ledger }) => {
 
   return (
     <div>
-      {accountsWithRows.map((account) => {
+      {accountsWithRows.map(({account}) => {
         const accountId = account.id;
         const accountName = account.name;
 

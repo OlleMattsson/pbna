@@ -4,13 +4,22 @@ import { Row, RowType } from "./Row/Row";
 import { Ledger } from "./Ledger";
 import { getIncome, getBalancesForAccounts } from "./IncomeStatement";
 
+
+export type AccountWithRows = {account: Account, rows:Row[]}
+
+
 export const BalanceSheetUI = ({ ledger }: { ledger: Ledger }) => {
   // Used for containing the account information for the UI
-  // They server a double purpose in also containing the row for each account
+  // They serve a double purpose in also containing the row for each account
   // so that the saldo for each account can be calculated and displayed
   // Like so: [{...Account, rows: [Row]], ...}
-  const assetAccountsWithRows = [];
-  const liabilityAccountsWithRows = [];
+
+  // TODO somehow declare a type that combines Account with a list of Rows
+
+
+
+  const assetAccountsWithRows: AccountWithRows[] = [];
+  const liabilityAccountsWithRows: AccountWithRows[] = [];
 
   /**
    *
@@ -52,8 +61,10 @@ export const BalanceSheetUI = ({ ledger }: { ledger: Ledger }) => {
   const assetAccounts = ledger.accountManager.getAssetAccounts();
 
   assetAccounts.forEach((account) => {
-    account.rows = ledger.getRowsForAccount(account);
-    assetAccountsWithRows.push({ ...account });
+    assetAccountsWithRows.push({
+      account,
+      rows: ledger.getRowsForAccount(account)
+    });
   });
 
   const {
@@ -80,8 +91,7 @@ export const BalanceSheetUI = ({ ledger }: { ledger: Ledger }) => {
   liabilityAccounts.push(temporaryIncomeAccount);
 
   liabilityAccounts.forEach((account) => {
-    account.rows = ledger.getRowsForAccount(account);
-    liabilityAccountsWithRows.push({ ...account });
+    liabilityAccountsWithRows.push({ account, rows: ledger.getRowsForAccount(account)});
   });
 
   // add the temporaruy result row
@@ -114,7 +124,7 @@ export const BalanceSheetUI = ({ ledger }: { ledger: Ledger }) => {
     <div>
       <div>
         <h3>A$$ets</h3>
-        {assetAccountsWithRows.map((account) => {
+        {assetAccountsWithRows.map(({account}) => {
           const accountId = account.getId();
           const accountName = account.getName();
           const balance = assetBalancesObj[accountId];
@@ -129,7 +139,7 @@ export const BalanceSheetUI = ({ ledger }: { ledger: Ledger }) => {
       </div>
       <div>
         <h3>Liabilities & Equity</h3>
-        {liabilityAccountsWithRows.map((account) => {
+        {liabilityAccountsWithRows.map(({account}) => {
           const accountId = account.getId();
           const accountName = account.getName();
           const balance = liabilityBalancesObj[accountId];
