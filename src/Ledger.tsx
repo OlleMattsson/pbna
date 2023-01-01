@@ -47,8 +47,6 @@ export class Ledger implements LedgerInterface {
     const groupedRows: AccountWithRows[] = [];
 
     this.accountManager.getAccounts().forEach((account) => {
-      //const rows = this.getRowsForAccount(account);
-      //account.rows = this.getRowsForAccount(account);
       groupedRows.push({ account, rows: this.getRowsForAccount(account) });
     });
 
@@ -101,7 +99,6 @@ export class Ledger implements LedgerInterface {
 
 export const LedgerUI = ({ ledger }: { ledger: Ledger }) => {
   const groupedRows = ledger.getRowsGroupedByAccount();
-  console.log(groupedRows)
   const balances = ledger.getBalances();
 
   return (

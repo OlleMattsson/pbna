@@ -1,15 +1,17 @@
 import { Transaction } from "./../Transaction";
 import {
-  RowComponent,
   EditableRowComponent
 } from "./../../Row/UI/RowComponent";
 import { solidBlackBorder1px } from "./../../styles";
 import { AccountManager } from "./../../Account/AccountManager";
 import { Row } from "./../../Row/Row";
 import { useState } from "react";
-import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import sv from "date-fns/locale/sv";
+
+// @ts-ignore
+import DatePicker, { registerLocale } from "react-datepicker";
+
 registerLocale("sv", sv);
 
 export const TransactionComponent: Function = ({

@@ -1,4 +1,4 @@
-import { Row, RowType, RowObject } from "./../Row/Row";
+import { Row, RowType } from "./../Row/Row";
 
 interface TransactionInterface {
   get(pretty?: boolean): Transaction | string;
@@ -75,7 +75,7 @@ class Transaction implements TransactionInterface {
   };
 
   removeRow = (rowId: number) => {
-    const filteredRows = this.getRows().filter((row, index, arr) => {
+    const filteredRows = this.getRows().filter((row) => {
       if (row.getId() !== rowId) {
         return row;
       }

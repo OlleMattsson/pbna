@@ -1,7 +1,7 @@
 import { Account } from "./Account/Account";
 
 import { Ledger } from "./Ledger";
-import {AccountWithRows} from "./BalanceSheet"
+import { AccountWithRows } from "./BalanceSheet"
 
 const getIncomeStatementAccountsAndRows = ({ ledger }: { ledger: Ledger }) => {
   const accountsWithRows: AccountWithRows[] = [];
@@ -65,7 +65,7 @@ export const IncomeStatementUI = ({ ledger }: { ledger: Ledger }) => {
   const accountsWithRows = getIncomeStatementAccountsAndRows({
     ledger
   });
-  const { balancesArr, balancesObj } = getBalancesForAccounts({
+  const { balancesObj } = getBalancesForAccounts({
     accountsWithRows,
     ledger
   });
