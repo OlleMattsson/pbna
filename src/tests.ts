@@ -1,6 +1,6 @@
 import "./styles.css";
-import { Row, RowType } from "./Row";
-import { Transaction, TransactionError } from "./Transaction";
+import { Row, RowType } from "./Row/Row";
+import { Transaction, TransactionError } from "./Transaction/Transaction";
 // Tests
 
 // Create new Row with value 100.01
