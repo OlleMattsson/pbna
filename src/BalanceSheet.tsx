@@ -50,10 +50,10 @@ export const BalanceSheetUI = ({ ledger }: { ledger: Ledger }) => {
 
   // Create a temporary account that contains the income row above
   const temporaryIncomeAccount = new Account({
-    name: "resultat",
     id: INCOME_ACCOUNT_ID,
-    type: AccountType.Liability
-  }) as Object;
+    type: AccountType.Liability,
+    name: "resultat"
+  });
 
   /**
    * 2. ASSETS
