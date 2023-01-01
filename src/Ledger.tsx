@@ -3,10 +3,11 @@ import { Account, AccountType } from "./Account/Account";
 import { Transaction } from "./Transaction/Transaction";
 import { TransactionManager } from "./Transaction/TransactionManager";
 import { Row, RowType } from "./Row/Row";
+import { AccountWithRows } from "./BalanceSheet";
 
 interface LedgerInterface {
   getRowsForAccount(a: Account): Row[];
-  getRowsGroupedByAccount(): [{ number: Row[] }];
+  getRowsGroupedByAccount(): AccountWithRows[];
   getBalanceForAccount(a: Account): number;
 }
 
@@ -42,13 +43,13 @@ export class Ledger implements LedgerInterface {
     return rows;
   };
 
-  getRowsGroupedByAccount = (): [{ number: Row[] }] => {
-    const groupedRows = [];
+  getRowsGroupedByAccount = (): AccountWithRows[]=> {
+    const groupedRows: AccountWithRows[] = [];
 
     this.accountManager.getAccounts().forEach((account) => {
       //const rows = this.getRowsForAccount(account);
-      account.rows = this.getRowsForAccount(account);
-      groupedRows.push({ ...account });
+      //account.rows = this.getRowsForAccount(account);
+      groupedRows.push({ account, rows: this.getRowsForAccount(account) });
     });
 
     return groupedRows;
@@ -63,7 +64,8 @@ export class Ledger implements LedgerInterface {
   };
 
   getBalances = () => {
-    const balancesObj = {};
+    const balancesObj: {[key: string]: number} = {};
+
     this.accountManager.getAccounts().forEach((account: Account) => {
       const balance = this.getBalanceForAccount(account);
       const accountId = account.getId();
@@ -78,7 +80,7 @@ export class Ledger implements LedgerInterface {
     asset accounts =)
   */
   getSignedValue = (a: Account, r: Row): number => {
-    const amount = r.getAmount();
+    const amount = r.getAmount() || 0;
     if (a.getType() == AccountType.Asset) {
       if (r.getType() === RowType.Debit) {
         return amount;
@@ -99,13 +101,14 @@ export class Ledger implements LedgerInterface {
 
 export const LedgerUI = ({ ledger }: { ledger: Ledger }) => {
   const groupedRows = ledger.getRowsGroupedByAccount();
+  console.log(groupedRows)
   const balances = ledger.getBalances();
 
   return (
     <div>
-      {groupedRows.map((account: Account) => {
-        const accountId = account.getId();
-        const accountName = account.getName();
+      {groupedRows.map(({account, rows}: {account: Account, rows: Row[]}) => {
+        const {id: accountId, name: accountName} = account.get()
+
         const balance = balances[accountId];
 
         if (account.getType() == AccountType.Noop) {
@@ -128,7 +131,7 @@ export const LedgerUI = ({ ledger }: { ledger: Ledger }) => {
               </p>
               <table style={{ width: "500px" }}>
                 <tbody>
-                  {account.rows.map((row: Row) => {
+                  {rows.map((row: Row) => {
                     const description = row.getDescription();
 
                     return (

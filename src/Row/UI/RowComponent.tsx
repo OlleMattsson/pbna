@@ -57,7 +57,7 @@ export const EditableRowComponent: Function = ({
   accountManager: AccountManager
 }) => {
   const type = row.getType();
-  const value = row.getAmount() || ""
+  const value = row.getAmount() || 0
   const debitVal = type === RowType.Debit ? value : "";
   const creditVal = type === RowType.Credit ? value : "";
 

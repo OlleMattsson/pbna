@@ -42,7 +42,7 @@ interface RowInterface {
   // return amount including the precision
   // ie. amount: 12350, precision: 2 => 123,50
   // if the raw amount is needed for some reason, use the get() method
-  getAmount(): number | null;
+  getAmount(): number;
 
   // preferred
   // set the amount, calculate and set the precision in on go
@@ -84,7 +84,7 @@ class Row implements RowInterface {
     }
     this.date = r.date;
     this.account = r.account;
-    this.amount = r.amount;
+    this.amount = r.amount || 0;
     this.type = r.type;
     this.precision = r.precision;
     this.description = r.description;
@@ -133,7 +133,7 @@ class Row implements RowInterface {
    * amount & precision
    */
 
-  getAmount = (): number | null => {
+  getAmount = (): number => {
     if (this.amount && this.precision && this.precision >= 1) {
       return this.amount / 10 ** this.precision;
     }
@@ -142,7 +142,7 @@ class Row implements RowInterface {
       return this.amount;
     }
 
-    return null;
+    return 0;
   };
 
   setAmount = (a: number): void => {
