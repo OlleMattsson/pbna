@@ -16,8 +16,8 @@ const getIncomeStatementAccountsAndRows = ({ ledger }: { ledger: Ledger }) => {
 };
 
 export const getBalancesForAccounts = ({ accountsWithRows, ledger }: {accountsWithRows: AccountWithRows[], ledger: Ledger}) => {
-  const balancesObj = {};
-  const balancesArr = [];
+  const balancesObj: {[key: string]: number} = {};
+  const balancesArr: number[] = [];
 
   // calculate balance (saldo) for each account
   accountsWithRows.forEach(({account}) => {
@@ -30,9 +30,14 @@ export const getBalancesForAccounts = ({ accountsWithRows, ledger }: {accountsWi
   return { balancesArr, balancesObj };
 };
 
+/**
+ * 
+ * @param param
+ * @returns number
+ */
 export const getIncome = ({ ledger }: { ledger: Ledger }): number => {
   // helper
-  const calculateIncome = (a: [number]) => {
+  const calculateIncome = (a: number[]) => {
     return a.reduce((entry, acc) => {
       acc += entry;
       return acc;
@@ -43,12 +48,12 @@ export const getIncome = ({ ledger }: { ledger: Ledger }): number => {
     ledger
   });
 
-  const { balancesArr, balancesObj } = getBalancesForAccounts({
+  const { balancesArr } = getBalancesForAccounts({
     accountsWithRows,
     ledger
   });
 
-  return calculateIncome(balancesArr).toFixed(2);
+  return calculateIncome(balancesArr)//
 };
 
 /**
@@ -64,19 +69,18 @@ export const IncomeStatementUI = ({ ledger }: { ledger: Ledger }) => {
     accountsWithRows,
     ledger
   });
-  const income = getIncome({ ledger });
+  const income = getIncome({ ledger }).toFixed(2);
 
   return (
     <div>
       {accountsWithRows.map(({account}) => {
-        const accountId = account.id;
-        const accountName = account.name;
+        const {id, name} = account.get()
 
-        const balance = balancesObj[accountId];
+        const balance = balancesObj[id];
         return (
-          <div key={accountId}>
+          <div key={id}>
             <p style={{ fontWeight: "bold" }}>
-              {accountId} - {accountName}: {balance} €
+              {id} - {name}: {balance} €
             </p>
           </div>
         );
