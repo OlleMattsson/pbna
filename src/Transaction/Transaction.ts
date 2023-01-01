@@ -27,10 +27,13 @@ class TransactionError extends Error {
 }
 
 class Transaction implements TransactionInterface {
-  private number: number;
+  // TODO Implement being able to manually assigning a number to a transaction since it's expected by the end user for practical accounting purposes
+  private id: number;
+  
   private rows: Row[];
   constructor(rows: Row[] = []) {
     this.rows = rows;
+    this.id = 0 
     /*
     if (!this.doesBalance()) {
       throw new TransactionError({

@@ -3,9 +3,12 @@ import { AddTransactionRowComponent } from "./AddTransactionRowComponent";
 import { Row, RowType } from "./../../Row/Row";
 import { Transaction } from "../Transaction";
 import { AccountManager } from "./../../Account/AccountManager";
-import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import sv from "date-fns/locale/sv";
+
+// @ts-ignore
+import DatePicker, { registerLocale } from "react-datepicker";
+
 registerLocale("sv", sv);
 
 export const AddTransactionComponent: Function = ({
@@ -84,13 +87,14 @@ export const AddTransactionComponent: Function = ({
             type="text"
             defaultValue="description"
             onChange={(e) => {
-              transaction.setDescription(d);
+              console.log(e.target.value)
+              transaction.setDescription(e.target.value);
             }}
           />
           date:
           <DatePicker
             selected={startDate}
-            onChange={(date: string) => {
+            onChange={(date: Date) => {
               transaction.setDate(date);
               setStartDate(new Date(date));
             }}

@@ -1,6 +1,8 @@
 import { StrictMode } from "react";
-import * as ReactDOMClient from "react-dom/client";
 import App from "./App";
+
+// @ts-ignore
+import * as ReactDOMClient from "react-dom/client";
 
 const rootElement = document.getElementById("root");
 const root = ReactDOMClient.createRoot(rootElement);

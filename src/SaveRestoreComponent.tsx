@@ -17,18 +17,23 @@ export const SaveRestoreComponent = ({
         <h3>Save / Restore</h3>
         <button
           onClick={() => {
-            document.getElementById("jsonData").value = dataToJson({
+            const e = document.getElementById("jsonData") as HTMLInputElement
+            
+            e.value = dataToJson({
               accountManager,
               transactionManager
             });
           }}
         >
-          To JSON
+          Export to JSON
         </button>
         <input id="jsonData" type="text" />
         <button
           onClick={() => {
-            const json = document.getElementById("jsonData").value;
+
+            const e = document.getElementById("jsonData") as HTMLInputElement
+            const json = e.value;
+
             restoreAppStateFromJson({
               json,
               transactionManager,
@@ -56,7 +61,7 @@ export const SaveRestoreComponent = ({
         </button>
         <button
           onClick={() => {
-            const json = localStorage.getItem("pbna_data");
+            const json = localStorage.getItem("pbna_data") || "";
             restoreAppStateFromJson({
               json,
               transactionManager,
