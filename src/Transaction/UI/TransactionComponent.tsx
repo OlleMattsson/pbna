@@ -30,7 +30,7 @@ export const TransactionComponent: Function = ({
         date:
         <DatePicker
           selected={startDate}
-          onChange={(date) => {
+          onChange={(date: Date) => {
             setStartDate(date);
             transaction.setDate(date);
           }}
