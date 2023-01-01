@@ -95,9 +95,10 @@ export const BalanceSheetUI = ({ ledger }: { ledger: Ledger }) => {
   });
 
   // add the temporaruy result row
-  liabilityAccountsWithRows.forEach((account) => {
-    if (account.id == INCOME_ACCOUNT_ID) {
-      account.rows.push(resultRow);
+  liabilityAccountsWithRows.forEach((obj: AccountWithRows) => {
+    const {account} = obj
+    if (account.getId() == INCOME_ACCOUNT_ID) {
+      obj.rows.push(resultRow);
     }
   });
 
