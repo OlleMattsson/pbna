@@ -59,16 +59,10 @@ export const TransactionComponent: Function = ({
         </thead>
         <tbody>
           {transaction.getRows().map((row: Row, i) => {
-            // account name lookup
-            const { account } = row.get();
-            const accountName = accountManager.getAccountName(
-              parseInt(account, 10) // TODO: we're storing the account as a String in the Row which causes this tiny mess
-            );
-
             return (
               <EditableRowComponent
                 row={row}
-                accountName={accountName}
+                accountManager={accountManager}
                 key={i}
               />
             );
