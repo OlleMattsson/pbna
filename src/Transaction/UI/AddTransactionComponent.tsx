@@ -11,20 +11,44 @@ import { generateRandomInteger } from "./../../helpers/generateRandomInt";
 
 registerLocale("sv", sv);
 
-type Attachment = {[id:string]: string }
+type Attachment = {[key:string]: {name: string, data:string} }
 
-const AttachmentList: Function = ({attachments} : {attachments: Attachment[]}) => { 
+const AttachmentList: Function = ({
+  attachments, 
+  removeAttachment
+} : {
+  attachments: Attachment[], 
+  removeAttachment: Function
+}) => { 
+
+  const styles = {
+    deleteAttachmentAnchor:{textDecoration: "underline", cursor: "pointer"}
+  }
+
+  const handleOnDelete = (key: string) => (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    removeAttachment(key)
+  }
 
   return (
-    <p>
+    <>
       {attachments.length ? attachments.map((a) => {
         const key = Object.keys(a)[0]
-        const data = a[key]
+        const data = a[key].data
+        const name = a[key].name
         return (
-          <img key={key} className="thumb" src={`${[data]}`}/>
+          <div key={key}>
+            <img className="thumb" src={`${[data]}`}/>
+            <p>remove{" "} 
+              <a style={styles.deleteAttachmentAnchor} 
+                onClick={handleOnDelete(key)}
+              >
+                {name}
+              </a>
+            </p>
+          </div>
         )
-      }): <span>derp</span>}
-    </p>
+      }): <p>No attachments</p>}
+    </>
   )
 }
 
@@ -33,39 +57,54 @@ const Attachments: Function = () => {
 
   const [attachments, setAttachments] = useState<Attachment[]>([])
 
+  const removeAttachment = (keyToDelete: String) => {
+    
+    const filteredAttachments = attachments.filter(a => {
+      const key = Object.keys(a)[0]
+
+      if (key !== keyToDelete) {
+        return a
+      }
+    })
+
+    localStorage.setItem("images", JSON.stringify(filteredAttachments));
+    setAttachments(filteredAttachments)
+  }
+
   return(
     <div>
       <p>Attachments</p>
       <input type="file" id="attachmentInput" onChange={(evt) => {
 
         if ( evt.target.files ) {
-          var files = evt.target.files; // FileList object
 
-          // Loop through the FileList and render image files as thumbnails.
-          for (var i = 0, f; f = files[i]; i++) {
-  
-            // Only process image files.
-            if (!f.type.match('image.*')) {
-              continue;
+          Array.from(evt.target.files).forEach((file) => {
+
+            // early escape hatch for non image files
+            if (!file.type.match('image.*')) {
+              return
             }
   
-            var reader = new FileReader();
-  
-            // Closure to capture the file information.
-            reader.onload = function(e) {
+            var r = new FileReader();
+
+            r.onload = (({name}) =>
+              (e) => {
                 if (e.target && typeof e.target.result === "string") {
-                  const newAttachment = {[generateRandomInteger()]: e.target.result}
+                  const newAttachment = {
+                    [generateRandomInteger()]: {name, data: e.target.result}
+                  }
                   const newAttachments = [...attachments, newAttachment]
                   setAttachments(newAttachments)
                   localStorage.setItem("images", JSON.stringify(newAttachments));
                 }
-            };
-  
-            reader.readAsDataURL(f);
-          }
+              }
+            )(file); // scope File inside the FileReader.onload event
+
+            r.readAsDataURL(file);        
+          })
         }
       }}/>
-      <AttachmentList attachments={attachments}/>
+      <AttachmentList attachments={attachments} removeAttachment={removeAttachment} />
     </div>
   )
 }
