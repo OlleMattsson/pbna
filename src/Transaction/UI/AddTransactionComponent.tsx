@@ -6,108 +6,11 @@ import { AccountManager } from "./../../Account/AccountManager";
 import "react-datepicker/dist/react-datepicker.css";
 import sv from "date-fns/locale/sv";
 import DatePicker, { registerLocale } from "react-datepicker";
-import { generateRandomInteger } from "./../../helpers/generateRandomInt";
-
+import { Attachment, Attachments } from "./Attachments";
 
 registerLocale("sv", sv);
 
-type Attachment = {[key:string]: {name: string, data:string} }
 
-const AttachmentList: Function = ({
-  attachments, 
-  removeAttachment
-} : {
-  attachments: Attachment[], 
-  removeAttachment: Function
-}) => { 
-
-  const styles = {
-    deleteAttachmentAnchor:{textDecoration: "underline", cursor: "pointer"}
-  }
-
-  const handleOnDelete = (key: string) => (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-    removeAttachment(key)
-  }
-
-  return (
-    <>
-      {attachments.length ? attachments.map((a) => {
-        const key = Object.keys(a)[0]
-        const data = a[key].data
-        const name = a[key].name
-        return (
-          <div key={key}>
-            <img className="thumb" src={`${[data]}`}/>
-            <p>remove{" "} 
-              <a style={styles.deleteAttachmentAnchor} 
-                onClick={handleOnDelete(key)}
-              >
-                {name}
-              </a>
-            </p>
-          </div>
-        )
-      }): <p>No attachments</p>}
-    </>
-  )
-}
-
-
-const Attachments: Function = () => {
-
-  const [attachments, setAttachments] = useState<Attachment[]>([])
-
-  const removeAttachment = (keyToDelete: String) => {
-    
-    const filteredAttachments = attachments.filter(a => {
-      const key = Object.keys(a)[0]
-
-      if (key !== keyToDelete) {
-        return a
-      }
-    })
-
-    localStorage.setItem("images", JSON.stringify(filteredAttachments));
-    setAttachments(filteredAttachments)
-  }
-
-  return(
-    <div>
-      <p>Attachments</p>
-      <input type="file" id="attachmentInput" onChange={(evt) => {
-
-        if ( evt.target.files ) {
-
-          Array.from(evt.target.files).forEach((file) => {
-
-            // early escape hatch for non image files
-            if (!file.type.match('image.*')) {
-              return
-            }
-  
-            var r = new FileReader();
-
-            r.onload = (({name}) =>
-              (e) => {
-                if (e.target && typeof e.target.result === "string") {
-                  const newAttachment = {
-                    [generateRandomInteger()]: {name, data: e.target.result}
-                  }
-                  const newAttachments = [...attachments, newAttachment]
-                  setAttachments(newAttachments)
-                  localStorage.setItem("images", JSON.stringify(newAttachments));
-                }
-              }
-            )(file); // scope File inside the FileReader.onload event
-
-            r.readAsDataURL(file);        
-          })
-        }
-      }}/>
-      <AttachmentList attachments={attachments} removeAttachment={removeAttachment} />
-    </div>
-  )
-}
 
 export const AddTransactionComponent: Function = ({
   addTransaction,
@@ -177,6 +80,22 @@ export const AddTransactionComponent: Function = ({
     setTransaction(updatedTransaction);
   };
 
+  
+  const handleAddAttachment = (a: Attachment) => {
+    const updatedTransaction = new Transaction([...transaction.getRows()]);
+    updatedTransaction.setAttachments(transaction.getAttachments())
+    updatedTransaction.putAttachment(a)
+    setTransaction(updatedTransaction);
+  }
+
+  const handleRemoveAttachment = (a: Attachment) => {
+    const updatedTransaction = new Transaction([...transaction.getRows()]);
+    updatedTransaction.setAttachments(transaction.getAttachments())
+    updatedTransaction.deleteAttachment(a)
+    setTransaction(updatedTransaction);
+  }
+  
+
   return (
     <>
       {transaction.getRows().length > 0 && (
@@ -212,7 +131,10 @@ export const AddTransactionComponent: Function = ({
         />
       ))}
       <button onClick={() => handleAddRow()}>add row</button>
-      <Attachments />
+      <Attachments 
+        attachments={transaction.getAttachments()} 
+        addHandler={handleAddAttachment} 
+        removeHandler={handleRemoveAttachment}/>
       <button
         onClick={() => {
           addTransaction(transaction);
