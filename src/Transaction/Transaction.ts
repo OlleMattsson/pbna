@@ -29,11 +29,14 @@ class TransactionError extends Error {
 class Transaction implements TransactionInterface {
   // TODO Implement being able to manually assigning a number to a transaction since it's expected by the end user for practical accounting purposes
   private id: number;
+  private attachments: string[]
   
   private rows: Row[];
   constructor(rows: Row[] = []) {
     this.rows = rows;
     this.id = 0 
+    this.attachments = []
+
     /*
     if (!this.doesBalance()) {
       throw new TransactionError({
@@ -140,6 +143,20 @@ class Transaction implements TransactionInterface {
     const rows = this.getRows();
     return rows[0].getCreatedAt();
   };
+
+  public putAttachment = (a: string): void =>{
+    this.attachments.push(a)
+
+  }
+
+  public getAttachments = (): string[] =>{
+    return this.attachments
+  }
+
+  // n:th attachment in list
+  public deleteAttachment = (n: number): void => {
+    this.attachments.splice(n, 1)
+  }
 }
 
 export { Transaction, TransactionError };

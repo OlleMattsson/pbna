@@ -6,8 +6,69 @@ import { AccountManager } from "./../../Account/AccountManager";
 import "react-datepicker/dist/react-datepicker.css";
 import sv from "date-fns/locale/sv";
 import DatePicker, { registerLocale } from "react-datepicker";
+import { generateRandomInteger } from "./../../helpers/generateRandomInt";
+
 
 registerLocale("sv", sv);
+
+type Attachment = {[id:string]: string }
+
+const AttachmentList: Function = ({attachments} : {attachments: Attachment[]}) => { 
+
+  return (
+    <p>
+      {attachments.length ? attachments.map((a) => {
+        const key = Object.keys(a)[0]
+        const data = a[key]
+        return (
+          <img key={key} className="thumb" src={`${[data]}`}/>
+        )
+      }): <span>derp</span>}
+    </p>
+  )
+}
+
+
+const Attachments: Function = () => {
+
+  const [attachments, setAttachments] = useState<Attachment[]>([])
+
+  return(
+    <div>
+      <p>Attachments</p>
+      <input type="file" id="attachmentInput" onChange={(evt) => {
+
+        if ( evt.target.files ) {
+          var files = evt.target.files; // FileList object
+
+          // Loop through the FileList and render image files as thumbnails.
+          for (var i = 0, f; f = files[i]; i++) {
+  
+            // Only process image files.
+            if (!f.type.match('image.*')) {
+              continue;
+            }
+  
+            var reader = new FileReader();
+  
+            // Closure to capture the file information.
+            reader.onload = function(e) {
+                if (e.target && typeof e.target.result === "string") {
+                  const newAttachment = {[generateRandomInteger()]: e.target.result}
+                  const newAttachments = [...attachments, newAttachment]
+                  setAttachments(newAttachments)
+                  localStorage.setItem("images", JSON.stringify(newAttachments));
+                }
+            };
+  
+            reader.readAsDataURL(f);
+          }
+        }
+      }}/>
+      <AttachmentList attachments={attachments}/>
+    </div>
+  )
+}
 
 export const AddTransactionComponent: Function = ({
   addTransaction,
@@ -112,6 +173,7 @@ export const AddTransactionComponent: Function = ({
         />
       ))}
       <button onClick={() => handleAddRow()}>add row</button>
+      <Attachments />
       <button
         onClick={() => {
           addTransaction(transaction);
