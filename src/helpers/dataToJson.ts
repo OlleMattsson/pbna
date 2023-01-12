@@ -13,7 +13,10 @@ export const dataToJson = ({
   const transactions = transactionManager
     .getTransactions()
     .map((t: Transaction, i) => {
-      return { rows: t.getRows() };
+      return { 
+        rows: t.getRows(), 
+        attachments: t.getAttachments() 
+      };
     });
 
   const accounts = accountManager.getAccounts().map((a: Account, i) => {
