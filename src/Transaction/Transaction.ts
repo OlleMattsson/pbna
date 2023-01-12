@@ -1,4 +1,5 @@
 import { Row, RowType } from "./../Row/Row";
+import { Attachment } from "./UI/Attachments";
 
 interface TransactionInterface {
   get(pretty?: boolean): Transaction | string;
@@ -29,7 +30,7 @@ class TransactionError extends Error {
 class Transaction implements TransactionInterface {
   // TODO Implement being able to manually assigning a number to a transaction since it's expected by the end user for practical accounting purposes
   private id: number;
-  private attachments: string[]
+  private attachments: Attachment[]
   
   private rows: Row[];
   constructor(rows: Row[] = []) {
@@ -144,18 +145,31 @@ class Transaction implements TransactionInterface {
     return rows[0].getCreatedAt();
   };
 
-  public putAttachment = (a: string): void =>{
-    this.attachments.push(a)
-
+  public setAttachments = (a: Attachment[]): void => {
+    this.attachments = a
   }
 
-  public getAttachments = (): string[] =>{
+  public putAttachment = (a: Attachment): void =>{
+    this.attachments.push(a)
+  }
+
+  public getAttachments = (): Attachment[] =>{
     return this.attachments
   }
 
   // n:th attachment in list
-  public deleteAttachment = (n: number): void => {
-    this.attachments.splice(n, 1)
+  public deleteAttachment = (a: Attachment): void => {
+    const keyToDelete = Object.keys(a)[0]
+
+    const filteredAttachments = this.attachments.filter(curr => {
+      const key = Object.keys(curr)[0]
+
+      if (key !== keyToDelete) {
+        return curr
+      }
+    })
+
+    this.setAttachments(filteredAttachments)
   }
 }
 
