@@ -3,7 +3,7 @@ import { useState } from "react";
 
 export type Attachment = {[key:string]: {name: string, data:string} }
 
-const AttachmentList: Function = ({
+export const AttachmentList: Function = ({
   attachments, 
   removeAttachment
 } : {
@@ -45,7 +45,7 @@ const AttachmentList: Function = ({
 }
 
 
-export const Attachments: Function = ({
+export const AddAttachments: Function = ({
     attachments: _attachments, addHandler, removeHandler
 }: {
     attachments: Attachment[],

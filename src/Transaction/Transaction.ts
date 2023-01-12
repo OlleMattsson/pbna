@@ -33,10 +33,10 @@ class Transaction implements TransactionInterface {
   private attachments: Attachment[]
   
   private rows: Row[];
-  constructor(rows: Row[] = []) {
+  constructor(rows: Row[] = [], attachments: Attachment[] = []) {
     this.rows = rows;
     this.id = 0 
-    this.attachments = []
+    this.attachments = attachments
 
     /*
     if (!this.doesBalance()) {

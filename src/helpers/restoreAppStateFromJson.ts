@@ -23,12 +23,13 @@ export const restoreAppStateFromJson = ({
   const restoreTransactions = (transactions: []) => {
     transactionManager.clear();
 
-    const newTransactions = transactions.map((t: { rows: [] }) => {
+    const newTransactions = transactions.map((t: { rows: [], attachments: [] }) => {
       const rows = t.rows.map((r) => {
         return new Row(r);
       });
 
-      return new Transaction(rows);
+
+      return new Transaction(rows, t.attachments);
     });
 
     newTransactions.forEach((t) => {
@@ -42,7 +43,6 @@ export const restoreAppStateFromJson = ({
    * Restore Accounts
    * @param accounts
    */
-  // TODO: implement =)
   const restoreAccounts = (accounts: []) => {
     accounts.forEach((a) => {
       accountManager.put(new Account(a));

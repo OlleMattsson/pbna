@@ -9,6 +9,7 @@ import { useState } from "react";
 import "react-datepicker/dist/react-datepicker.css";
 import sv from "date-fns/locale/sv";
 import DatePicker, { registerLocale } from "react-datepicker";
+import { AttachmentList } from "./Attachments";
 
 registerLocale("sv", sv);
 
@@ -70,6 +71,7 @@ export const TransactionComponent: Function = ({
         </tbody>
       </table>
       <p>cratedAt: {new Date(transaction.getCreatedAt()).toISOString()} </p>
+      <AttachmentList attachments={transaction.getAttachments()}/>
     </div>
   );
 };
