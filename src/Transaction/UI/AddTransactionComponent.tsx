@@ -6,7 +6,7 @@ import { AccountManager } from "./../../Account/AccountManager";
 import "react-datepicker/dist/react-datepicker.css";
 import sv from "date-fns/locale/sv";
 import DatePicker, { registerLocale } from "react-datepicker";
-import { Attachment, Attachments } from "./Attachments";
+import { Attachment, AddAttachments } from "./Attachments";
 
 registerLocale("sv", sv);
 
@@ -131,7 +131,7 @@ export const AddTransactionComponent: Function = ({
         />
       ))}
       <button onClick={() => handleAddRow()}>add row</button>
-      <Attachments 
+      <AddAttachments 
         attachments={transaction.getAttachments()} 
         addHandler={handleAddAttachment} 
         removeHandler={handleRemoveAttachment}/>
