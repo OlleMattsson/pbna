@@ -19,11 +19,12 @@ export default
 //withAuth(
   config({
     db: {
-      // we're using sqlite for the fastest startup experience
-      //   for more information on what database might be appropriate for you
-      //   see https://keystonejs.com/docs/guides/choosing-a-database#title
-      provider: 'sqlite',
-      url: 'file:./keystone.db',
+      provider: 'postgresql',
+
+      // url should come from env
+      url: process.env.DATABASE_URL as string,
+      enableLogging: true,
+      idField: { kind: 'uuid' }
     },
     lists,
     //session,
@@ -31,11 +32,11 @@ export default
       journal_item_files: {
         kind: 'local',
         type: 'file',
-        generateUrl: path => `http://localhost:3000/files${path}`,
+        generateUrl: path => `http://localhost:${process.env.PORT}/files${path}`,
         serverRoute: {
           path: '/files',
         },
-        storagePath: 'public/files',
+        storagePath: 'public/files'
       }
     }
   })
