@@ -1,0 +1,30 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:latest
+    container_name: pbna_postgres
+    environment:
+      POSTGRES_USER: pbna_pguser
+      POSTGRES_PASSWORD: pbna_pgpw
+      POSTGRES_DB: pbna_pgdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+
+  backend:
+    image: node:lts-alpine
+    container_name: pbna_backend
+    working_dir: /app
+    volumes:
+      - ./app:/app
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgres://pbna_pguser:pbna_pgpq@postgres/pbna_pgdb
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+
+volumes:
+  pg-data:
