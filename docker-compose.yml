@@ -13,18 +13,17 @@ services:
       - pg-data:/var/lib/postgresql/data
 
   backend:
-    image: node:lts-alpine
     container_name: pbna_backend
-    working_dir: /app
-    volumes:
-      - ./app:/app
-    environment:
-      NODE_ENV: development
-      DATABASE_URL: postgres://pbna_pguser:pbna_pgpq@postgres/pbna_pgdb
+    build: 
+      context: ./keystone
+      dockerfile: keystone.Dockerfile
+    command: "npm run dev"
     ports:
       - "3000:3000"
-    depends_on:
-      - postgres
+    environment:
+      PORT: 3000   
+      NODE_ENV: development
+      DATABASE_URL: postgres://pbna_pguser:pbna_pgpq@postgres/pbna_pgdb      
 
 volumes:
   pg-data:
