@@ -1,20 +1,17 @@
-# pbna
-Top notch minimalistic accounting software in typescript.
+# PBNA
 
-## installation
+## development
 
-### prerequisites
+start database: `docker compose up postgres`
+in another terminal, start admin frontend `DATABASE_URL=postgres://pbna_pguser:pbna_pgpw@localhost/pbna_pgdb npm run dev`
 
-node: v16 latest
 
-### steps
+Alternatively use the convenience script 
+`npm run devpg`
 
-## running locally
-`docker compose up`
 
-## how to run after changing the keystone schema
+## running prouction 
 `docker compose up --build`
-
 
 # license
 Copyright 2023 Mattssoft Ab (www.mattssoft.com)

@@ -4,9 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "keystone dev",
+    "devpg": "docker compose up postgres -d && DATABASE_URL=postgres://pbna_pguser:pbna_pgpw@localhost/pbna_pgdb keystone dev",
     "start": "keystone start",
     "build": "keystone build",
     "postinstall": "keystone build --no-ui --frozen"
+    
+
   },
   "dependencies": {
     "@keystone-6/auth": "^7.0.0",
