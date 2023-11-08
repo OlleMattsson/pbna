@@ -17,12 +17,13 @@ services:
     build: 
       context: ./keystone
       dockerfile: keystone.Dockerfile
-    command: "npm run dev"
+    command: "npm run start"
+    #command: "npm run dev"
     ports:
       - "3000:3000"
     environment:
       PORT: 3000   
-      NODE_ENV: development
+      # NODE_ENV: development
       # values should come from postgres env...
       DATABASE_URL: postgres://pbna_pguser:pbna_pgpw@postgres/pbna_pgdb
 
