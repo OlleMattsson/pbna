@@ -37,7 +37,6 @@ model Entry {
 
 model LineItem {
   id                   String   @id @default(uuid()) @postgresql.Uuid
-  description          String   @default("")
   account              Account? @relation("LineItem_account", fields: [accountId], references: [id])
   accountId            String?  @map("account") @postgresql.Uuid
   type                 String

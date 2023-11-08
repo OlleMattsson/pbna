@@ -84,8 +84,16 @@ var lists = {
       description: (0, import_fields.text)(),
       lineItems: (0, import_fields.relationship)({
         ref: "LineItem",
-        many: true
-        //ui: {displayMode: 'cards'}
+        many: true,
+        ui: {
+          displayMode: "cards",
+          cardFields: ["account", "type", "amount"],
+          linkToItem: true,
+          removeMode: "disconnect",
+          inlineCreate: { fields: ["account", "type", "amount"] },
+          inlineEdit: { fields: ["account", "type", "amount"] },
+          inlineConnect: true
+        }
       }),
       attachments: (0, import_fields.relationship)({
         ref: "Attachment",
@@ -109,8 +117,6 @@ var lists = {
     },
     // this is the fields for our Tag list
     fields: {
-      // journal entry description
-      description: (0, import_fields.text)(),
       // account id
       account: (0, import_fields.relationship)({
         ref: "Account",

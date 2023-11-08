@@ -86,7 +86,15 @@ export const lists: Lists = {
       lineItems: relationship({
         ref: 'LineItem',
         many: true,
-        //ui: {displayMode: 'cards'}
+        ui: {
+          displayMode: 'cards',
+          cardFields: ["account", "type", "amount"],
+          linkToItem: true,
+          removeMode: 'disconnect',
+          inlineCreate: { fields: ["account", "type", "amount"] },
+          inlineEdit: { fields: ["account", "type", "amount"] },
+          inlineConnect: true,        
+        }
       }),
       attachments: relationship({ 
         ref: 'Attachment', 
@@ -114,8 +122,6 @@ export const lists: Lists = {
 
     // this is the fields for our Tag list
     fields: {
-      // journal entry description
-      description: text(),
 
       // account id
       account: relationship({

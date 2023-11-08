@@ -298,7 +298,6 @@ input AttachmentRelateToManyForCreateInput {
 
 type LineItem {
   id: ID!
-  description: String
   account: Account
   type: String
   amount: Decimal
@@ -315,7 +314,6 @@ input LineItemWhereInput {
   OR: [LineItemWhereInput!]
   NOT: [LineItemWhereInput!]
   id: IDFilter
-  description: StringFilter
   account: AccountWhereInput
   type: StringFilter
   amount: DecimalFilter
@@ -334,13 +332,11 @@ input DecimalFilter {
 
 input LineItemOrderByInput {
   id: OrderDirection
-  description: OrderDirection
   type: OrderDirection
   amount: OrderDirection
 }
 
 input LineItemUpdateInput {
-  description: String
   account: AccountRelateToOneForUpdateInput
   type: String
   amount: Decimal
@@ -358,7 +354,6 @@ input LineItemUpdateArgs {
 }
 
 input LineItemCreateInput {
-  description: String
   account: AccountRelateToOneForCreateInput
   type: String
   amount: Decimal
