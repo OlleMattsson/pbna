@@ -5,6 +5,13 @@ import { withAuth, session } from './auth';
 export default 
 //withAuth(
   config({
+    server: {
+      cors: { 
+        origin: [
+          'http://localhost:8080'
+        ], 
+        credentials: true }
+    },
     db: {
       provider: 'postgresql',
       //url: "postgres://pbna_pguser:pbna_pgpw@localhost/pbna_pgdb", 
