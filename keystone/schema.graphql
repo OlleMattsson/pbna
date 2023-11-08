@@ -57,7 +57,13 @@ input StringFilter {
   contains: String
   startsWith: String
   endsWith: String
+  mode: QueryMode
   not: NestedStringFilter
+}
+
+enum QueryMode {
+  default
+  insensitive
 }
 
 input NestedStringFilter {
@@ -295,9 +301,10 @@ type LineItem {
   description: String
   account: String
   type: String
-  amount: Int
-  precision: Int
+  amount: Decimal
 }
+
+scalar Decimal
 
 input LineItemWhereUniqueInput {
   id: ID
@@ -311,19 +318,18 @@ input LineItemWhereInput {
   description: StringFilter
   account: StringFilter
   type: StringFilter
-  amount: IntFilter
-  precision: IntNullableFilter
+  amount: DecimalFilter
 }
 
-input IntFilter {
-  equals: Int
-  in: [Int!]
-  notIn: [Int!]
-  lt: Int
-  lte: Int
-  gt: Int
-  gte: Int
-  not: IntFilter
+input DecimalFilter {
+  equals: Decimal
+  in: [Decimal!]
+  notIn: [Decimal!]
+  lt: Decimal
+  lte: Decimal
+  gt: Decimal
+  gte: Decimal
+  not: DecimalFilter
 }
 
 input LineItemOrderByInput {
@@ -332,15 +338,13 @@ input LineItemOrderByInput {
   account: OrderDirection
   type: OrderDirection
   amount: OrderDirection
-  precision: OrderDirection
 }
 
 input LineItemUpdateInput {
   description: String
   account: String
   type: String
-  amount: Int
-  precision: Int
+  amount: Decimal
 }
 
 input LineItemUpdateArgs {
@@ -352,8 +356,7 @@ input LineItemCreateInput {
   description: String
   account: String
   type: String
-  amount: Int
-  precision: Int
+  amount: Decimal
 }
 
 type Attachment {
@@ -544,11 +547,6 @@ enum KeystoneAdminUIFieldMetaItemViewFieldMode {
 enum KeystoneAdminUIFieldMetaItemViewFieldPosition {
   form
   sidebar
-}
-
-enum QueryMode {
-  default
-  insensitive
 }
 
 type KeystoneAdminUIFieldGroupMeta {

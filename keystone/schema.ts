@@ -1,15 +1,5 @@
-// Welcome to your schema
-//   Schema driven development is Keystone's modus operandi
-//
-// This file is where we define the lists, fields and hooks for our data.
-// If you want to learn more about how lists are configured, please read
-// - https://keystonejs.com/docs/config/lists
-
 import { list } from '@keystone-6/core';
 import { allowAll } from '@keystone-6/core/access';
-
-// see https://keystonejs.com/docs/fields/overview for the full list of fields
-//   this is a few common fields for an example
 import {
   text,
   relationship,
@@ -140,18 +130,11 @@ export const lists: Lists = {
         validation: { isRequired: true},
         ui: { displayMode: 'radio' }
       }),
-      // amount to be debited or credited
-      amount: integer({
+
+      amount: decimal({
+        scale: 2,
         validation: { isRequired: true},
-      }),
-
-      // decimal precision of integer      
-      precision: integer({
-        defaultValue: 0
-      }) ,
-
-      // note: there's a decimal fiel type but it is not supported by sdqlite
-      // amountWithDecimal: decimal()
+      })
 
     },
     

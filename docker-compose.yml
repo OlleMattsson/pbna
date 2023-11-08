@@ -24,7 +24,7 @@ services:
       PORT: 3000   
       NODE_ENV: development
       # values should come from postgres env...
-      DATABASE_URL: postgres://pbna_pguser:pbna_pgpw@postgres/pbna_pgdb      
+      DATABASE_URL: postgres://pbna_pguser:pbna_pgpw@postgres/pbna_pgdb
 
 volumes:
   pg-data:

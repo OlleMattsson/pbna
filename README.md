@@ -8,11 +8,13 @@ Top notch minimalistic accounting software in typescript.
 node: v16 latest
 
 ### steps
-`npm install`
 
 ## running locally
+`docker compose up`
 
-`npm run start`
+## how to run after changing the keystone schema
+`docker compose up --build`
+
 
 # license
 Copyright 2023 Mattssoft Ab (www.mattssoft.com)

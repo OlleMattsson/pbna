@@ -123,16 +123,10 @@ var lists = {
         validation: { isRequired: true },
         ui: { displayMode: "radio" }
       }),
-      // amount to be debited or credited
-      amount: (0, import_fields.integer)({
+      amount: (0, import_fields.decimal)({
+        scale: 2,
         validation: { isRequired: true }
-      }),
-      // decimal precision of integer      
-      precision: (0, import_fields.integer)({
-        defaultValue: 0
       })
-      // note: there's a decimal fiel type but it is not supported by sdqlite
-      // amountWithDecimal: decimal()
     }
   }),
   Attachment: (0, import_core.list)({
@@ -150,11 +144,11 @@ var keystone_default = (
   //withAuth(
   (0, import_core2.config)({
     db: {
-      // we're using sqlite for the fastest startup experience
-      //   for more information on what database might be appropriate for you
-      //   see https://keystonejs.com/docs/guides/choosing-a-database#title
-      provider: "sqlite",
-      url: "file:./keystone.db"
+      provider: "postgresql",
+      //url: "postgres://pbna_pguser:pbna_pgpw@localhost/pbna_pgdb", 
+      url: process.env.DATABASE_URL,
+      enableLogging: true,
+      idField: { kind: "uuid" }
     },
     lists,
     //session,
@@ -162,7 +156,7 @@ var keystone_default = (
       journal_item_files: {
         kind: "local",
         type: "file",
-        generateUrl: (path) => `http://localhost:3000/files${path}`,
+        generateUrl: (path) => `http://localhost:${process.env.PORT}/files${path}`,
         serverRoute: {
           path: "/files"
         },
