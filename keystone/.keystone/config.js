@@ -136,6 +136,32 @@ var lists = {
       description: (0, import_fields.text)(),
       file: (0, import_fields.file)({ storage: "journal_item_files" })
     }
+  }),
+  Account: (0, import_core.list)({
+    access: import_access.allowAll,
+    fields: {
+      account: (0, import_fields.integer)(),
+      type: (0, import_fields.select)({
+        type: "string",
+        options: [
+          { label: "Asset", value: "0" },
+          { label: "Liability", value: "1" },
+          { label: "VAT", value: "2" },
+          { label: "IncomeStatement", value: "3" },
+          { label: "Noop", value: "4" }
+        ],
+        validation: { isRequired: true },
+        ui: { displayMode: "select" }
+      }),
+      name: (0, import_fields.text)(),
+      description: (0, import_fields.text)(),
+      vatAmount: (0, import_fields.decimal)({
+        scale: 2
+      }),
+      vatAccount: (0, import_fields.relationship)({
+        ref: "Account"
+      })
+    }
   })
 };
 
@@ -143,10 +169,18 @@ var lists = {
 var keystone_default = (
   //withAuth(
   (0, import_core2.config)({
+    server: {
+      cors: {
+        origin: [
+          "http://localhost:8080"
+        ],
+        credentials: true
+      }
+    },
     db: {
       provider: "postgresql",
-      //url: "postgres://pbna_pguser:pbna_pgpw@localhost/pbna_pgdb", 
-      url: process.env.DATABASE_URL,
+      url: "postgres://pbna_pguser:pbna_pgpw@localhost/pbna_pgdb",
+      //url: process.env.DATABASE_URL as string,
       enableLogging: true,
       idField: { kind: "uuid" }
     },

@@ -2,16 +2,26 @@
 
 ## development
 
-start database: `docker compose up postgres`
-in another terminal, start admin frontend `DATABASE_URL=postgres://pbna_pguser:pbna_pgpw@localhost/pbna_pgdb npm run dev`
+While developing it can be convenient to run the containers separately. This makes it 
+possible to reload containers as needed. One way of achieving this is to run the following
+commands in separate terminals.
 
+### start backend
+1. cd to the `keystone` folder
+2. In terminal 1, Start database: `npm run startpg`. This is an alias for `docker compose up postgres`
+3. In terminal 2, Start keystone backend `npm run dev`
 
-Alternatively use the convenience script 
-`npm run devpg`
+### start frontend
+1. cd to `frontend` folder
+2. In terminal 3, Start frontend `npm run start`
 
+The keystone server runs on http://localhost:3000
+The frontend client runs on http://localhost:8080
 
 ## running prouction 
-`docker compose up --build`
+In the project root, run `docker compose up --build`
+This starts all the containers
+
 
 # license
 Copyright 2023 Mattssoft Ab (www.mattssoft.com)

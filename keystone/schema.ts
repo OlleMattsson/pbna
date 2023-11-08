@@ -150,5 +150,33 @@ export const lists: Lists = {
     }
   }),
 
+  
+  Account: list({
+    access: allowAll,
+    fields: {
+      account: integer(),
+      type: select({
+        type: "string",
+        options: [
+          { label: 'Asset', value: '0' },
+          { label: 'Liability', value: '1' },
+          { label: 'VAT', value: '2' },
+          { label: 'IncomeStatement', value: '3' },
+          { label: 'Noop', value: '4' },
+        ],
+        validation: { isRequired: true},
+        ui: { displayMode: 'select' }
+      }),
+      name: text(),
+      description: text(),
+      vatAmount: decimal({
+        scale: 2,
+      }),
+      vatAccount: relationship({
+        ref: 'Account'
+      })
+    }
+  })
+  
 
 };

@@ -14,8 +14,8 @@ export default
     },
     db: {
       provider: 'postgresql',
-      //url: "postgres://pbna_pguser:pbna_pgpw@localhost/pbna_pgdb", 
-      url: process.env.DATABASE_URL as string,
+      url: "postgres://pbna_pguser:pbna_pgpw@localhost/pbna_pgdb", 
+      //url: process.env.DATABASE_URL as string,
       enableLogging: true,
       idField: { kind: 'uuid' }
     },

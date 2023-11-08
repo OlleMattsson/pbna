@@ -52,3 +52,17 @@ model Attachment {
   file_filename          String?
   from_Entry_attachments Entry[] @relation("Entry_attachments")
 }
+
+model Account {
+  id                      String    @id @default(uuid()) @postgresql.Uuid
+  account                 Int?
+  type                    String
+  name                    String    @default("")
+  description             String    @default("")
+  vatAmount               Decimal?  @postgresql.Decimal(18, 2)
+  vatAccount              Account?  @relation("Account_vatAccount", fields: [vatAccountId], references: [id])
+  vatAccountId            String?   @map("vatAccount") @postgresql.Uuid
+  from_Account_vatAccount Account[] @relation("Account_vatAccount")
+
+  @@index([vatAccountId])
+}

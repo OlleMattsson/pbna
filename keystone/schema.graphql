@@ -415,6 +415,87 @@ input AttachmentCreateInput {
   file: FileFieldInput
 }
 
+type Account {
+  id: ID!
+  account: Int
+  type: String
+  name: String
+  description: String
+  vatAmount: Decimal
+  vatAccount: Account
+}
+
+input AccountWhereUniqueInput {
+  id: ID
+}
+
+input AccountWhereInput {
+  AND: [AccountWhereInput!]
+  OR: [AccountWhereInput!]
+  NOT: [AccountWhereInput!]
+  id: IDFilter
+  account: IntNullableFilter
+  type: StringFilter
+  name: StringFilter
+  description: StringFilter
+  vatAmount: DecimalNullableFilter
+  vatAccount: AccountWhereInput
+}
+
+input DecimalNullableFilter {
+  equals: Decimal
+  in: [Decimal!]
+  notIn: [Decimal!]
+  lt: Decimal
+  lte: Decimal
+  gt: Decimal
+  gte: Decimal
+  not: DecimalNullableFilter
+}
+
+input AccountOrderByInput {
+  id: OrderDirection
+  account: OrderDirection
+  type: OrderDirection
+  name: OrderDirection
+  description: OrderDirection
+  vatAmount: OrderDirection
+}
+
+input AccountUpdateInput {
+  account: Int
+  type: String
+  name: String
+  description: String
+  vatAmount: Decimal
+  vatAccount: AccountRelateToOneForUpdateInput
+}
+
+input AccountRelateToOneForUpdateInput {
+  create: AccountCreateInput
+  connect: AccountWhereUniqueInput
+  disconnect: Boolean
+}
+
+input AccountUpdateArgs {
+  where: AccountWhereUniqueInput!
+  data: AccountUpdateInput!
+}
+
+input AccountCreateInput {
+  account: Int
+  type: String
+  name: String
+  description: String
+  vatAmount: Decimal
+  vatAccount: AccountRelateToOneForCreateInput
+}
+
+input AccountRelateToOneForCreateInput {
+  create: AccountCreateInput
+  connect: AccountWhereUniqueInput
+}
+
 """
 The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
 """
@@ -445,6 +526,12 @@ type Mutation {
   updateAttachments(data: [AttachmentUpdateArgs!]!): [Attachment]
   deleteAttachment(where: AttachmentWhereUniqueInput!): Attachment
   deleteAttachments(where: [AttachmentWhereUniqueInput!]!): [Attachment]
+  createAccount(data: AccountCreateInput!): Account
+  createAccounts(data: [AccountCreateInput!]!): [Account]
+  updateAccount(where: AccountWhereUniqueInput!, data: AccountUpdateInput!): Account
+  updateAccounts(data: [AccountUpdateArgs!]!): [Account]
+  deleteAccount(where: AccountWhereUniqueInput!): Account
+  deleteAccounts(where: [AccountWhereUniqueInput!]!): [Account]
 }
 
 type Query {
@@ -460,6 +547,9 @@ type Query {
   attachments(where: AttachmentWhereInput! = {}, orderBy: [AttachmentOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: AttachmentWhereUniqueInput): [Attachment!]
   attachment(where: AttachmentWhereUniqueInput!): Attachment
   attachmentsCount(where: AttachmentWhereInput! = {}): Int
+  accounts(where: AccountWhereInput! = {}, orderBy: [AccountOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: AccountWhereUniqueInput): [Account!]
+  account(where: AccountWhereUniqueInput!): Account
+  accountsCount(where: AccountWhereInput! = {}): Int
   keystone: KeystoneMeta!
 }
 
