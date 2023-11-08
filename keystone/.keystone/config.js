@@ -112,7 +112,12 @@ var lists = {
       // journal entry description
       description: (0, import_fields.text)(),
       // account id
-      account: (0, import_fields.text)(),
+      account: (0, import_fields.relationship)({
+        ref: "Account",
+        ui: {
+          labelField: "description"
+        }
+      }),
       // debit or credit
       type: (0, import_fields.select)({
         type: "string",
@@ -139,6 +144,9 @@ var lists = {
   }),
   Account: (0, import_core.list)({
     access: import_access.allowAll,
+    ui: {
+      labelField: "name"
+    },
     fields: {
       account: (0, import_fields.integer)(),
       type: (0, import_fields.select)({

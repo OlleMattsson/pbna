@@ -36,12 +36,15 @@ model Entry {
 }
 
 model LineItem {
-  id                   String  @id @default(uuid()) @postgresql.Uuid
-  description          String  @default("")
-  account              String  @default("")
+  id                   String   @id @default(uuid()) @postgresql.Uuid
+  description          String   @default("")
+  account              Account? @relation("LineItem_account", fields: [accountId], references: [id])
+  accountId            String?  @map("account") @postgresql.Uuid
   type                 String
-  amount               Decimal @postgresql.Decimal(18, 2)
-  from_Entry_lineItems Entry[] @relation("Entry_lineItems")
+  amount               Decimal  @postgresql.Decimal(18, 2)
+  from_Entry_lineItems Entry[]  @relation("Entry_lineItems")
+
+  @@index([accountId])
 }
 
 model Attachment {
@@ -54,15 +57,16 @@ model Attachment {
 }
 
 model Account {
-  id                      String    @id @default(uuid()) @postgresql.Uuid
+  id                      String     @id @default(uuid()) @postgresql.Uuid
   account                 Int?
   type                    String
-  name                    String    @default("")
-  description             String    @default("")
-  vatAmount               Decimal?  @postgresql.Decimal(18, 2)
-  vatAccount              Account?  @relation("Account_vatAccount", fields: [vatAccountId], references: [id])
-  vatAccountId            String?   @map("vatAccount") @postgresql.Uuid
-  from_Account_vatAccount Account[] @relation("Account_vatAccount")
+  name                    String     @default("")
+  description             String     @default("")
+  vatAmount               Decimal?   @postgresql.Decimal(18, 2)
+  vatAccount              Account?   @relation("Account_vatAccount", fields: [vatAccountId], references: [id])
+  vatAccountId            String?    @map("vatAccount") @postgresql.Uuid
+  from_LineItem_account   LineItem[] @relation("LineItem_account")
+  from_Account_vatAccount Account[]  @relation("Account_vatAccount")
 
   @@index([vatAccountId])
 }

@@ -118,7 +118,12 @@ export const lists: Lists = {
       description: text(),
 
       // account id
-      account: text(),
+      account: relationship({
+        ref: 'Account',
+        ui: {
+          labelField: "description",
+        }
+      }),
 
       // debit or credit
       type: select({
@@ -153,6 +158,9 @@ export const lists: Lists = {
   
   Account: list({
     access: allowAll,
+    ui: {
+      labelField: 'name',
+    },
     fields: {
       account: integer(),
       type: select({
