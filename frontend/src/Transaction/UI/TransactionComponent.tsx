@@ -13,15 +13,14 @@ import { AttachmentList } from "./Attachments";
 
 registerLocale("sv", sv);
 
-export const TransactionComponent: Function = ({
-  transaction,
-  accountManager,
-  transactionNumber
-}: {
+export const TransactionComponent: Function = ({transaction,accountManager,transactionNumber}: {
   transaction: Transaction;
   accountManager: AccountManager;
   transactionNumber: number;
 }) => {
+
+console.log(transaction)
+
   const [startDate, setStartDate] = useState(new Date(transaction.getDate()));
 
   return (
