@@ -38,7 +38,6 @@ export const lists: Lists = {
       }),
 
       password: password({ validation: { isRequired: true } }),
-      isAdmin: checkbox(),
       
       entries: relationship({ ref: 'Entry.createdBy', many: true }),
 
@@ -50,6 +49,16 @@ export const lists: Lists = {
             fieldMode: "hidden" 
           } 
         }
+      }),
+      role: select({
+        type: "string",
+        options: [
+          { label: 'Admin', value: 'admin' },
+          { label: 'User', value: 'user' },
+          { label: 'Owner', value: 'owner' },
+        ],
+        validation: { isRequired: true},
+        ui: { displayMode: 'select' }
       }),
     },
     ui: {
@@ -88,11 +97,11 @@ export const lists: Lists = {
         many: true,
         ui: {
           displayMode: 'cards',
-          cardFields: ["account", "type", "amount"],
+          cardFields: ["account", "type", "amount", "description"],
           linkToItem: true,
           removeMode: 'disconnect',
-          inlineCreate: { fields: ["account", "type", "amount"] },
-          inlineEdit: { fields: ["account", "type", "amount"] },
+          inlineCreate: { fields: ["account", "type", "amount", "description"] },
+          inlineEdit: { fields: ["account", "type", "amount", "description"] },
           inlineConnect: true,        
         }
       }),
@@ -145,7 +154,10 @@ export const lists: Lists = {
       amount: decimal({
         scale: 2,
         validation: { isRequired: true},
-      })
+      }),
+
+      description: text(),
+
 
     },
     
