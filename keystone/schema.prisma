@@ -12,13 +12,15 @@ generator client {
 }
 
 model User {
-  id        String    @id @default(uuid()) @postgresql.Uuid
-  name      String    @default("")
-  email     String    @unique @default("")
-  password  String
-  entries   Entry[]   @relation("Entry_createdBy")
-  createdAt DateTime? @default(now())
-  role      String
+  id                 String    @id @default(uuid()) @postgresql.Uuid
+  name               String    @default("")
+  email              String    @unique @default("")
+  password           String
+  entries            Entry[]   @relation("Entry_createdBy")
+  createdAt          DateTime? @default(now())
+  role               String
+  companies          Company[] @relation("User_companies")
+  from_Company_users Company[] @relation("Company_users")
 }
 
 model Entry {
@@ -69,4 +71,20 @@ model Account {
   from_Account_vatAccount Account[]  @relation("Account_vatAccount")
 
   @@index([vatAccountId])
+}
+
+model Company {
+  id                  String @id @default(uuid()) @postgresql.Uuid
+  name                String @default("")
+  addressStreet       String @default("")
+  addressPostalCode   String @default("")
+  addressCity         String @default("")
+  addressCountry      String @default("")
+  phone               String @default("")
+  email               String @default("")
+  website             String @default("")
+  businessID          String @default("")
+  vatNumber           String @default("")
+  users               User[] @relation("Company_users")
+  from_User_companies User[] @relation("User_companies")
 }

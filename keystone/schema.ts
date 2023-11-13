@@ -60,6 +60,13 @@ export const lists: Lists = {
         validation: { isRequired: true},
         ui: { displayMode: 'select' }
       }),
+      companies: relationship({
+        ref: "Company",
+        many: true,
+        ui: {
+          labelField: "name"
+        }
+      })      
     },
     ui: {
       listView: {
@@ -202,7 +209,31 @@ export const lists: Lists = {
         ref: 'Account'
       })
     }
-  })
-  
+  }),
 
+  Company: list({
+    access: allowAll,
+    fields: {
+      name: text(),
+      addressStreet: text(),
+      addressPostalCode: text(),
+      addressCity: text(),
+      addressCountry: text(),
+      phone: text(),
+      email: text(),
+      website: text(),
+      businessID: text(), // "y-tuunus", 1234567-8
+      vatNumber: text(), // // FI12345678
+      users: relationship({
+        ref: "User",
+        many: true,
+        ui: {
+          labelField: "name"
+        }
+      })
+    },
+    ui: {
+      labelField: 'name',
+    },
+  })
 };

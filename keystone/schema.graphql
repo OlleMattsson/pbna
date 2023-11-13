@@ -10,6 +10,8 @@ type User {
   entriesCount(where: EntryWhereInput! = {}): Int
   createdAt: DateTime
   role: String
+  companies(where: CompanyWhereInput! = {}, orderBy: [CompanyOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: CompanyWhereUniqueInput): [Company!]
+  companiesCount(where: CompanyWhereInput! = {}): Int
 }
 
 type PasswordState {
@@ -33,6 +35,7 @@ input UserWhereInput {
   entries: EntryManyRelationFilter
   createdAt: DateTimeNullableFilter
   role: StringFilter
+  companies: CompanyManyRelationFilter
 }
 
 input IDFilter {
@@ -97,6 +100,12 @@ input DateTimeNullableFilter {
   not: DateTimeNullableFilter
 }
 
+input CompanyManyRelationFilter {
+  every: CompanyWhereInput
+  some: CompanyWhereInput
+  none: CompanyWhereInput
+}
+
 input UserOrderByInput {
   id: OrderDirection
   name: OrderDirection
@@ -117,6 +126,7 @@ input UserUpdateInput {
   entries: EntryRelateToManyForUpdateInput
   createdAt: DateTime
   role: String
+  companies: CompanyRelateToManyForUpdateInput
 }
 
 input EntryRelateToManyForUpdateInput {
@@ -124,6 +134,13 @@ input EntryRelateToManyForUpdateInput {
   set: [EntryWhereUniqueInput!]
   create: [EntryCreateInput!]
   connect: [EntryWhereUniqueInput!]
+}
+
+input CompanyRelateToManyForUpdateInput {
+  disconnect: [CompanyWhereUniqueInput!]
+  set: [CompanyWhereUniqueInput!]
+  create: [CompanyCreateInput!]
+  connect: [CompanyWhereUniqueInput!]
 }
 
 input UserUpdateArgs {
@@ -138,11 +155,17 @@ input UserCreateInput {
   entries: EntryRelateToManyForCreateInput
   createdAt: DateTime
   role: String
+  companies: CompanyRelateToManyForCreateInput
 }
 
 input EntryRelateToManyForCreateInput {
   create: [EntryCreateInput!]
   connect: [EntryWhereUniqueInput!]
+}
+
+input CompanyRelateToManyForCreateInput {
+  create: [CompanyCreateInput!]
+  connect: [CompanyWhereUniqueInput!]
 }
 
 type Entry {
@@ -490,6 +513,109 @@ input AccountCreateInput {
   vatAccount: AccountRelateToOneForCreateInput
 }
 
+type Company {
+  id: ID!
+  name: String
+  addressStreet: String
+  addressPostalCode: String
+  addressCity: String
+  addressCountry: String
+  phone: String
+  email: String
+  website: String
+  businessID: String
+  vatNumber: String
+  users(where: UserWhereInput! = {}, orderBy: [UserOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: UserWhereUniqueInput): [User!]
+  usersCount(where: UserWhereInput! = {}): Int
+}
+
+input CompanyWhereUniqueInput {
+  id: ID
+}
+
+input CompanyWhereInput {
+  AND: [CompanyWhereInput!]
+  OR: [CompanyWhereInput!]
+  NOT: [CompanyWhereInput!]
+  id: IDFilter
+  name: StringFilter
+  addressStreet: StringFilter
+  addressPostalCode: StringFilter
+  addressCity: StringFilter
+  addressCountry: StringFilter
+  phone: StringFilter
+  email: StringFilter
+  website: StringFilter
+  businessID: StringFilter
+  vatNumber: StringFilter
+  users: UserManyRelationFilter
+}
+
+input UserManyRelationFilter {
+  every: UserWhereInput
+  some: UserWhereInput
+  none: UserWhereInput
+}
+
+input CompanyOrderByInput {
+  id: OrderDirection
+  name: OrderDirection
+  addressStreet: OrderDirection
+  addressPostalCode: OrderDirection
+  addressCity: OrderDirection
+  addressCountry: OrderDirection
+  phone: OrderDirection
+  email: OrderDirection
+  website: OrderDirection
+  businessID: OrderDirection
+  vatNumber: OrderDirection
+}
+
+input CompanyUpdateInput {
+  name: String
+  addressStreet: String
+  addressPostalCode: String
+  addressCity: String
+  addressCountry: String
+  phone: String
+  email: String
+  website: String
+  businessID: String
+  vatNumber: String
+  users: UserRelateToManyForUpdateInput
+}
+
+input UserRelateToManyForUpdateInput {
+  disconnect: [UserWhereUniqueInput!]
+  set: [UserWhereUniqueInput!]
+  create: [UserCreateInput!]
+  connect: [UserWhereUniqueInput!]
+}
+
+input CompanyUpdateArgs {
+  where: CompanyWhereUniqueInput!
+  data: CompanyUpdateInput!
+}
+
+input CompanyCreateInput {
+  name: String
+  addressStreet: String
+  addressPostalCode: String
+  addressCity: String
+  addressCountry: String
+  phone: String
+  email: String
+  website: String
+  businessID: String
+  vatNumber: String
+  users: UserRelateToManyForCreateInput
+}
+
+input UserRelateToManyForCreateInput {
+  create: [UserCreateInput!]
+  connect: [UserWhereUniqueInput!]
+}
+
 """
 The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
 """
@@ -526,6 +652,12 @@ type Mutation {
   updateAccounts(data: [AccountUpdateArgs!]!): [Account]
   deleteAccount(where: AccountWhereUniqueInput!): Account
   deleteAccounts(where: [AccountWhereUniqueInput!]!): [Account]
+  createCompany(data: CompanyCreateInput!): Company
+  createCompanies(data: [CompanyCreateInput!]!): [Company]
+  updateCompany(where: CompanyWhereUniqueInput!, data: CompanyUpdateInput!): Company
+  updateCompanies(data: [CompanyUpdateArgs!]!): [Company]
+  deleteCompany(where: CompanyWhereUniqueInput!): Company
+  deleteCompanies(where: [CompanyWhereUniqueInput!]!): [Company]
 }
 
 type Query {
@@ -544,6 +676,9 @@ type Query {
   accounts(where: AccountWhereInput! = {}, orderBy: [AccountOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: AccountWhereUniqueInput): [Account!]
   account(where: AccountWhereUniqueInput!): Account
   accountsCount(where: AccountWhereInput! = {}): Int
+  companies(where: CompanyWhereInput! = {}, orderBy: [CompanyOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: CompanyWhereUniqueInput): [Company!]
+  company(where: CompanyWhereUniqueInput!): Company
+  companiesCount(where: CompanyWhereInput! = {}): Int
   keystone: KeystoneMeta!
 }
 
