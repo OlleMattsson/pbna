@@ -6,10 +6,10 @@ type User {
   name: String
   email: String
   password: PasswordState
-  isAdmin: Boolean
   entries(where: EntryWhereInput! = {}, orderBy: [EntryOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: EntryWhereUniqueInput): [Entry!]
   entriesCount(where: EntryWhereInput! = {}): Int
   createdAt: DateTime
+  role: String
 }
 
 type PasswordState {
@@ -30,9 +30,9 @@ input UserWhereInput {
   id: IDFilter
   name: StringFilter
   email: StringFilter
-  isAdmin: BooleanFilter
   entries: EntryManyRelationFilter
   createdAt: DateTimeNullableFilter
+  role: StringFilter
 }
 
 input IDFilter {
@@ -80,11 +80,6 @@ input NestedStringFilter {
   not: NestedStringFilter
 }
 
-input BooleanFilter {
-  equals: Boolean
-  not: BooleanFilter
-}
-
 input EntryManyRelationFilter {
   every: EntryWhereInput
   some: EntryWhereInput
@@ -106,8 +101,8 @@ input UserOrderByInput {
   id: OrderDirection
   name: OrderDirection
   email: OrderDirection
-  isAdmin: OrderDirection
   createdAt: OrderDirection
+  role: OrderDirection
 }
 
 enum OrderDirection {
@@ -119,9 +114,9 @@ input UserUpdateInput {
   name: String
   email: String
   password: String
-  isAdmin: Boolean
   entries: EntryRelateToManyForUpdateInput
   createdAt: DateTime
+  role: String
 }
 
 input EntryRelateToManyForUpdateInput {
@@ -140,9 +135,9 @@ input UserCreateInput {
   name: String
   email: String
   password: String
-  isAdmin: Boolean
   entries: EntryRelateToManyForCreateInput
   createdAt: DateTime
+  role: String
 }
 
 input EntryRelateToManyForCreateInput {
@@ -301,6 +296,7 @@ type LineItem {
   account: Account
   type: String
   amount: Decimal
+  description: String
 }
 
 scalar Decimal
@@ -317,6 +313,7 @@ input LineItemWhereInput {
   account: AccountWhereInput
   type: StringFilter
   amount: DecimalFilter
+  description: StringFilter
 }
 
 input DecimalFilter {
@@ -334,12 +331,14 @@ input LineItemOrderByInput {
   id: OrderDirection
   type: OrderDirection
   amount: OrderDirection
+  description: OrderDirection
 }
 
 input LineItemUpdateInput {
   account: AccountRelateToOneForUpdateInput
   type: String
   amount: Decimal
+  description: String
 }
 
 input AccountRelateToOneForUpdateInput {
@@ -357,6 +356,7 @@ input LineItemCreateInput {
   account: AccountRelateToOneForCreateInput
   type: String
   amount: Decimal
+  description: String
 }
 
 input AccountRelateToOneForCreateInput {
