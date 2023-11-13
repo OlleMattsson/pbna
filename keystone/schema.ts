@@ -20,14 +20,70 @@ import {
 // the generated types from '.keystone/types'
 import type { Lists } from '.keystone/types';
 
+type Session = {
+  data: {
+    id: string;
+    name: string;
+    role: string;
+    email: string;
+  }
+}
+
+const isAdmin = ({ session } : {session: Session}) => {
+  if (session?.data.role === 'admin') {
+    return true
+  } 
+  
+  return false
+}
+
+const isAdminOrOwner = ({ session } : {session: Session}) => {
+  if (session?.data.role === 'admin' || session?.data.role === 'owner')  {
+    return true
+  } 
+  
+  return false
+}
+
+const filterLineItems = ({ session }: { session: Session }) => {
+  // if the user is an Admin, they can access all the records
+  if (session?.data.role === 'admin') return true;
+  // otherwise, filter for published posts
+  return { isPublished: { equals: true } };
+}
+
+
+
 export const lists: Lists = {
   
   User: list({
-    // WARNING
-    //   for this starter project, anyone can create, query, update and delete anything
-    //   if you want to prevent random people on the internet from accessing your data,
-    //   you can find out more at https://keystonejs.com/docs/guides/auth-and-access-control
-    access: allowAll,
+    access: // allowAll,
+    
+    
+    {
+      operation: allowAll,
+      filter: {
+        query: ({ session, context, listKey, operation }) => {
+          console.log("Session")
+          console.log(session)
+          
+          if (session?.data.role === 'admin' || session?.data.role === 'owner')  {
+            return true
+          } 
+
+          if (session?.data.role === 'user') {
+            return {email: {equals: session?.data.email}}
+          }
+
+          // graphql playgound doesn't have any session data, so 
+          // if we don't return true at the very end here, we wont
+          // be able to access any data through it.....
+          return true
+         
+        }
+      }
+    },
+    
 
     fields: {
       name: text({ validation: { isRequired: true } }),

@@ -31,11 +31,25 @@ var import_access = require("@keystone-6/core/access");
 var import_fields = require("@keystone-6/core/fields");
 var lists = {
   User: (0, import_core.list)({
-    // WARNING
-    //   for this starter project, anyone can create, query, update and delete anything
-    //   if you want to prevent random people on the internet from accessing your data,
-    //   you can find out more at https://keystonejs.com/docs/guides/auth-and-access-control
-    access: import_access.allowAll,
+    access: (
+      // allowAll,
+      {
+        operation: import_access.allowAll,
+        filter: {
+          query: ({ session: session2, context, listKey, operation }) => {
+            console.log("Session");
+            console.log(session2);
+            if (session2?.data.role === "admin" || session2?.data.role === "owner") {
+              return true;
+            }
+            if (session2?.data.role === "user") {
+              return { email: { equals: session2?.data.email } };
+            }
+            return true;
+          }
+        }
+      }
+    ),
     fields: {
       name: (0, import_fields.text)({ validation: { isRequired: true } }),
       email: (0, import_fields.text)({
@@ -43,7 +57,6 @@ var lists = {
         isIndexed: "unique"
       }),
       password: (0, import_fields.password)({ validation: { isRequired: true } }),
-      isAdmin: (0, import_fields.checkbox)(),
       entries: (0, import_fields.relationship)({ ref: "Entry.createdBy", many: true }),
       createdAt: (0, import_fields.timestamp)({
         // this sets the timestamp to Date.now() when the user is first created
@@ -52,6 +65,23 @@ var lists = {
           createView: {
             fieldMode: "hidden"
           }
+        }
+      }),
+      role: (0, import_fields.select)({
+        type: "string",
+        options: [
+          { label: "Admin", value: "admin" },
+          { label: "User", value: "user" },
+          { label: "Owner", value: "owner" }
+        ],
+        validation: { isRequired: true },
+        ui: { displayMode: "select" }
+      }),
+      companies: (0, import_fields.relationship)({
+        ref: "Company",
+        many: true,
+        ui: {
+          labelField: "name"
         }
       })
     },
@@ -87,11 +117,11 @@ var lists = {
         many: true,
         ui: {
           displayMode: "cards",
-          cardFields: ["account", "type", "amount"],
+          cardFields: ["account", "type", "amount", "description"],
           linkToItem: true,
           removeMode: "disconnect",
-          inlineCreate: { fields: ["account", "type", "amount"] },
-          inlineEdit: { fields: ["account", "type", "amount"] },
+          inlineCreate: { fields: ["account", "type", "amount", "description"] },
+          inlineEdit: { fields: ["account", "type", "amount", "description"] },
           inlineConnect: true
         }
       }),
@@ -137,7 +167,8 @@ var lists = {
       amount: (0, import_fields.decimal)({
         scale: 2,
         validation: { isRequired: true }
-      })
+      }),
+      description: (0, import_fields.text)()
     }
   }),
   Attachment: (0, import_core.list)({
@@ -176,12 +207,71 @@ var lists = {
         ref: "Account"
       })
     }
+  }),
+  Company: (0, import_core.list)({
+    access: import_access.allowAll,
+    fields: {
+      name: (0, import_fields.text)(),
+      addressStreet: (0, import_fields.text)(),
+      addressPostalCode: (0, import_fields.text)(),
+      addressCity: (0, import_fields.text)(),
+      addressCountry: (0, import_fields.text)(),
+      phone: (0, import_fields.text)(),
+      email: (0, import_fields.text)(),
+      website: (0, import_fields.text)(),
+      businessID: (0, import_fields.text)(),
+      // "y-tuunus", 1234567-8
+      vatNumber: (0, import_fields.text)(),
+      // // FI12345678
+      users: (0, import_fields.relationship)({
+        ref: "User",
+        many: true,
+        ui: {
+          labelField: "name"
+        }
+      })
+    },
+    ui: {
+      labelField: "name"
+    }
   })
 };
 
+// auth.ts
+var import_crypto = require("crypto");
+var import_auth = require("@keystone-6/auth");
+var import_session = require("@keystone-6/core/session");
+var sessionSecret = process.env.SESSION_SECRET;
+if (!sessionSecret && process.env.NODE_ENV !== "production") {
+  sessionSecret = (0, import_crypto.randomBytes)(32).toString("hex");
+}
+var { withAuth } = (0, import_auth.createAuth)({
+  listKey: "User",
+  identityField: "email",
+  // this is a GraphQL query fragment for fetching what data will be attached to a context.session
+  //   this can be helpful for when you are writing your access control functions
+  //   you can find out more at https://keystonejs.com/docs/guides/auth-and-access-control
+  sessionData: "name createdAt role id email",
+  secretField: "password",
+  // WARNING: remove initFirstItem functionality in production
+  //   see https://keystonejs.com/docs/config/auth#init-first-item for more
+  initFirstItem: {
+    // if there are no items in the database, by configuring this field
+    //   you are asking the Keystone AdminUI to create a new user
+    //   providing inputs for these fields
+    fields: ["name", "email", "password"]
+    // it uses context.sudo() to do this, which bypasses any access control you might have
+    //   you shouldn't use this in production
+  }
+});
+var sessionMaxAge = 60 * 60 * 24 * 30;
+var session = (0, import_session.statelessSessions)({
+  maxAge: sessionMaxAge,
+  secret: sessionSecret
+});
+
 // keystone.ts
-var keystone_default = (
-  //withAuth(
+var keystone_default = withAuth(
   (0, import_core2.config)({
     server: {
       cors: {
@@ -199,7 +289,7 @@ var keystone_default = (
       idField: { kind: "uuid" }
     },
     lists,
-    //session,
+    session,
     storage: {
       journal_item_files: {
         kind: "local",
