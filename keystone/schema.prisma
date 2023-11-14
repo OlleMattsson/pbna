@@ -24,17 +24,20 @@ model User {
 }
 
 model Entry {
-  id          String       @id @default(uuid()) @postgresql.Uuid
-  createdAt   DateTime     @default(now())
-  createdBy   User?        @relation("Entry_createdBy", fields: [createdById], references: [id])
-  createdById String?      @map("createdBy") @postgresql.Uuid
-  entryId     Int?
-  date        DateTime?    @postgresql.Date
-  description String       @default("")
-  lineItems   LineItem[]   @relation("Entry_lineItems")
-  attachments Attachment[] @relation("Entry_attachments")
+  id                 String            @id @default(uuid()) @postgresql.Uuid
+  createdAt          DateTime          @default(now())
+  createdBy          User?             @relation("Entry_createdBy", fields: [createdById], references: [id])
+  createdById        String?           @map("createdBy") @postgresql.Uuid
+  accountingPeriod   AccountingPeriod? @relation("Entry_accountingPeriod", fields: [accountingPeriodId], references: [id])
+  accountingPeriodId String?           @map("accountingPeriod") @postgresql.Uuid
+  entryId            Int?
+  date               DateTime?         @postgresql.Date
+  description        String            @default("")
+  lineItems          LineItem[]        @relation("Entry_lineItems")
+  attachments        Attachment[]      @relation("Entry_attachments")
 
   @@index([createdById])
+  @@index([accountingPeriodId])
 }
 
 model LineItem {
@@ -58,33 +61,54 @@ model Attachment {
   from_Entry_attachments Entry[] @relation("Entry_attachments")
 }
 
+model AccountChart {
+  id          String    @id @default(uuid()) @postgresql.Uuid
+  name        String    @default("")
+  description String    @default("")
+  accounts    Account[] @relation("AccountChart_accounts")
+}
+
 model Account {
-  id                      String     @id @default(uuid()) @postgresql.Uuid
-  account                 Int?
-  type                    String
-  name                    String     @default("")
-  description             String     @default("")
-  vatAmount               Decimal?   @postgresql.Decimal(18, 2)
-  vatAccount              Account?   @relation("Account_vatAccount", fields: [vatAccountId], references: [id])
-  vatAccountId            String?    @map("vatAccount") @postgresql.Uuid
-  from_LineItem_account   LineItem[] @relation("LineItem_account")
-  from_Account_vatAccount Account[]  @relation("Account_vatAccount")
+  id                         String         @id @default(uuid()) @postgresql.Uuid
+  account                    Int?
+  name                       String         @default("")
+  description                String         @default("")
+  type                       String
+  vatAmount                  Decimal?       @postgresql.Decimal(18, 2)
+  vatAccount                 Account?       @relation("Account_vatAccount", fields: [vatAccountId], references: [id])
+  vatAccountId               String?        @map("vatAccount") @postgresql.Uuid
+  from_LineItem_account      LineItem[]     @relation("LineItem_account")
+  from_AccountChart_accounts AccountChart[] @relation("AccountChart_accounts")
+  from_Account_vatAccount    Account[]      @relation("Account_vatAccount")
 
   @@index([vatAccountId])
 }
 
+model AccountingPeriod {
+  id                          String    @id @default(uuid()) @postgresql.Uuid
+  label                       String    @default("")
+  company                     Company?  @relation("AccountingPeriod_company", fields: [companyId], references: [id])
+  companyId                   String?   @map("company") @postgresql.Uuid
+  startDate                   DateTime? @postgresql.Date
+  endDate                     DateTime? @postgresql.Date
+  from_Entry_accountingPeriod Entry[]   @relation("Entry_accountingPeriod")
+
+  @@index([companyId])
+}
+
 model Company {
-  id                  String @id @default(uuid()) @postgresql.Uuid
-  name                String @default("")
-  addressStreet       String @default("")
-  addressPostalCode   String @default("")
-  addressCity         String @default("")
-  addressCountry      String @default("")
-  phone               String @default("")
-  email               String @default("")
-  website             String @default("")
-  businessID          String @default("")
-  vatNumber           String @default("")
-  users               User[] @relation("Company_users")
-  from_User_companies User[] @relation("User_companies")
+  id                            String             @id @default(uuid()) @postgresql.Uuid
+  name                          String             @default("")
+  addressStreet                 String             @default("")
+  addressPostalCode             String             @default("")
+  addressCity                   String             @default("")
+  addressCountry                String             @default("")
+  phone                         String             @default("")
+  email                         String             @default("")
+  website                       String             @default("")
+  businessID                    String             @default("")
+  vatNumber                     String             @default("")
+  users                         User[]             @relation("Company_users")
+  from_User_companies           User[]             @relation("User_companies")
+  from_AccountingPeriod_company AccountingPeriod[] @relation("AccountingPeriod_company")
 }

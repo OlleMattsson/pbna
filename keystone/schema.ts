@@ -158,6 +158,14 @@ export const lists: Lists = {
         }
       }),
 
+      accountingPeriod: relationship({
+        ref: "AccountingPeriod",
+        ui: {
+          hideCreate: true,
+        }
+      }),
+
+
       entryId: integer({label: "Entry Number"}),
       date: calendarDay({label: "Transaction Date"}),
       description: text(),
@@ -242,6 +250,33 @@ export const lists: Lists = {
     }
   }),
 
+  // Chart of Accounts, "kontoplan"
+  AccountChart: list ({
+    access: allowAll,
+    fields: {
+      name: text(),
+      description: text(),
+      accounts: relationship({
+        ref: "Account",
+        many: true,
+        ui: {
+          displayMode: 'cards',
+          cardFields: ["account", "name", "description", "type", "vatAmount", "vatAccount"],
+          linkToItem: true,
+          removeMode: 'disconnect',
+          inlineCreate: { fields: ["account", "name", "description", "type", "vatAmount", "vatAccount"] },
+          inlineEdit: { fields: ["account", "name", "description", "type", "vatAmount", "vatAccount"] },
+          inlineConnect: true,        
+        }
+      })
+    },
+    ui: {
+      label: "Chart of Accounts",
+      listView: {
+        initialColumns: ["name", "description"]
+      }
+    }
+  }),
   
   Account: list({
     access: allowAll,
@@ -250,6 +285,8 @@ export const lists: Lists = {
     },
     fields: {
       account: integer(),
+      name: text(),
+      description: text(),
       type: select({
         type: "string",
         options: [
@@ -262,14 +299,27 @@ export const lists: Lists = {
         validation: { isRequired: true},
         ui: { displayMode: 'select' }
       }),
-      name: text(),
-      description: text(),
       vatAmount: decimal({
         scale: 2,
       }),
       vatAccount: relationship({
         ref: 'Account'
       })
+    }
+  }),
+
+  AccountingPeriod: list({
+    access: allowAll,
+    fields: {
+      label: text(),
+      company: relationship({
+        ref: "Company",
+        many: false
+      }),
+      startDate: calendarDay({label: "Start Date"}),
+      endDate: calendarDay({label: "End Date"}),
+
+
     }
   }),
 

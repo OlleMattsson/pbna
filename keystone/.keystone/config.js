@@ -125,6 +125,12 @@ var lists = {
           hideCreate: true
         }
       }),
+      accountingPeriod: (0, import_fields.relationship)({
+        ref: "AccountingPeriod",
+        ui: {
+          hideCreate: true
+        }
+      }),
       entryId: (0, import_fields.integer)({ label: "Entry Number" }),
       date: (0, import_fields.calendarDay)({ label: "Transaction Date" }),
       description: (0, import_fields.text)(),
@@ -195,6 +201,33 @@ var lists = {
       file: (0, import_fields.file)({ storage: "journal_item_files" })
     }
   }),
+  // Chart of Accounts, "kontoplan"
+  AccountChart: (0, import_core.list)({
+    access: import_access.allowAll,
+    fields: {
+      name: (0, import_fields.text)(),
+      description: (0, import_fields.text)(),
+      accounts: (0, import_fields.relationship)({
+        ref: "Account",
+        many: true,
+        ui: {
+          displayMode: "cards",
+          cardFields: ["account", "name", "description", "type", "vatAmount", "vatAccount"],
+          linkToItem: true,
+          removeMode: "disconnect",
+          inlineCreate: { fields: ["account", "name", "description", "type", "vatAmount", "vatAccount"] },
+          inlineEdit: { fields: ["account", "name", "description", "type", "vatAmount", "vatAccount"] },
+          inlineConnect: true
+        }
+      })
+    },
+    ui: {
+      label: "Chart of Accounts",
+      listView: {
+        initialColumns: ["name", "description"]
+      }
+    }
+  }),
   Account: (0, import_core.list)({
     access: import_access.allowAll,
     ui: {
@@ -202,6 +235,8 @@ var lists = {
     },
     fields: {
       account: (0, import_fields.integer)(),
+      name: (0, import_fields.text)(),
+      description: (0, import_fields.text)(),
       type: (0, import_fields.select)({
         type: "string",
         options: [
@@ -214,14 +249,24 @@ var lists = {
         validation: { isRequired: true },
         ui: { displayMode: "select" }
       }),
-      name: (0, import_fields.text)(),
-      description: (0, import_fields.text)(),
       vatAmount: (0, import_fields.decimal)({
         scale: 2
       }),
       vatAccount: (0, import_fields.relationship)({
         ref: "Account"
       })
+    }
+  }),
+  AccountingPeriod: (0, import_core.list)({
+    access: import_access.allowAll,
+    fields: {
+      label: (0, import_fields.text)(),
+      company: (0, import_fields.relationship)({
+        ref: "Company",
+        many: false
+      }),
+      startDate: (0, import_fields.calendarDay)({ label: "Start Date" }),
+      endDate: (0, import_fields.calendarDay)({ label: "End Date" })
     }
   }),
   Company: (0, import_core.list)({

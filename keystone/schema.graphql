@@ -172,6 +172,7 @@ type Entry {
   id: ID!
   createdAt: DateTime
   createdBy: User
+  accountingPeriod: AccountingPeriod
   entryId: Int
   date: CalendarDay
   description: String
@@ -194,6 +195,7 @@ input EntryWhereInput {
   id: IDFilter
   createdAt: DateTimeFilter
   createdBy: UserWhereInput
+  accountingPeriod: AccountingPeriodWhereInput
   entryId: IntNullableFilter
   date: CalendarDayNullableFilter
   description: StringFilter
@@ -257,6 +259,7 @@ input EntryOrderByInput {
 input EntryUpdateInput {
   createdAt: DateTime
   createdBy: UserRelateToOneForUpdateInput
+  accountingPeriod: AccountingPeriodRelateToOneForUpdateInput
   entryId: Int
   date: CalendarDay
   description: String
@@ -267,6 +270,12 @@ input EntryUpdateInput {
 input UserRelateToOneForUpdateInput {
   create: UserCreateInput
   connect: UserWhereUniqueInput
+  disconnect: Boolean
+}
+
+input AccountingPeriodRelateToOneForUpdateInput {
+  create: AccountingPeriodCreateInput
+  connect: AccountingPeriodWhereUniqueInput
   disconnect: Boolean
 }
 
@@ -292,6 +301,7 @@ input EntryUpdateArgs {
 input EntryCreateInput {
   createdAt: DateTime
   createdBy: UserRelateToOneForCreateInput
+  accountingPeriod: AccountingPeriodRelateToOneForCreateInput
   entryId: Int
   date: CalendarDay
   description: String
@@ -302,6 +312,11 @@ input EntryCreateInput {
 input UserRelateToOneForCreateInput {
   create: UserCreateInput
   connect: UserWhereUniqueInput
+}
+
+input AccountingPeriodRelateToOneForCreateInput {
+  create: AccountingPeriodCreateInput
+  connect: AccountingPeriodWhereUniqueInput
 }
 
 input LineItemRelateToManyForCreateInput {
@@ -443,12 +458,75 @@ input AttachmentCreateInput {
   file: FileFieldInput
 }
 
+type AccountChart {
+  id: ID!
+  name: String
+  description: String
+  accounts(where: AccountWhereInput! = {}, orderBy: [AccountOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: AccountWhereUniqueInput): [Account!]
+  accountsCount(where: AccountWhereInput! = {}): Int
+}
+
+input AccountChartWhereUniqueInput {
+  id: ID
+}
+
+input AccountChartWhereInput {
+  AND: [AccountChartWhereInput!]
+  OR: [AccountChartWhereInput!]
+  NOT: [AccountChartWhereInput!]
+  id: IDFilter
+  name: StringFilter
+  description: StringFilter
+  accounts: AccountManyRelationFilter
+}
+
+input AccountManyRelationFilter {
+  every: AccountWhereInput
+  some: AccountWhereInput
+  none: AccountWhereInput
+}
+
+input AccountChartOrderByInput {
+  id: OrderDirection
+  name: OrderDirection
+  description: OrderDirection
+}
+
+input AccountChartUpdateInput {
+  name: String
+  description: String
+  accounts: AccountRelateToManyForUpdateInput
+}
+
+input AccountRelateToManyForUpdateInput {
+  disconnect: [AccountWhereUniqueInput!]
+  set: [AccountWhereUniqueInput!]
+  create: [AccountCreateInput!]
+  connect: [AccountWhereUniqueInput!]
+}
+
+input AccountChartUpdateArgs {
+  where: AccountChartWhereUniqueInput!
+  data: AccountChartUpdateInput!
+}
+
+input AccountChartCreateInput {
+  name: String
+  description: String
+  accounts: AccountRelateToManyForCreateInput
+}
+
+input AccountRelateToManyForCreateInput {
+  create: [AccountCreateInput!]
+  connect: [AccountWhereUniqueInput!]
+}
+
 type Account {
   id: ID!
   account: Int
-  type: String
   name: String
   description: String
+  type: String
   vatAmount: Decimal
   vatAccount: Account
 }
@@ -463,9 +541,9 @@ input AccountWhereInput {
   NOT: [AccountWhereInput!]
   id: IDFilter
   account: IntNullableFilter
-  type: StringFilter
   name: StringFilter
   description: StringFilter
+  type: StringFilter
   vatAmount: DecimalNullableFilter
   vatAccount: AccountWhereInput
 }
@@ -484,17 +562,17 @@ input DecimalNullableFilter {
 input AccountOrderByInput {
   id: OrderDirection
   account: OrderDirection
-  type: OrderDirection
   name: OrderDirection
   description: OrderDirection
+  type: OrderDirection
   vatAmount: OrderDirection
 }
 
 input AccountUpdateInput {
   account: Int
-  type: String
   name: String
   description: String
+  type: String
   vatAmount: Decimal
   vatAccount: AccountRelateToOneForUpdateInput
 }
@@ -506,11 +584,71 @@ input AccountUpdateArgs {
 
 input AccountCreateInput {
   account: Int
-  type: String
   name: String
   description: String
+  type: String
   vatAmount: Decimal
   vatAccount: AccountRelateToOneForCreateInput
+}
+
+type AccountingPeriod {
+  id: ID!
+  label: String
+  company: Company
+  startDate: CalendarDay
+  endDate: CalendarDay
+}
+
+input AccountingPeriodWhereUniqueInput {
+  id: ID
+}
+
+input AccountingPeriodWhereInput {
+  AND: [AccountingPeriodWhereInput!]
+  OR: [AccountingPeriodWhereInput!]
+  NOT: [AccountingPeriodWhereInput!]
+  id: IDFilter
+  label: StringFilter
+  company: CompanyWhereInput
+  startDate: CalendarDayNullableFilter
+  endDate: CalendarDayNullableFilter
+}
+
+input AccountingPeriodOrderByInput {
+  id: OrderDirection
+  label: OrderDirection
+  startDate: OrderDirection
+  endDate: OrderDirection
+}
+
+input AccountingPeriodUpdateInput {
+  label: String
+  company: CompanyRelateToOneForUpdateInput
+  startDate: CalendarDay
+  endDate: CalendarDay
+}
+
+input CompanyRelateToOneForUpdateInput {
+  create: CompanyCreateInput
+  connect: CompanyWhereUniqueInput
+  disconnect: Boolean
+}
+
+input AccountingPeriodUpdateArgs {
+  where: AccountingPeriodWhereUniqueInput!
+  data: AccountingPeriodUpdateInput!
+}
+
+input AccountingPeriodCreateInput {
+  label: String
+  company: CompanyRelateToOneForCreateInput
+  startDate: CalendarDay
+  endDate: CalendarDay
+}
+
+input CompanyRelateToOneForCreateInput {
+  create: CompanyCreateInput
+  connect: CompanyWhereUniqueInput
 }
 
 type Company {
@@ -646,12 +784,24 @@ type Mutation {
   updateAttachments(data: [AttachmentUpdateArgs!]!): [Attachment]
   deleteAttachment(where: AttachmentWhereUniqueInput!): Attachment
   deleteAttachments(where: [AttachmentWhereUniqueInput!]!): [Attachment]
+  createAccountChart(data: AccountChartCreateInput!): AccountChart
+  createAccountCharts(data: [AccountChartCreateInput!]!): [AccountChart]
+  updateAccountChart(where: AccountChartWhereUniqueInput!, data: AccountChartUpdateInput!): AccountChart
+  updateAccountCharts(data: [AccountChartUpdateArgs!]!): [AccountChart]
+  deleteAccountChart(where: AccountChartWhereUniqueInput!): AccountChart
+  deleteAccountCharts(where: [AccountChartWhereUniqueInput!]!): [AccountChart]
   createAccount(data: AccountCreateInput!): Account
   createAccounts(data: [AccountCreateInput!]!): [Account]
   updateAccount(where: AccountWhereUniqueInput!, data: AccountUpdateInput!): Account
   updateAccounts(data: [AccountUpdateArgs!]!): [Account]
   deleteAccount(where: AccountWhereUniqueInput!): Account
   deleteAccounts(where: [AccountWhereUniqueInput!]!): [Account]
+  createAccountingPeriod(data: AccountingPeriodCreateInput!): AccountingPeriod
+  createAccountingPeriods(data: [AccountingPeriodCreateInput!]!): [AccountingPeriod]
+  updateAccountingPeriod(where: AccountingPeriodWhereUniqueInput!, data: AccountingPeriodUpdateInput!): AccountingPeriod
+  updateAccountingPeriods(data: [AccountingPeriodUpdateArgs!]!): [AccountingPeriod]
+  deleteAccountingPeriod(where: AccountingPeriodWhereUniqueInput!): AccountingPeriod
+  deleteAccountingPeriods(where: [AccountingPeriodWhereUniqueInput!]!): [AccountingPeriod]
   createCompany(data: CompanyCreateInput!): Company
   createCompanies(data: [CompanyCreateInput!]!): [Company]
   updateCompany(where: CompanyWhereUniqueInput!, data: CompanyUpdateInput!): Company
@@ -693,9 +843,15 @@ type Query {
   attachments(where: AttachmentWhereInput! = {}, orderBy: [AttachmentOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: AttachmentWhereUniqueInput): [Attachment!]
   attachment(where: AttachmentWhereUniqueInput!): Attachment
   attachmentsCount(where: AttachmentWhereInput! = {}): Int
+  accountCharts(where: AccountChartWhereInput! = {}, orderBy: [AccountChartOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: AccountChartWhereUniqueInput): [AccountChart!]
+  accountChart(where: AccountChartWhereUniqueInput!): AccountChart
+  accountChartsCount(where: AccountChartWhereInput! = {}): Int
   accounts(where: AccountWhereInput! = {}, orderBy: [AccountOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: AccountWhereUniqueInput): [Account!]
   account(where: AccountWhereUniqueInput!): Account
   accountsCount(where: AccountWhereInput! = {}): Int
+  accountingPeriods(where: AccountingPeriodWhereInput! = {}, orderBy: [AccountingPeriodOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: AccountingPeriodWhereUniqueInput): [AccountingPeriod!]
+  accountingPeriod(where: AccountingPeriodWhereUniqueInput!): AccountingPeriod
+  accountingPeriodsCount(where: AccountingPeriodWhereInput! = {}): Int
   companies(where: CompanyWhereInput! = {}, orderBy: [CompanyOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: CompanyWhereUniqueInput): [Company!]
   company(where: CompanyWhereUniqueInput!): Company
   companiesCount(where: CompanyWhereInput! = {}): Int
