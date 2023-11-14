@@ -1,5 +1,5 @@
 import { Transaction } from "./Transaction";
-import { Account } from "./../Account/Account";
+import { Account } from "../Account/Account";
 
 interface TransatctionManagerInterface {
   getTransactions(): Transaction[];

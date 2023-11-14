@@ -1,4 +1,4 @@
-import { Row, RowType } from "./../Row/Row";
+import { Row, RowType } from "../Row/Row";
 import { Attachment } from "./UI/Attachments";
 
 interface TransactionInterface {

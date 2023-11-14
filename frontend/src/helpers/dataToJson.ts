@@ -1,7 +1,7 @@
-import { Account } from "./../Account/Account";
-import { AccountManager } from "./../Account/AccountManager";
-import { Transaction } from "./../Transaction/Transaction";
-import { TransactionManager } from "./../Transaction/TransactionManager";
+import { Account } from "../Account/Account";
+import { AccountManager } from "../Account/AccountManager";
+import { Transaction } from "../Transaction/Transaction";
+import { TransactionManager } from "../Transaction/TransactionManager";
 
 export const dataToJson = ({
   accountManager,

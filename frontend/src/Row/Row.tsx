@@ -1,4 +1,4 @@
-import { generateRandomInteger } from "./../helpers";
+import { generateRandomInteger } from "../helpers";
 
 enum RowType {
   Debit = "debit",

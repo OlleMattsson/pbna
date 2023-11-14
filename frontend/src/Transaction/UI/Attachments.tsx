@@ -1,4 +1,4 @@
-import { generateRandomInteger } from "./../../helpers/generateRandomInt";
+import { generateRandomInteger } from "../../helpers/generateRandomInt";
 import { useState } from "react";
 
 export type Attachment = {[key:string]: {name: string, data:string} }

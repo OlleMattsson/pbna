@@ -1,0 +1,43 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:latest
+    container_name: pbna_postgres
+    environment:
+      POSTGRES_USER: pbna_pguser
+      POSTGRES_PASSWORD: pbna_pgpw
+      POSTGRES_DB: pbna_pgdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+
+  backend:
+    container_name: pbna_backend
+    build: 
+      context: ./keystone
+      dockerfile: keystone.Dockerfile
+    command: "npm run start"
+    #command: "npm run dev"
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000   
+      # NODE_ENV: development
+      # values should come from postgres env...
+      DATABASE_URL: postgres://pbna_pguser:pbna_pgpw@postgres/pbna_pgdb
+
+  frontend:
+    container_name: pbna_frontend
+    build: 
+      context: ./frontend
+      dockerfile: frontend.Dockerfile
+    command: "npm run start"
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: 8080   
+      GRAPHQL_API_URL: "http://backend:3000/api/graphql"
+
+volumes:
+  pg-data:
