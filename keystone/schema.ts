@@ -101,8 +101,6 @@ export const lists: Lists = {
 
       password: password({ validation: { isRequired: true } }),
       
-      entries: relationship({ ref: 'Entry.createdBy', many: true }),
-
       createdAt: timestamp({
         // this sets the timestamp to Date.now() when the user is first created
         defaultValue: { kind: 'now' },
@@ -143,7 +141,7 @@ export const lists: Lists = {
     fields: {
       createdAt: timestamp({
         defaultValue: { kind: 'now' },
-        validation: {isRequired: true},
+        validation: { isRequired: true },
         ui: { 
           createView: {
             fieldMode: "hidden" 
@@ -152,36 +150,45 @@ export const lists: Lists = {
       }),
 
       createdBy: relationship({
-        ref: "User.entries",
+        ref: "User",
         ui: {
           hideCreate: true,
         }
       }),
 
-      accountingPeriod: relationship({
-        ref: "AccountingPeriod",
+      owner: relationship({
+        ref: "Company",
         ui: {
           hideCreate: true,
         }
+      }),      
+
+      date: calendarDay({
+        label: "Transaction Date",
+        validation: {isRequired: true},
       }),
 
+      entryNumber: integer({
+        label: "Entry Number",
+        validation: {isRequired: true},
+      }),
 
-      entryId: integer({label: "Entry Number"}),
-      date: calendarDay({label: "Transaction Date"}),
       description: text(),
+
       lineItems: relationship({
         ref: 'LineItem',
         many: true,
         ui: {
           displayMode: 'cards',
-          cardFields: ["account", "type", "amount", "description"],
+          cardFields: ["createdAt", "createdBy", "owner", "account", "type", "amount", "description"],
           linkToItem: true,
           removeMode: 'disconnect',
-          inlineCreate: { fields: ["account", "type", "amount", "description"] },
-          inlineEdit: { fields: ["account", "type", "amount", "description"] },
+          inlineCreate: { fields: ["createdAt", "createdBy", "owner", "account", "type", "amount", "description"] },
+          inlineEdit: { fields: ["createdAt", "createdBy", "owner", "account", "type", "amount", "description"] },
           inlineConnect: true,        
         }
       }),
+
       attachments: relationship({ 
         ref: 'Attachment', 
         many: true 
@@ -191,7 +198,7 @@ export const lists: Lists = {
     ui: {
       label: "Journal",
       listView: {
-        initialColumns: ["entryId", "date", "description"]
+        initialColumns: ["entryNumber", "date", "description"]
       }
     }
   }),
@@ -208,6 +215,32 @@ export const lists: Lists = {
 
     // this is the fields for our Tag list
     fields: {
+
+      createdAt: timestamp({
+        defaultValue: { kind: 'now' },
+        validation: {isRequired: true},
+        ui: { 
+          createView: {
+            fieldMode: "hidden" 
+          } 
+        }
+      }),
+
+      createdBy: relationship({
+        ref: "User",
+        ui: {
+          hideCreate: true,
+        }
+      }),
+
+      owner: relationship({
+        ref: "Company",
+        ui: {
+          hideCreate: true,
+        }
+      }),  
+
+      date: calendarDay({label: "Transaction Date"}),
 
       // account id
       account: relationship({
@@ -234,8 +267,6 @@ export const lists: Lists = {
       }),
 
       description: text(),
-
-
     },
     
   }),
@@ -246,7 +277,8 @@ export const lists: Lists = {
     fields: {
       name: text(),
       description: text(),
-      file: file({storage: "journal_item_files"})
+      file: file({storage: "journal_item_files"}),
+      ocrData: text()
     }
   }),
 
@@ -316,6 +348,10 @@ export const lists: Lists = {
         ref: "Company",
         many: false
       }),
+      accountChart: relationship({
+        ref: "AccountChart",
+        many: false
+      }),
       startDate: calendarDay({label: "Start Date"}),
       endDate: calendarDay({label: "End Date"}),
 
@@ -336,6 +372,13 @@ export const lists: Lists = {
       website: text(),
       businessID: text(), // "y-tuunus", 1234567-8
       vatNumber: text(), // // FI12345678
+      owner: relationship({
+        ref: "User",
+        many: false,
+        ui: {
+          labelField: "name"
+        }
+      }),
       users: relationship({
         ref: "User",
         many: true,

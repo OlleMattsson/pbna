@@ -73,7 +73,6 @@ var lists = {
         isIndexed: "unique"
       }),
       password: (0, import_fields.password)({ validation: { isRequired: true } }),
-      entries: (0, import_fields.relationship)({ ref: "Entry.createdBy", many: true }),
       createdAt: (0, import_fields.timestamp)({
         // this sets the timestamp to Date.now() when the user is first created
         defaultValue: { kind: "now" },
@@ -120,30 +119,36 @@ var lists = {
         }
       }),
       createdBy: (0, import_fields.relationship)({
-        ref: "User.entries",
+        ref: "User",
         ui: {
           hideCreate: true
         }
       }),
-      accountingPeriod: (0, import_fields.relationship)({
-        ref: "AccountingPeriod",
+      owner: (0, import_fields.relationship)({
+        ref: "Company",
         ui: {
           hideCreate: true
         }
       }),
-      entryId: (0, import_fields.integer)({ label: "Entry Number" }),
-      date: (0, import_fields.calendarDay)({ label: "Transaction Date" }),
+      date: (0, import_fields.calendarDay)({
+        label: "Transaction Date",
+        validation: { isRequired: true }
+      }),
+      entryNumber: (0, import_fields.integer)({
+        label: "Entry Number",
+        validation: { isRequired: true }
+      }),
       description: (0, import_fields.text)(),
       lineItems: (0, import_fields.relationship)({
         ref: "LineItem",
         many: true,
         ui: {
           displayMode: "cards",
-          cardFields: ["account", "type", "amount", "description"],
+          cardFields: ["createdAt", "createdBy", "owner", "account", "type", "amount", "description"],
           linkToItem: true,
           removeMode: "disconnect",
-          inlineCreate: { fields: ["account", "type", "amount", "description"] },
-          inlineEdit: { fields: ["account", "type", "amount", "description"] },
+          inlineCreate: { fields: ["createdAt", "createdBy", "owner", "account", "type", "amount", "description"] },
+          inlineEdit: { fields: ["createdAt", "createdBy", "owner", "account", "type", "amount", "description"] },
           inlineConnect: true
         }
       }),
@@ -155,7 +160,7 @@ var lists = {
     ui: {
       label: "Journal",
       listView: {
-        initialColumns: ["entryId", "date", "description"]
+        initialColumns: ["entryNumber", "date", "description"]
       }
     }
   }),
@@ -169,6 +174,28 @@ var lists = {
     },
     // this is the fields for our Tag list
     fields: {
+      createdAt: (0, import_fields.timestamp)({
+        defaultValue: { kind: "now" },
+        validation: { isRequired: true },
+        ui: {
+          createView: {
+            fieldMode: "hidden"
+          }
+        }
+      }),
+      createdBy: (0, import_fields.relationship)({
+        ref: "User",
+        ui: {
+          hideCreate: true
+        }
+      }),
+      owner: (0, import_fields.relationship)({
+        ref: "Company",
+        ui: {
+          hideCreate: true
+        }
+      }),
+      date: (0, import_fields.calendarDay)({ label: "Transaction Date" }),
       // account id
       account: (0, import_fields.relationship)({
         ref: "Account",
@@ -198,7 +225,8 @@ var lists = {
     fields: {
       name: (0, import_fields.text)(),
       description: (0, import_fields.text)(),
-      file: (0, import_fields.file)({ storage: "journal_item_files" })
+      file: (0, import_fields.file)({ storage: "journal_item_files" }),
+      ocrData: (0, import_fields.text)()
     }
   }),
   // Chart of Accounts, "kontoplan"
@@ -265,6 +293,10 @@ var lists = {
         ref: "Company",
         many: false
       }),
+      accountChart: (0, import_fields.relationship)({
+        ref: "AccountChart",
+        many: false
+      }),
       startDate: (0, import_fields.calendarDay)({ label: "Start Date" }),
       endDate: (0, import_fields.calendarDay)({ label: "End Date" })
     }
@@ -284,6 +316,13 @@ var lists = {
       // "y-tuunus", 1234567-8
       vatNumber: (0, import_fields.text)(),
       // // FI12345678
+      owner: (0, import_fields.relationship)({
+        ref: "User",
+        many: false,
+        ui: {
+          labelField: "name"
+        }
+      }),
       users: (0, import_fields.relationship)({
         ref: "User",
         many: true,

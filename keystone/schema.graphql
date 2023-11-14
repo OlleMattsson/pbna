@@ -6,8 +6,6 @@ type User {
   name: String
   email: String
   password: PasswordState
-  entries(where: EntryWhereInput! = {}, orderBy: [EntryOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: EntryWhereUniqueInput): [Entry!]
-  entriesCount(where: EntryWhereInput! = {}): Int
   createdAt: DateTime
   role: String
   companies(where: CompanyWhereInput! = {}, orderBy: [CompanyOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: CompanyWhereUniqueInput): [Company!]
@@ -32,7 +30,6 @@ input UserWhereInput {
   id: IDFilter
   name: StringFilter
   email: StringFilter
-  entries: EntryManyRelationFilter
   createdAt: DateTimeNullableFilter
   role: StringFilter
   companies: CompanyManyRelationFilter
@@ -83,12 +80,6 @@ input NestedStringFilter {
   not: NestedStringFilter
 }
 
-input EntryManyRelationFilter {
-  every: EntryWhereInput
-  some: EntryWhereInput
-  none: EntryWhereInput
-}
-
 input DateTimeNullableFilter {
   equals: DateTime
   in: [DateTime!]
@@ -123,17 +114,9 @@ input UserUpdateInput {
   name: String
   email: String
   password: String
-  entries: EntryRelateToManyForUpdateInput
   createdAt: DateTime
   role: String
   companies: CompanyRelateToManyForUpdateInput
-}
-
-input EntryRelateToManyForUpdateInput {
-  disconnect: [EntryWhereUniqueInput!]
-  set: [EntryWhereUniqueInput!]
-  create: [EntryCreateInput!]
-  connect: [EntryWhereUniqueInput!]
 }
 
 input CompanyRelateToManyForUpdateInput {
@@ -152,15 +135,9 @@ input UserCreateInput {
   name: String
   email: String
   password: String
-  entries: EntryRelateToManyForCreateInput
   createdAt: DateTime
   role: String
   companies: CompanyRelateToManyForCreateInput
-}
-
-input EntryRelateToManyForCreateInput {
-  create: [EntryCreateInput!]
-  connect: [EntryWhereUniqueInput!]
 }
 
 input CompanyRelateToManyForCreateInput {
@@ -172,9 +149,9 @@ type Entry {
   id: ID!
   createdAt: DateTime
   createdBy: User
-  accountingPeriod: AccountingPeriod
-  entryId: Int
+  owner: Company
   date: CalendarDay
+  entryNumber: Int
   description: String
   lineItems(where: LineItemWhereInput! = {}, orderBy: [LineItemOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: LineItemWhereUniqueInput): [LineItem!]
   lineItemsCount(where: LineItemWhereInput! = {}): Int
@@ -195,9 +172,9 @@ input EntryWhereInput {
   id: IDFilter
   createdAt: DateTimeFilter
   createdBy: UserWhereInput
-  accountingPeriod: AccountingPeriodWhereInput
-  entryId: IntNullableFilter
-  date: CalendarDayNullableFilter
+  owner: CompanyWhereInput
+  date: CalendarDayFilter
+  entryNumber: IntFilter
   description: StringFilter
   lineItems: LineItemManyRelationFilter
   attachments: AttachmentManyRelationFilter
@@ -214,18 +191,7 @@ input DateTimeFilter {
   not: DateTimeFilter
 }
 
-input IntNullableFilter {
-  equals: Int
-  in: [Int!]
-  notIn: [Int!]
-  lt: Int
-  lte: Int
-  gt: Int
-  gte: Int
-  not: IntNullableFilter
-}
-
-input CalendarDayNullableFilter {
+input CalendarDayFilter {
   equals: CalendarDay
   in: [CalendarDay!]
   notIn: [CalendarDay!]
@@ -233,7 +199,18 @@ input CalendarDayNullableFilter {
   lte: CalendarDay
   gt: CalendarDay
   gte: CalendarDay
-  not: CalendarDayNullableFilter
+  not: CalendarDayFilter
+}
+
+input IntFilter {
+  equals: Int
+  in: [Int!]
+  notIn: [Int!]
+  lt: Int
+  lte: Int
+  gt: Int
+  gte: Int
+  not: IntFilter
 }
 
 input LineItemManyRelationFilter {
@@ -251,17 +228,17 @@ input AttachmentManyRelationFilter {
 input EntryOrderByInput {
   id: OrderDirection
   createdAt: OrderDirection
-  entryId: OrderDirection
   date: OrderDirection
+  entryNumber: OrderDirection
   description: OrderDirection
 }
 
 input EntryUpdateInput {
   createdAt: DateTime
   createdBy: UserRelateToOneForUpdateInput
-  accountingPeriod: AccountingPeriodRelateToOneForUpdateInput
-  entryId: Int
+  owner: CompanyRelateToOneForUpdateInput
   date: CalendarDay
+  entryNumber: Int
   description: String
   lineItems: LineItemRelateToManyForUpdateInput
   attachments: AttachmentRelateToManyForUpdateInput
@@ -273,9 +250,9 @@ input UserRelateToOneForUpdateInput {
   disconnect: Boolean
 }
 
-input AccountingPeriodRelateToOneForUpdateInput {
-  create: AccountingPeriodCreateInput
-  connect: AccountingPeriodWhereUniqueInput
+input CompanyRelateToOneForUpdateInput {
+  create: CompanyCreateInput
+  connect: CompanyWhereUniqueInput
   disconnect: Boolean
 }
 
@@ -301,9 +278,9 @@ input EntryUpdateArgs {
 input EntryCreateInput {
   createdAt: DateTime
   createdBy: UserRelateToOneForCreateInput
-  accountingPeriod: AccountingPeriodRelateToOneForCreateInput
-  entryId: Int
+  owner: CompanyRelateToOneForCreateInput
   date: CalendarDay
+  entryNumber: Int
   description: String
   lineItems: LineItemRelateToManyForCreateInput
   attachments: AttachmentRelateToManyForCreateInput
@@ -314,9 +291,9 @@ input UserRelateToOneForCreateInput {
   connect: UserWhereUniqueInput
 }
 
-input AccountingPeriodRelateToOneForCreateInput {
-  create: AccountingPeriodCreateInput
-  connect: AccountingPeriodWhereUniqueInput
+input CompanyRelateToOneForCreateInput {
+  create: CompanyCreateInput
+  connect: CompanyWhereUniqueInput
 }
 
 input LineItemRelateToManyForCreateInput {
@@ -331,6 +308,10 @@ input AttachmentRelateToManyForCreateInput {
 
 type LineItem {
   id: ID!
+  createdAt: DateTime
+  createdBy: User
+  owner: Company
+  date: CalendarDay
   account: Account
   type: String
   amount: Decimal
@@ -348,10 +329,25 @@ input LineItemWhereInput {
   OR: [LineItemWhereInput!]
   NOT: [LineItemWhereInput!]
   id: IDFilter
+  createdAt: DateTimeFilter
+  createdBy: UserWhereInput
+  owner: CompanyWhereInput
+  date: CalendarDayNullableFilter
   account: AccountWhereInput
   type: StringFilter
   amount: DecimalFilter
   description: StringFilter
+}
+
+input CalendarDayNullableFilter {
+  equals: CalendarDay
+  in: [CalendarDay!]
+  notIn: [CalendarDay!]
+  lt: CalendarDay
+  lte: CalendarDay
+  gt: CalendarDay
+  gte: CalendarDay
+  not: CalendarDayNullableFilter
 }
 
 input DecimalFilter {
@@ -367,12 +363,18 @@ input DecimalFilter {
 
 input LineItemOrderByInput {
   id: OrderDirection
+  createdAt: OrderDirection
+  date: OrderDirection
   type: OrderDirection
   amount: OrderDirection
   description: OrderDirection
 }
 
 input LineItemUpdateInput {
+  createdAt: DateTime
+  createdBy: UserRelateToOneForUpdateInput
+  owner: CompanyRelateToOneForUpdateInput
+  date: CalendarDay
   account: AccountRelateToOneForUpdateInput
   type: String
   amount: Decimal
@@ -391,6 +393,10 @@ input LineItemUpdateArgs {
 }
 
 input LineItemCreateInput {
+  createdAt: DateTime
+  createdBy: UserRelateToOneForCreateInput
+  owner: CompanyRelateToOneForCreateInput
+  date: CalendarDay
   account: AccountRelateToOneForCreateInput
   type: String
   amount: Decimal
@@ -407,6 +413,7 @@ type Attachment {
   name: String
   description: String
   file: FileFieldOutput
+  ocrData: String
 }
 
 type FileFieldOutput {
@@ -426,18 +433,21 @@ input AttachmentWhereInput {
   id: IDFilter
   name: StringFilter
   description: StringFilter
+  ocrData: StringFilter
 }
 
 input AttachmentOrderByInput {
   id: OrderDirection
   name: OrderDirection
   description: OrderDirection
+  ocrData: OrderDirection
 }
 
 input AttachmentUpdateInput {
   name: String
   description: String
   file: FileFieldInput
+  ocrData: String
 }
 
 input FileFieldInput {
@@ -456,6 +466,7 @@ input AttachmentCreateInput {
   name: String
   description: String
   file: FileFieldInput
+  ocrData: String
 }
 
 type AccountChart {
@@ -548,6 +559,17 @@ input AccountWhereInput {
   vatAccount: AccountWhereInput
 }
 
+input IntNullableFilter {
+  equals: Int
+  in: [Int!]
+  notIn: [Int!]
+  lt: Int
+  lte: Int
+  gt: Int
+  gte: Int
+  not: IntNullableFilter
+}
+
 input DecimalNullableFilter {
   equals: Decimal
   in: [Decimal!]
@@ -595,6 +617,7 @@ type AccountingPeriod {
   id: ID!
   label: String
   company: Company
+  accountChart: AccountChart
   startDate: CalendarDay
   endDate: CalendarDay
 }
@@ -610,6 +633,7 @@ input AccountingPeriodWhereInput {
   id: IDFilter
   label: StringFilter
   company: CompanyWhereInput
+  accountChart: AccountChartWhereInput
   startDate: CalendarDayNullableFilter
   endDate: CalendarDayNullableFilter
 }
@@ -624,13 +648,14 @@ input AccountingPeriodOrderByInput {
 input AccountingPeriodUpdateInput {
   label: String
   company: CompanyRelateToOneForUpdateInput
+  accountChart: AccountChartRelateToOneForUpdateInput
   startDate: CalendarDay
   endDate: CalendarDay
 }
 
-input CompanyRelateToOneForUpdateInput {
-  create: CompanyCreateInput
-  connect: CompanyWhereUniqueInput
+input AccountChartRelateToOneForUpdateInput {
+  create: AccountChartCreateInput
+  connect: AccountChartWhereUniqueInput
   disconnect: Boolean
 }
 
@@ -642,13 +667,14 @@ input AccountingPeriodUpdateArgs {
 input AccountingPeriodCreateInput {
   label: String
   company: CompanyRelateToOneForCreateInput
+  accountChart: AccountChartRelateToOneForCreateInput
   startDate: CalendarDay
   endDate: CalendarDay
 }
 
-input CompanyRelateToOneForCreateInput {
-  create: CompanyCreateInput
-  connect: CompanyWhereUniqueInput
+input AccountChartRelateToOneForCreateInput {
+  create: AccountChartCreateInput
+  connect: AccountChartWhereUniqueInput
 }
 
 type Company {
@@ -663,6 +689,7 @@ type Company {
   website: String
   businessID: String
   vatNumber: String
+  owner: User
   users(where: UserWhereInput! = {}, orderBy: [UserOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: UserWhereUniqueInput): [User!]
   usersCount(where: UserWhereInput! = {}): Int
 }
@@ -686,6 +713,7 @@ input CompanyWhereInput {
   website: StringFilter
   businessID: StringFilter
   vatNumber: StringFilter
+  owner: UserWhereInput
   users: UserManyRelationFilter
 }
 
@@ -720,6 +748,7 @@ input CompanyUpdateInput {
   website: String
   businessID: String
   vatNumber: String
+  owner: UserRelateToOneForUpdateInput
   users: UserRelateToManyForUpdateInput
 }
 
@@ -746,6 +775,7 @@ input CompanyCreateInput {
   website: String
   businessID: String
   vatNumber: String
+  owner: UserRelateToOneForCreateInput
   users: UserRelateToManyForCreateInput
 }
 
