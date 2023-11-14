@@ -29,6 +29,24 @@ var import_core2 = require("@keystone-6/core");
 var import_core = require("@keystone-6/core");
 var import_access = require("@keystone-6/core/access");
 var import_fields = require("@keystone-6/core/fields");
+var isAdmin = ({ session: session2 }) => {
+  if (session2?.data.role === "admin") {
+    return true;
+  }
+  return false;
+};
+var isOwner = ({ session: session2 }) => {
+  if (session2?.data.role === "owner") {
+    return true;
+  }
+  return false;
+};
+var isUser = ({ session: session2 }) => {
+  if (session2?.data.role === "user") {
+    return true;
+  }
+  return false;
+};
 var lists = {
   User: (0, import_core.list)({
     access: (
@@ -37,12 +55,10 @@ var lists = {
         operation: import_access.allowAll,
         filter: {
           query: ({ session: session2, context, listKey, operation }) => {
-            console.log("Session");
-            console.log(session2);
-            if (session2?.data.role === "admin" || session2?.data.role === "owner") {
+            if (isAdmin({ session: session2 }) || isOwner({ session: session2 })) {
               return true;
             }
-            if (session2?.data.role === "user") {
+            if (isUser({ session: session2 })) {
               return { email: { equals: session2?.data.email } };
             }
             return true;

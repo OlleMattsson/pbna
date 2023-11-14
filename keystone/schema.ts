@@ -37,13 +37,23 @@ const isAdmin = ({ session } : {session: Session}) => {
   return false
 }
 
-const isAdminOrOwner = ({ session } : {session: Session}) => {
-  if (session?.data.role === 'admin' || session?.data.role === 'owner')  {
+const isOwner = ({ session } : {session: Session}) => {
+  if (session?.data.role === 'owner') {
     return true
   } 
   
   return false
 }
+
+
+const isUser = ({ session } : {session: Session}) => {
+  if (session?.data.role === 'user') {
+    return true
+  } 
+  
+  return false
+}
+
 
 const filterLineItems = ({ session }: { session: Session }) => {
   // if the user is an Admin, they can access all the records
@@ -58,20 +68,16 @@ export const lists: Lists = {
   
   User: list({
     access: // allowAll,
-    
-    
     {
       operation: allowAll,
       filter: {
         query: ({ session, context, listKey, operation }) => {
-          console.log("Session")
-          console.log(session)
           
-          if (session?.data.role === 'admin' || session?.data.role === 'owner')  {
+          if (isAdmin({session}) || isOwner({session}))  {
             return true
           } 
 
-          if (session?.data.role === 'user') {
+          if (isUser({session})) {
             return {email: {equals: session?.data.email}}
           }
 
