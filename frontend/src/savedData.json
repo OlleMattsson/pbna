@@ -6,7 +6,7 @@
       "name": "Tillgångar",
       "description": "",
       "vatAmount": 0,
-      "vatAccountId": 0
+      "vatAccount": 0
     },
     {
       "id": 1100,
@@ -14,7 +14,7 @@
       "name": "Försäljningsfordringar",
       "description": "Skickade räkningar som inte ännu betalats",
       "vatAmount": 0,
-      "vatAccountId": 0
+      "vatAccount": 0
     },
     {
       "id": 1700,
@@ -22,7 +22,7 @@
       "name": "momsfordran",
       "description": "24%",
       "vatAmount": 0,
-      "vatAccountId": 0
+      "vatAccount": 0
     },
     {
       "id": 1940,
@@ -30,7 +30,7 @@
       "name": "bankkonto",
       "description": "OP 1234 2345 3456 4567",
       "vatAmount": 0,
-      "vatAccountId": 0
+      "vatAccount": 0
     },
     {
       "id": 2000,
@@ -38,7 +38,7 @@
       "name": "Eget kapital",
       "description": "",
       "vatAmount": 0,
-      "vatAccountId": 0
+      "vatAccount": 0
     },
     {
       "id": 2001,
@@ -46,7 +46,7 @@
       "name": "främmande kapital",
       "description": "egna insättningar",
       "vatAmount": 0,
-      "vatAccountId": 0
+      "vatAccount": 0
     },
     {
       "id": 2100,
@@ -54,7 +54,7 @@
       "name": "Kortfristiga skulder",
       "description": "Inkomna räkningar som inte betalats",
       "vatAmount": 0,
-      "vatAccountId": 0
+      "vatAccount": 0
     },
     {
       "id": 2400,
@@ -62,7 +62,7 @@
       "name": "momsskuld",
       "description": "24%",
       "vatAmount": 0,
-      "vatAccountId": 0
+      "vatAccount": 0
     },
     {
       "id": 3000,
@@ -70,7 +70,7 @@
       "name": "Intäkter",
       "description": "",
       "vatAmount": 0,
-      "vatAccountId": 0
+      "vatAccount": 0
     },
     {
       "id": 3001,
@@ -78,7 +78,7 @@
       "name": "Försäljning",
       "description": "inkomster från försäljning",
       "vatAmount": 0,
-      "vatAccountId": 0
+      "vatAccount": 0
     },
     {
       "id": 5000,
@@ -86,7 +86,7 @@
       "name": "Rörelsekostnader",
       "description": "",
       "vatAmount": 0,
-      "vatAccountId": 0
+      "vatAccount": 0
     },
     {
       "id": 5001,
@@ -94,7 +94,7 @@
       "name": "Kontorsmaterial",
       "description": "kontorsmaterial etc",
       "vatAmount": 0,
-      "vatAccountId": 0
+      "vatAccount": 0
     },
     {
       "id": 5002,
@@ -102,7 +102,7 @@
       "name": "Representation",
       "description": "god mat & dryck efter kl 18",
       "vatAmount": 0,
-      "vatAccountId": 0
+      "vatAccount": 0
     },
     {
       "id": 5003,
@@ -110,7 +110,7 @@
       "name": "Telefon & Internet",
       "description": "",
       "vatAmount": 0,
-      "vatAccountId": 0
+      "vatAccount": 0
     },
     {
       "id": 5004,
@@ -118,7 +118,7 @@
       "name": "Digitala tjänster",
       "description": "",
       "vatAmount": 0,
-      "vatAccountId": 0
+      "vatAccount": 0
     },
     {
       "id": 5005,
@@ -126,7 +126,7 @@
       "name": "km-ersättning",
       "description": "",
       "vatAmount": 0,
-      "vatAccountId": 0
+      "vatAccount": 0
     },
     {
       "id": 7000,
@@ -134,7 +134,7 @@
       "name": "Personalkostnader",
       "description": "",
       "vatAmount": 0,
-      "vatAccountId": 0
+      "vatAccount": 0
     },
     {
       "id": 7001,
@@ -142,7 +142,7 @@
       "name": "Lunch",
       "description": "",
       "vatAmount": 0,
-      "vatAccountId": 0
+      "vatAccount": 0
     },
     {
       "id": 7002,
@@ -150,7 +150,7 @@
       "name": "Dagtraktamenten",
       "description": "",
       "vatAmount": 0,
-      "vatAccountId": 0
+      "vatAccount": 0
     }
   ],
   "transactions": [
