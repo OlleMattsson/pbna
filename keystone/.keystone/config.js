@@ -1,7 +1,9 @@
 "use strict";
+var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
+var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __export = (target, all) => {
   for (var name in all)
@@ -15,6 +17,14 @@ var __copyProps = (to, from, except, desc) => {
   }
   return to;
 };
+var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+  // If the importer is in node compatibility mode or this is not an ESM
+  // file that has been converted to a CommonJS file using a Babel-
+  // compatible transform (i.e. "__esModule" has not been set), then set
+  // "default" to the CommonJS "module.exports" for node compatibility.
+  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+  mod
+));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
 // keystone.ts
@@ -29,6 +39,27 @@ var import_core2 = require("@keystone-6/core");
 var import_core = require("@keystone-6/core");
 var import_access = require("@keystone-6/core/access");
 var import_fields = require("@keystone-6/core/fields");
+
+// tesseract.ts
+var import_tesseract = __toESM(require("tesseract.js"));
+function ocrService(opts) {
+  const { imagePath, language } = opts;
+  return new Promise((resolve, reject) => {
+    import_tesseract.default.recognize(
+      imagePath,
+      language,
+      { logger: (m) => console.log(m) }
+    ).then(({ data: { text: text2 } }) => {
+      resolve(text2);
+    }).catch((err) => {
+      console.log("CAUGHT!");
+      console.log(err);
+      reject(err);
+    });
+  });
+}
+
+// schema.ts
 var isAdmin = ({ session: session2 }) => {
   if (session2?.data.role === "admin") {
     return true;
@@ -227,6 +258,32 @@ var lists = {
       description: (0, import_fields.text)(),
       file: (0, import_fields.file)({ storage: "journal_item_files" }),
       ocrData: (0, import_fields.text)()
+    },
+    hooks: {
+      afterOperation: async ({ operation, item, context }) => {
+        console.log(item);
+        if (operation === "create") {
+          const { file_filename, id } = item;
+          const file_extension = file_filename?.split(".")[1];
+          if (file_extension === "pdf") {
+            console.log("PDF not supported");
+            return;
+          }
+          try {
+            const ocrData = await ocrService({
+              imagePath: `http://localhost:3000/files/${file_filename}`,
+              language: "fin"
+            });
+            await context.db.Attachment.updateOne({
+              where: { id },
+              data: { ocrData }
+            });
+          } catch (err) {
+            console.log("afterOperation catch");
+            throw new Error(`ocrData Service failed with error: ${err}`);
+          }
+        }
+      }
     }
   }),
   // Chart of Accounts, "kontoplan"

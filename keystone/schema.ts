@@ -20,6 +20,8 @@ import {
 // the generated types from '.keystone/types'
 import type { Lists } from '.keystone/types';
 
+import {ocrService} from './tesseract'
+
 type Session = {
   data: {
     id: string;
@@ -279,6 +281,46 @@ export const lists: Lists = {
       description: text(),
       file: file({storage: "journal_item_files"}),
       ocrData: text()
+    },
+    hooks: {
+      afterOperation: async ({ operation, item, context }) => {
+
+
+        console.log(item)
+
+        if (operation === 'create') {
+
+          const { file_filename, id  } = item;
+
+          const file_extension = file_filename?.split('.')[1]
+
+          if (file_extension === "pdf") {
+            console.log("PDF not supported")
+            return
+          }
+
+          try {
+
+            const ocrData = await ocrService({
+              imagePath: `http://localhost:3000/files/${file_filename}`,
+              language: "fin"
+            }) as string
+  
+
+            await context.db.Attachment.updateOne({
+              where: { id },
+              data: { ocrData },
+            });
+
+          } catch (err) {
+
+            console.log("afterOperation catch")
+            throw new Error(`ocrData Service failed with error: ${err}`)
+            
+          }
+        }     
+
+      }      
     }
   }),
 
