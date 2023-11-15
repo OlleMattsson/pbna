@@ -10,7 +10,8 @@ withAuth(
         origin: [
           'http://localhost:8080'
         ], 
-        credentials: true }
+        credentials: true 
+      }
     },
     db: {
       provider: 'postgresql',

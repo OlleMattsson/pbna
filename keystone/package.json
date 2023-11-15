@@ -3,7 +3,7 @@
   "version": "1.0.2",
   "private": true,
   "scripts": {
-    "dev": "DATABASE_URL=postgres://pbna_pguser:pbna_pgpw@localhost/pbna_pgdb keystone dev",
+    "dev": "DATABASE_URL=postgres://pbna_pguser:pbna_pgpw@localhost/pbna_pgdb PORT=3000 keystone dev",
     "startpg": "docker compose up postgres",
     "start": "keystone start",
     "build": "keystone build",
