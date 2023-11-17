@@ -56,16 +56,6 @@ const isUser = ({ session } : {session: Session}) => {
   return false
 }
 
-
-const filterLineItems = ({ session }: { session: Session }) => {
-  // if the user is an Admin, they can access all the records
-  if (session?.data.role === 'admin') return true;
-  // otherwise, filter for published posts
-  return { isPublished: { equals: true } };
-}
-
-
-
 export const lists: Lists = {
   
   User: list({
@@ -285,7 +275,7 @@ export const lists: Lists = {
     hooks: {
       afterOperation: async ({ operation, item, context }) => {
 
-
+        // add validation to check that file exists :D
         console.log(item)
 
         if (operation === 'create') {
@@ -316,7 +306,7 @@ export const lists: Lists = {
 
             console.log("afterOperation catch")
             throw new Error(`ocrData Service failed with error: ${err}`)
-            
+
           }
         }     
 
