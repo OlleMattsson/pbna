@@ -9,17 +9,9 @@ import {
   integer,
   file,
   calendarDay,
-  checkbox,
   decimal
 } from '@keystone-6/core/fields';
-
-
-// if you want to make your own fields, see https://keystonejs.com/docs/guides/custom-fields
-
-// when using Typescript, you can refine your types to a stricter subset by importing
-// the generated types from '.keystone/types'
 import type { Lists } from '.keystone/types';
-
 import {ocrService} from './tesseract'
 
 type Session = {
@@ -59,10 +51,15 @@ const isUser = ({ session } : {session: Session}) => {
 export const lists: Lists = {
   
   User: list({
-    access: // allowAll,
-    {
+    access:{
       operation: allowAll,
       filter: {
+
+        /*
+          Users should only be able to see their own profile
+          Owners should be able to see all users belonging to their organization
+          Admin sees everything
+        */
         query: ({ session, context, listKey, operation }) => {
           
           if (isAdmin({session}) || isOwner({session}))  {
@@ -73,11 +70,13 @@ export const lists: Lists = {
             return {email: {equals: session?.data.email}}
           }
 
-          // graphql playgound doesn't have any session data, so 
+          // NOTE: graphql playgound doesn't have any session data, so 
           // if we don't return true at the very end here, we wont
           // be able to access any data through it.....
-          return true
-         
+
+          // TODO: remove before publishing. playground access needs to happen
+          // with a valid token.
+          return true 
         }
       }
     },
@@ -102,6 +101,7 @@ export const lists: Lists = {
           } 
         }
       }),
+
       role: select({
         type: "string",
         options: [
@@ -112,17 +112,19 @@ export const lists: Lists = {
         validation: { isRequired: true},
         ui: { displayMode: 'select' }
       }),
+
       companies: relationship({
         ref: "Company",
         many: true,
         ui: {
           labelField: "name"
         }
-      })      
+      })
+
     },
     ui: {
       listView: {
-        initialColumns: ["name", "email", "isAdmin","createdAt"]
+        initialColumns: ["name", "email", "companies", "role", "createdAt"]
       }
     }
   }),

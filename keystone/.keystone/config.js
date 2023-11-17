@@ -80,23 +80,25 @@ var isUser = ({ session: session2 }) => {
 };
 var lists = {
   User: (0, import_core.list)({
-    access: (
-      // allowAll,
-      {
-        operation: import_access.allowAll,
-        filter: {
-          query: ({ session: session2, context, listKey, operation }) => {
-            if (isAdmin({ session: session2 }) || isOwner({ session: session2 })) {
-              return true;
-            }
-            if (isUser({ session: session2 })) {
-              return { email: { equals: session2?.data.email } };
-            }
+    access: {
+      operation: import_access.allowAll,
+      filter: {
+        /*
+          Users should only be able to see their own profile
+          Owners should be able to see all users belonging to their organization
+          Admin sees everything
+        */
+        query: ({ session: session2, context, listKey, operation }) => {
+          if (isAdmin({ session: session2 }) || isOwner({ session: session2 })) {
             return true;
           }
+          if (isUser({ session: session2 })) {
+            return { email: { equals: session2?.data.email } };
+          }
+          return true;
         }
       }
-    ),
+    },
     fields: {
       name: (0, import_fields.text)({ validation: { isRequired: true } }),
       email: (0, import_fields.text)({
@@ -133,7 +135,7 @@ var lists = {
     },
     ui: {
       listView: {
-        initialColumns: ["name", "email", "isAdmin", "createdAt"]
+        initialColumns: ["name", "email", "companies", "role", "createdAt"]
       }
     }
   }),
