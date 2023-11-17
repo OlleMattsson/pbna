@@ -113,8 +113,8 @@ export const lists: Lists = {
         ui: { displayMode: 'select' }
       }),
 
-      companies: relationship({
-        ref: "Company",
+      organizations: relationship({
+        ref: "Organization",
         many: true,
         ui: {
           labelField: "name"
@@ -124,11 +124,32 @@ export const lists: Lists = {
     },
     ui: {
       listView: {
-        initialColumns: ["name", "email", "companies", "role", "createdAt"]
+        initialColumns: ["name", "email", "organizations", "role", "createdAt"]
       }
     }
   }),
 
+  /*
+
+  Entries and Line Items have a few overlapping "system" level fields, namely.
+  createdAt, createdBy. owner, date & description. This might seem redundant.
+  The reason for this is that even though these entry and list item are tightly related 
+  (one should not exist without the other), we still need to query for them separately
+  in various situations. The thinking is taht, having to always follow the relationship 
+  between the two to find the other, would be inefficient from a database pow.
+
+  In terms of journal views, we need to be able to find entries quickly based on date
+  and ownership.
+
+  In terms of individual account views, we need to be able to quickly find related line items
+  without having to look up ever entry first.
+
+  So in order to save on compute, we redundantly store the above data fields explicitly for 
+  each row. This also helps us debugging the DB.
+
+  In the PBNA user client, the client logic takes care of settings these fields for us.
+
+  */
 
   Entry: list({
     access: allowAll,
@@ -151,7 +172,7 @@ export const lists: Lists = {
       }),
 
       owner: relationship({
-        ref: "Company",
+        ref: "Organization",
         ui: {
           hideCreate: true,
         }
@@ -228,7 +249,7 @@ export const lists: Lists = {
       }),
 
       owner: relationship({
-        ref: "Company",
+        ref: "Organization",
         ui: {
           hideCreate: true,
         }
@@ -378,8 +399,8 @@ export const lists: Lists = {
     access: allowAll,
     fields: {
       label: text(),
-      company: relationship({
-        ref: "Company",
+      organization: relationship({
+        ref: "Organization",
         many: false
       }),
       accountChart: relationship({
@@ -393,7 +414,7 @@ export const lists: Lists = {
     }
   }),
 
-  Company: list({
+  Organization: list({
     access: allowAll,
     fields: {
       name: text(),

@@ -12,50 +12,50 @@ generator client {
 }
 
 model User {
-  id                      String     @id @default(uuid()) @postgresql.Uuid
-  name                    String     @default("")
-  email                   String     @unique @default("")
+  id                      String         @id @default(uuid()) @postgresql.Uuid
+  name                    String         @default("")
+  email                   String         @unique @default("")
   password                String
-  createdAt               DateTime?  @default(now())
+  createdAt               DateTime?      @default(now())
   role                    String
-  companies               Company[]  @relation("User_companies")
-  from_Entry_createdBy    Entry[]    @relation("Entry_createdBy")
-  from_LineItem_createdBy LineItem[] @relation("LineItem_createdBy")
-  from_Company_owner      Company[]  @relation("Company_owner")
-  from_Company_users      Company[]  @relation("Company_users")
+  organizations           Organization[] @relation("User_organizations")
+  from_Entry_createdBy    Entry[]        @relation("Entry_createdBy")
+  from_LineItem_createdBy LineItem[]     @relation("LineItem_createdBy")
+  from_Organization_owner Organization[] @relation("Organization_owner")
+  from_Organization_users Organization[] @relation("Organization_users")
 }
 
 model Entry {
-  id          String       @id @default(uuid()) @postgresql.Uuid
-  createdAt   DateTime     @default(now())
-  createdBy   User?        @relation("Entry_createdBy", fields: [createdById], references: [id])
-  createdById String?      @map("createdBy") @postgresql.Uuid
-  owner       Company?     @relation("Entry_owner", fields: [ownerId], references: [id])
-  ownerId     String?      @map("owner") @postgresql.Uuid
-  date        DateTime     @postgresql.Date
+  id          String        @id @default(uuid()) @postgresql.Uuid
+  createdAt   DateTime      @default(now())
+  createdBy   User?         @relation("Entry_createdBy", fields: [createdById], references: [id])
+  createdById String?       @map("createdBy") @postgresql.Uuid
+  owner       Organization? @relation("Entry_owner", fields: [ownerId], references: [id])
+  ownerId     String?       @map("owner") @postgresql.Uuid
+  date        DateTime      @postgresql.Date
   entryNumber Int
-  description String       @default("")
-  lineItems   LineItem[]   @relation("Entry_lineItems")
-  attachments Attachment[] @relation("Entry_attachments")
+  description String        @default("")
+  lineItems   LineItem[]    @relation("Entry_lineItems")
+  attachments Attachment[]  @relation("Entry_attachments")
 
   @@index([createdById])
   @@index([ownerId])
 }
 
 model LineItem {
-  id                   String    @id @default(uuid()) @postgresql.Uuid
-  createdAt            DateTime  @default(now())
-  createdBy            User?     @relation("LineItem_createdBy", fields: [createdById], references: [id])
-  createdById          String?   @map("createdBy") @postgresql.Uuid
-  owner                Company?  @relation("LineItem_owner", fields: [ownerId], references: [id])
-  ownerId              String?   @map("owner") @postgresql.Uuid
-  date                 DateTime? @postgresql.Date
-  account              Account?  @relation("LineItem_account", fields: [accountId], references: [id])
-  accountId            String?   @map("account") @postgresql.Uuid
+  id                   String        @id @default(uuid()) @postgresql.Uuid
+  createdAt            DateTime      @default(now())
+  createdBy            User?         @relation("LineItem_createdBy", fields: [createdById], references: [id])
+  createdById          String?       @map("createdBy") @postgresql.Uuid
+  owner                Organization? @relation("LineItem_owner", fields: [ownerId], references: [id])
+  ownerId              String?       @map("owner") @postgresql.Uuid
+  date                 DateTime?     @postgresql.Date
+  account              Account?      @relation("LineItem_account", fields: [accountId], references: [id])
+  accountId            String?       @map("account") @postgresql.Uuid
   type                 String
-  amount               Decimal   @postgresql.Decimal(18, 2)
-  description          String    @default("")
-  from_Entry_lineItems Entry[]   @relation("Entry_lineItems")
+  amount               Decimal       @postgresql.Decimal(18, 2)
+  description          String        @default("")
+  from_Entry_lineItems Entry[]       @relation("Entry_lineItems")
 
   @@index([createdById])
   @@index([ownerId])
@@ -99,36 +99,36 @@ model Account {
 model AccountingPeriod {
   id             String        @id @default(uuid()) @postgresql.Uuid
   label          String        @default("")
-  company        Company?      @relation("AccountingPeriod_company", fields: [companyId], references: [id])
-  companyId      String?       @map("company") @postgresql.Uuid
+  organization   Organization? @relation("AccountingPeriod_organization", fields: [organizationId], references: [id])
+  organizationId String?       @map("organization") @postgresql.Uuid
   accountChart   AccountChart? @relation("AccountingPeriod_accountChart", fields: [accountChartId], references: [id])
   accountChartId String?       @map("accountChart") @postgresql.Uuid
   startDate      DateTime?     @postgresql.Date
   endDate        DateTime?     @postgresql.Date
 
-  @@index([companyId])
+  @@index([organizationId])
   @@index([accountChartId])
 }
 
-model Company {
-  id                            String             @id @default(uuid()) @postgresql.Uuid
-  name                          String             @default("")
-  addressStreet                 String             @default("")
-  addressPostalCode             String             @default("")
-  addressCity                   String             @default("")
-  addressCountry                String             @default("")
-  phone                         String             @default("")
-  email                         String             @default("")
-  website                       String             @default("")
-  businessID                    String             @default("")
-  vatNumber                     String             @default("")
-  owner                         User?              @relation("Company_owner", fields: [ownerId], references: [id])
-  ownerId                       String?            @map("owner") @postgresql.Uuid
-  users                         User[]             @relation("Company_users")
-  from_User_companies           User[]             @relation("User_companies")
-  from_Entry_owner              Entry[]            @relation("Entry_owner")
-  from_LineItem_owner           LineItem[]         @relation("LineItem_owner")
-  from_AccountingPeriod_company AccountingPeriod[] @relation("AccountingPeriod_company")
+model Organization {
+  id                                 String             @id @default(uuid()) @postgresql.Uuid
+  name                               String             @default("")
+  addressStreet                      String             @default("")
+  addressPostalCode                  String             @default("")
+  addressCity                        String             @default("")
+  addressCountry                     String             @default("")
+  phone                              String             @default("")
+  email                              String             @default("")
+  website                            String             @default("")
+  businessID                         String             @default("")
+  vatNumber                          String             @default("")
+  owner                              User?              @relation("Organization_owner", fields: [ownerId], references: [id])
+  ownerId                            String?            @map("owner") @postgresql.Uuid
+  users                              User[]             @relation("Organization_users")
+  from_User_organizations            User[]             @relation("User_organizations")
+  from_Entry_owner                   Entry[]            @relation("Entry_owner")
+  from_LineItem_owner                LineItem[]         @relation("LineItem_owner")
+  from_AccountingPeriod_organization AccountingPeriod[] @relation("AccountingPeriod_organization")
 
   @@index([ownerId])
 }

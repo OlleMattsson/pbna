@@ -8,8 +8,8 @@ type User {
   password: PasswordState
   createdAt: DateTime
   role: String
-  companies(where: CompanyWhereInput! = {}, orderBy: [CompanyOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: CompanyWhereUniqueInput): [Company!]
-  companiesCount(where: CompanyWhereInput! = {}): Int
+  organizations(where: OrganizationWhereInput! = {}, orderBy: [OrganizationOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: OrganizationWhereUniqueInput): [Organization!]
+  organizationsCount(where: OrganizationWhereInput! = {}): Int
 }
 
 type PasswordState {
@@ -32,7 +32,7 @@ input UserWhereInput {
   email: StringFilter
   createdAt: DateTimeNullableFilter
   role: StringFilter
-  companies: CompanyManyRelationFilter
+  organizations: OrganizationManyRelationFilter
 }
 
 input IDFilter {
@@ -91,10 +91,10 @@ input DateTimeNullableFilter {
   not: DateTimeNullableFilter
 }
 
-input CompanyManyRelationFilter {
-  every: CompanyWhereInput
-  some: CompanyWhereInput
-  none: CompanyWhereInput
+input OrganizationManyRelationFilter {
+  every: OrganizationWhereInput
+  some: OrganizationWhereInput
+  none: OrganizationWhereInput
 }
 
 input UserOrderByInput {
@@ -116,14 +116,14 @@ input UserUpdateInput {
   password: String
   createdAt: DateTime
   role: String
-  companies: CompanyRelateToManyForUpdateInput
+  organizations: OrganizationRelateToManyForUpdateInput
 }
 
-input CompanyRelateToManyForUpdateInput {
-  disconnect: [CompanyWhereUniqueInput!]
-  set: [CompanyWhereUniqueInput!]
-  create: [CompanyCreateInput!]
-  connect: [CompanyWhereUniqueInput!]
+input OrganizationRelateToManyForUpdateInput {
+  disconnect: [OrganizationWhereUniqueInput!]
+  set: [OrganizationWhereUniqueInput!]
+  create: [OrganizationCreateInput!]
+  connect: [OrganizationWhereUniqueInput!]
 }
 
 input UserUpdateArgs {
@@ -137,19 +137,19 @@ input UserCreateInput {
   password: String
   createdAt: DateTime
   role: String
-  companies: CompanyRelateToManyForCreateInput
+  organizations: OrganizationRelateToManyForCreateInput
 }
 
-input CompanyRelateToManyForCreateInput {
-  create: [CompanyCreateInput!]
-  connect: [CompanyWhereUniqueInput!]
+input OrganizationRelateToManyForCreateInput {
+  create: [OrganizationCreateInput!]
+  connect: [OrganizationWhereUniqueInput!]
 }
 
 type Entry {
   id: ID!
   createdAt: DateTime
   createdBy: User
-  owner: Company
+  owner: Organization
   date: CalendarDay
   entryNumber: Int
   description: String
@@ -172,7 +172,7 @@ input EntryWhereInput {
   id: IDFilter
   createdAt: DateTimeFilter
   createdBy: UserWhereInput
-  owner: CompanyWhereInput
+  owner: OrganizationWhereInput
   date: CalendarDayFilter
   entryNumber: IntFilter
   description: StringFilter
@@ -236,7 +236,7 @@ input EntryOrderByInput {
 input EntryUpdateInput {
   createdAt: DateTime
   createdBy: UserRelateToOneForUpdateInput
-  owner: CompanyRelateToOneForUpdateInput
+  owner: OrganizationRelateToOneForUpdateInput
   date: CalendarDay
   entryNumber: Int
   description: String
@@ -250,9 +250,9 @@ input UserRelateToOneForUpdateInput {
   disconnect: Boolean
 }
 
-input CompanyRelateToOneForUpdateInput {
-  create: CompanyCreateInput
-  connect: CompanyWhereUniqueInput
+input OrganizationRelateToOneForUpdateInput {
+  create: OrganizationCreateInput
+  connect: OrganizationWhereUniqueInput
   disconnect: Boolean
 }
 
@@ -278,7 +278,7 @@ input EntryUpdateArgs {
 input EntryCreateInput {
   createdAt: DateTime
   createdBy: UserRelateToOneForCreateInput
-  owner: CompanyRelateToOneForCreateInput
+  owner: OrganizationRelateToOneForCreateInput
   date: CalendarDay
   entryNumber: Int
   description: String
@@ -291,9 +291,9 @@ input UserRelateToOneForCreateInput {
   connect: UserWhereUniqueInput
 }
 
-input CompanyRelateToOneForCreateInput {
-  create: CompanyCreateInput
-  connect: CompanyWhereUniqueInput
+input OrganizationRelateToOneForCreateInput {
+  create: OrganizationCreateInput
+  connect: OrganizationWhereUniqueInput
 }
 
 input LineItemRelateToManyForCreateInput {
@@ -310,7 +310,7 @@ type LineItem {
   id: ID!
   createdAt: DateTime
   createdBy: User
-  owner: Company
+  owner: Organization
   date: CalendarDay
   account: Account
   type: String
@@ -331,7 +331,7 @@ input LineItemWhereInput {
   id: IDFilter
   createdAt: DateTimeFilter
   createdBy: UserWhereInput
-  owner: CompanyWhereInput
+  owner: OrganizationWhereInput
   date: CalendarDayNullableFilter
   account: AccountWhereInput
   type: StringFilter
@@ -373,7 +373,7 @@ input LineItemOrderByInput {
 input LineItemUpdateInput {
   createdAt: DateTime
   createdBy: UserRelateToOneForUpdateInput
-  owner: CompanyRelateToOneForUpdateInput
+  owner: OrganizationRelateToOneForUpdateInput
   date: CalendarDay
   account: AccountRelateToOneForUpdateInput
   type: String
@@ -395,7 +395,7 @@ input LineItemUpdateArgs {
 input LineItemCreateInput {
   createdAt: DateTime
   createdBy: UserRelateToOneForCreateInput
-  owner: CompanyRelateToOneForCreateInput
+  owner: OrganizationRelateToOneForCreateInput
   date: CalendarDay
   account: AccountRelateToOneForCreateInput
   type: String
@@ -616,7 +616,7 @@ input AccountCreateInput {
 type AccountingPeriod {
   id: ID!
   label: String
-  company: Company
+  organization: Organization
   accountChart: AccountChart
   startDate: CalendarDay
   endDate: CalendarDay
@@ -632,7 +632,7 @@ input AccountingPeriodWhereInput {
   NOT: [AccountingPeriodWhereInput!]
   id: IDFilter
   label: StringFilter
-  company: CompanyWhereInput
+  organization: OrganizationWhereInput
   accountChart: AccountChartWhereInput
   startDate: CalendarDayNullableFilter
   endDate: CalendarDayNullableFilter
@@ -647,7 +647,7 @@ input AccountingPeriodOrderByInput {
 
 input AccountingPeriodUpdateInput {
   label: String
-  company: CompanyRelateToOneForUpdateInput
+  organization: OrganizationRelateToOneForUpdateInput
   accountChart: AccountChartRelateToOneForUpdateInput
   startDate: CalendarDay
   endDate: CalendarDay
@@ -666,7 +666,7 @@ input AccountingPeriodUpdateArgs {
 
 input AccountingPeriodCreateInput {
   label: String
-  company: CompanyRelateToOneForCreateInput
+  organization: OrganizationRelateToOneForCreateInput
   accountChart: AccountChartRelateToOneForCreateInput
   startDate: CalendarDay
   endDate: CalendarDay
@@ -677,7 +677,7 @@ input AccountChartRelateToOneForCreateInput {
   connect: AccountChartWhereUniqueInput
 }
 
-type Company {
+type Organization {
   id: ID!
   name: String
   addressStreet: String
@@ -694,14 +694,14 @@ type Company {
   usersCount(where: UserWhereInput! = {}): Int
 }
 
-input CompanyWhereUniqueInput {
+input OrganizationWhereUniqueInput {
   id: ID
 }
 
-input CompanyWhereInput {
-  AND: [CompanyWhereInput!]
-  OR: [CompanyWhereInput!]
-  NOT: [CompanyWhereInput!]
+input OrganizationWhereInput {
+  AND: [OrganizationWhereInput!]
+  OR: [OrganizationWhereInput!]
+  NOT: [OrganizationWhereInput!]
   id: IDFilter
   name: StringFilter
   addressStreet: StringFilter
@@ -723,7 +723,7 @@ input UserManyRelationFilter {
   none: UserWhereInput
 }
 
-input CompanyOrderByInput {
+input OrganizationOrderByInput {
   id: OrderDirection
   name: OrderDirection
   addressStreet: OrderDirection
@@ -737,7 +737,7 @@ input CompanyOrderByInput {
   vatNumber: OrderDirection
 }
 
-input CompanyUpdateInput {
+input OrganizationUpdateInput {
   name: String
   addressStreet: String
   addressPostalCode: String
@@ -759,12 +759,12 @@ input UserRelateToManyForUpdateInput {
   connect: [UserWhereUniqueInput!]
 }
 
-input CompanyUpdateArgs {
-  where: CompanyWhereUniqueInput!
-  data: CompanyUpdateInput!
+input OrganizationUpdateArgs {
+  where: OrganizationWhereUniqueInput!
+  data: OrganizationUpdateInput!
 }
 
-input CompanyCreateInput {
+input OrganizationCreateInput {
   name: String
   addressStreet: String
   addressPostalCode: String
@@ -832,12 +832,12 @@ type Mutation {
   updateAccountingPeriods(data: [AccountingPeriodUpdateArgs!]!): [AccountingPeriod]
   deleteAccountingPeriod(where: AccountingPeriodWhereUniqueInput!): AccountingPeriod
   deleteAccountingPeriods(where: [AccountingPeriodWhereUniqueInput!]!): [AccountingPeriod]
-  createCompany(data: CompanyCreateInput!): Company
-  createCompanies(data: [CompanyCreateInput!]!): [Company]
-  updateCompany(where: CompanyWhereUniqueInput!, data: CompanyUpdateInput!): Company
-  updateCompanies(data: [CompanyUpdateArgs!]!): [Company]
-  deleteCompany(where: CompanyWhereUniqueInput!): Company
-  deleteCompanies(where: [CompanyWhereUniqueInput!]!): [Company]
+  createOrganization(data: OrganizationCreateInput!): Organization
+  createOrganizations(data: [OrganizationCreateInput!]!): [Organization]
+  updateOrganization(where: OrganizationWhereUniqueInput!, data: OrganizationUpdateInput!): Organization
+  updateOrganizations(data: [OrganizationUpdateArgs!]!): [Organization]
+  deleteOrganization(where: OrganizationWhereUniqueInput!): Organization
+  deleteOrganizations(where: [OrganizationWhereUniqueInput!]!): [Organization]
   endSession: Boolean!
   authenticateUserWithPassword(email: String!, password: String!): UserAuthenticationWithPasswordResult
   createInitialUser(data: CreateInitialUserInput!): UserAuthenticationWithPasswordSuccess!
@@ -882,9 +882,9 @@ type Query {
   accountingPeriods(where: AccountingPeriodWhereInput! = {}, orderBy: [AccountingPeriodOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: AccountingPeriodWhereUniqueInput): [AccountingPeriod!]
   accountingPeriod(where: AccountingPeriodWhereUniqueInput!): AccountingPeriod
   accountingPeriodsCount(where: AccountingPeriodWhereInput! = {}): Int
-  companies(where: CompanyWhereInput! = {}, orderBy: [CompanyOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: CompanyWhereUniqueInput): [Company!]
-  company(where: CompanyWhereUniqueInput!): Company
-  companiesCount(where: CompanyWhereInput! = {}): Int
+  organizations(where: OrganizationWhereInput! = {}, orderBy: [OrganizationOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: OrganizationWhereUniqueInput): [Organization!]
+  organization(where: OrganizationWhereUniqueInput!): Organization
+  organizationsCount(where: OrganizationWhereInput! = {}): Int
   keystone: KeystoneMeta!
   authenticatedItem: AuthenticatedItem
 }
