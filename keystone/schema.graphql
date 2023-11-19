@@ -413,13 +413,17 @@ type Attachment {
   name: String
   description: String
   file: FileFieldOutput
-  ocrData: String
+  ocrData: Attachment_ocrData_Document
 }
 
 type FileFieldOutput {
   filename: String!
   filesize: Int!
   url: String!
+}
+
+type Attachment_ocrData_Document {
+  document(hydrateRelationships: Boolean! = false): JSON!
 }
 
 input AttachmentWhereUniqueInput {
@@ -433,21 +437,19 @@ input AttachmentWhereInput {
   id: IDFilter
   name: StringFilter
   description: StringFilter
-  ocrData: StringFilter
 }
 
 input AttachmentOrderByInput {
   id: OrderDirection
   name: OrderDirection
   description: OrderDirection
-  ocrData: OrderDirection
 }
 
 input AttachmentUpdateInput {
   name: String
   description: String
   file: FileFieldInput
-  ocrData: String
+  ocrData: JSON
 }
 
 input FileFieldInput {
@@ -466,7 +468,7 @@ input AttachmentCreateInput {
   name: String
   description: String
   file: FileFieldInput
-  ocrData: String
+  ocrData: JSON
 }
 
 type AccountChart {
@@ -838,26 +840,6 @@ type Mutation {
   updateOrganizations(data: [OrganizationUpdateArgs!]!): [Organization]
   deleteOrganization(where: OrganizationWhereUniqueInput!): Organization
   deleteOrganizations(where: [OrganizationWhereUniqueInput!]!): [Organization]
-  endSession: Boolean!
-  authenticateUserWithPassword(email: String!, password: String!): UserAuthenticationWithPasswordResult
-  createInitialUser(data: CreateInitialUserInput!): UserAuthenticationWithPasswordSuccess!
-}
-
-union UserAuthenticationWithPasswordResult = UserAuthenticationWithPasswordSuccess | UserAuthenticationWithPasswordFailure
-
-type UserAuthenticationWithPasswordSuccess {
-  sessionToken: String!
-  item: User!
-}
-
-type UserAuthenticationWithPasswordFailure {
-  message: String!
-}
-
-input CreateInitialUserInput {
-  name: String
-  email: String
-  password: String
 }
 
 type Query {
@@ -886,10 +868,7 @@ type Query {
   organization(where: OrganizationWhereUniqueInput!): Organization
   organizationsCount(where: OrganizationWhereInput! = {}): Int
   keystone: KeystoneMeta!
-  authenticatedItem: AuthenticatedItem
 }
-
-union AuthenticatedItem = User
 
 type KeystoneMeta {
   adminMeta: KeystoneAdminMeta!

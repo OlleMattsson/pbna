@@ -9,10 +9,12 @@ import {
   integer,
   file,
   calendarDay,
-  decimal
+  decimal,
 } from '@keystone-6/core/fields';
+import { document } from '@keystone-6/fields-document';
 import type { Lists } from '.keystone/types';
 import {ocrService} from './tesseract'
+import util from 'util'
 
 type Session = {
   data: {
@@ -293,7 +295,7 @@ export const lists: Lists = {
       name: text(),
       description: text(),
       file: file({storage: "journal_item_files"}),
-      ocrData: text()
+      ocrData: document()
     },
     hooks: {
       afterOperation: async ({ operation, item, context }) => {
@@ -314,16 +316,25 @@ export const lists: Lists = {
 
           try {
 
-            const ocrData = await ocrService({
+            const ocrServiceResponse = await ocrService({
               imagePath: `http://localhost:3000/files/${file_filename}`,
               language: "fin"
             }) as string
-  
+            
 
             await context.db.Attachment.updateOne({
               where: { id },
-              data: { ocrData },
+              data: { 
+                // store each line as a separate paragraph in order to make result more readable for humans and machines
+                ocrData: JSON.stringify(ocrServiceResponse).split("\\n").map(text => ({
+                  type: 'paragraph',
+                  children: [{ 
+                    text
+                  }]   
+                }))
+              }
             });
+
 
           } catch (err) {
 

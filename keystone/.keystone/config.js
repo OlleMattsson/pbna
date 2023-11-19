@@ -39,6 +39,7 @@ var import_core2 = require("@keystone-6/core");
 var import_core = require("@keystone-6/core");
 var import_access = require("@keystone-6/core/access");
 var import_fields = require("@keystone-6/core/fields");
+var import_fields_document = require("@keystone-6/fields-document");
 
 // tesseract.ts
 var import_tesseract = __toESM(require("tesseract.js"));
@@ -60,20 +61,20 @@ function ocrService(opts) {
 }
 
 // schema.ts
-var isAdmin = ({ session: session2 }) => {
-  if (session2?.data.role === "admin") {
+var isAdmin = ({ session }) => {
+  if (session?.data.role === "admin") {
     return true;
   }
   return false;
 };
-var isOwner = ({ session: session2 }) => {
-  if (session2?.data.role === "owner") {
+var isOwner = ({ session }) => {
+  if (session?.data.role === "owner") {
     return true;
   }
   return false;
 };
-var isUser = ({ session: session2 }) => {
-  if (session2?.data.role === "user") {
+var isUser = ({ session }) => {
+  if (session?.data.role === "user") {
     return true;
   }
   return false;
@@ -88,12 +89,12 @@ var lists = {
           Owners should be able to see all users belonging to their organization
           Admin sees everything
         */
-        query: ({ session: session2, context, listKey, operation }) => {
-          if (isAdmin({ session: session2 }) || isOwner({ session: session2 })) {
+        query: ({ session, context, listKey, operation }) => {
+          if (isAdmin({ session }) || isOwner({ session })) {
             return true;
           }
-          if (isUser({ session: session2 })) {
-            return { email: { equals: session2?.data.email } };
+          if (isUser({ session })) {
+            return { email: { equals: session?.data.email } };
           }
           return true;
         }
@@ -280,7 +281,7 @@ var lists = {
       name: (0, import_fields.text)(),
       description: (0, import_fields.text)(),
       file: (0, import_fields.file)({ storage: "journal_item_files" }),
-      ocrData: (0, import_fields.text)()
+      ocrData: (0, import_fields_document.document)()
     },
     hooks: {
       afterOperation: async ({ operation, item, context }) => {
@@ -293,13 +294,21 @@ var lists = {
             return;
           }
           try {
-            const ocrData = await ocrService({
+            const ocrServiceResponse = await ocrService({
               imagePath: `http://localhost:3000/files/${file_filename}`,
               language: "fin"
             });
             await context.db.Attachment.updateOne({
               where: { id },
-              data: { ocrData }
+              data: {
+                // store each line as a separate paragraph in order to make result more readable for humans and machines
+                ocrData: JSON.stringify(ocrServiceResponse).split("\\n").map((text2) => ({
+                  type: "paragraph",
+                  children: [{
+                    text: text2
+                  }]
+                }))
+              }
             });
           } catch (err) {
             console.log("afterOperation catch");
@@ -417,41 +426,9 @@ var lists = {
   })
 };
 
-// auth.ts
-var import_crypto = require("crypto");
-var import_auth = require("@keystone-6/auth");
-var import_session = require("@keystone-6/core/session");
-var sessionSecret = process.env.SESSION_SECRET;
-if (!sessionSecret && process.env.NODE_ENV !== "production") {
-  sessionSecret = (0, import_crypto.randomBytes)(32).toString("hex");
-}
-var { withAuth } = (0, import_auth.createAuth)({
-  listKey: "User",
-  identityField: "email",
-  // this is a GraphQL query fragment for fetching what data will be attached to a context.session
-  //   this can be helpful for when you are writing your access control functions
-  //   you can find out more at https://keystonejs.com/docs/guides/auth-and-access-control
-  sessionData: "name createdAt role id email",
-  secretField: "password",
-  // WARNING: remove initFirstItem functionality in production
-  //   see https://keystonejs.com/docs/config/auth#init-first-item for more
-  initFirstItem: {
-    // if there are no items in the database, by configuring this field
-    //   you are asking the Keystone AdminUI to create a new user
-    //   providing inputs for these fields
-    fields: ["name", "email", "password"]
-    // it uses context.sudo() to do this, which bypasses any access control you might have
-    //   you shouldn't use this in production
-  }
-});
-var sessionMaxAge = 60 * 60 * 24 * 30;
-var session = (0, import_session.statelessSessions)({
-  maxAge: sessionMaxAge,
-  secret: sessionSecret
-});
-
 // keystone.ts
-var keystone_default = withAuth(
+var keystone_default = (
+  //withAuth(
   (0, import_core2.config)({
     server: {
       cors: {
@@ -469,7 +446,7 @@ var keystone_default = withAuth(
       idField: { kind: "uuid" }
     },
     lists,
-    session,
+    //session,
     storage: {
       journal_item_files: {
         kind: "local",
