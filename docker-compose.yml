@@ -1,5 +1,6 @@
 version: '3'
 services:
+
   postgres:
     image: postgres:latest
     container_name: pbna_postgres
@@ -15,13 +16,13 @@ services:
   redis:
     image: redis
     container_name: redis
-    # use backend in container
-    #expose:
-    #  - 6379
-
-    # map ports for running backend locally (outside container)
+    # use when backend is running in container
+    expose:
+      - 6379
+    # used when backend is running locally
     ports:
       - "6379:6379"      
+
 
   backend:
     container_name: pbna_backend
@@ -44,6 +45,7 @@ services:
     links:
       - redis
 
+
   frontend:
     container_name: pbna_frontend
     build: 
@@ -56,6 +58,7 @@ services:
       PORT: 8080   
       GRAPHQL_API_URL: "http://backend:3000/api/graphql"
 
+
   node-llama:
     container_name: node-llama
     build: 
@@ -67,7 +70,22 @@ services:
       - type: bind
         source: ./common
         target: /code/src/common
-    command: node index.js        
+    command: node index.js
+
+
+  tesseract:
+    container_name: tesseract
+    build: 
+      context: ./tesseract
+      dockerfile: tesseract.Dockerfile
+    links:
+      - redis
+    volumes:
+      - type: bind
+        source: ./common
+        target: /code/common
+    # command: tail -f /dev/null
+    command: node index.js
 
 volumes:
   pg-data:

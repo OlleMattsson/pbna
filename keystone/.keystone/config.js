@@ -1,9 +1,7 @@
 "use strict";
-var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
-var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __export = (target, all) => {
   for (var name in all)
@@ -17,14 +15,6 @@ var __copyProps = (to, from, except, desc) => {
   }
   return to;
 };
-var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
-  // If the importer is in node compatibility mode or this is not an ESM
-  // file that has been converted to a CommonJS file using a Babel-
-  // compatible transform (i.e. "__esModule" has not been set), then set
-  // "default" to the CommonJS "module.exports" for node compatibility.
-  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
-  mod
-));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
 // keystone.ts
@@ -41,48 +31,32 @@ var import_access = require("@keystone-6/core/access");
 var import_fields = require("@keystone-6/core/fields");
 var import_fields_document = require("@keystone-6/fields-document");
 
-// tesseract.ts
-var import_tesseract = __toESM(require("tesseract.js"));
-function ocrService(opts) {
-  const { imagePath, language } = opts;
-  return new Promise((resolve, reject) => {
-    import_tesseract.default.recognize(
-      imagePath,
-      language,
-      { logger: (m) => console.log(m) }
-    ).then(({ data: { text: text2 } }) => {
-      resolve(text2);
-    }).catch((err) => {
-      console.log("CAUGHT!");
-      console.log(err);
-      reject(err);
-    });
-  });
-}
-
-// schema.ts
+// hooks/attachment_afteroperation.ts
 var import_redis_smq = require("redis-smq");
 
 // ../common/redis-smq-config.js
+var DEV = true;
 var config = {
   redis: {
     client: "redis_v4",
     options: {
       socket: {
-        host: "localhost"
+        host: DEV ? "localhost" : "redis"
       }
     }
   }
 };
+var queueNames = {
+  llamaDataExtraction: "llama-data-extraction",
+  tesseract: "tesseract"
+};
 
-// schema.ts
-var queueName = "llama-data-extraction";
-console.log(config);
+// hooks/attachment_afteroperation.ts
 import_redis_smq.QueueManager.createInstance(config, (err, queueManager) => {
   if (err)
     console.log(err);
   else
-    queueManager.queue.create(queueName, false, (err2) => console.log(err2));
+    queueManager.queue.create(queueNames.llamaDataExtraction, false, (err2) => console.log(err2));
 });
 function smqRun(message, config3) {
   const producer = new import_redis_smq.Producer(config3);
@@ -100,6 +74,31 @@ function smqRun(message, config3) {
     });
   });
 }
+async function attachmentAfterOperation({ operation, item, context }) {
+  console.log(item);
+  if (operation === "create") {
+    const { file_filename, id } = item;
+    const file_extension = file_filename?.split(".")[1];
+    if (file_extension === "pdf") {
+      console.log("PDF not supported");
+      return;
+    }
+    try {
+      const ocrmsg = new import_redis_smq.Message();
+      ocrmsg.setBody({
+        attachmentId: id,
+        imagePath: `http://localhost:3000/files/${file_filename}`,
+        language: "fin"
+      }).setTTL(36e5).setQueue(queueNames.tesseract);
+      smqRun(ocrmsg, config);
+    } catch (err) {
+      console.log("afterOperation catch");
+      throw new Error(`ocrData Service failed with error: ${err}`);
+    }
+  }
+}
+
+// schema.ts
 var isAdmin = ({ session }) => {
   if (session?.data.role === "admin") {
     return true;
@@ -324,45 +323,7 @@ var lists = {
       inferredData: (0, import_fields.text)()
     },
     hooks: {
-      afterOperation: async ({ operation, item, context }) => {
-        console.log(item);
-        if (operation === "create") {
-          const { file_filename, id } = item;
-          const file_extension = file_filename?.split(".")[1];
-          if (file_extension === "pdf") {
-            console.log("PDF not supported");
-            return;
-          }
-          try {
-            const ocrServiceResponse = await ocrService({
-              imagePath: `http://localhost:3000/files/${file_filename}`,
-              language: "fin"
-            });
-            await context.db.Attachment.updateOne({
-              where: { id },
-              data: {
-                // store each line as a separate paragraph in order to make result more readable for humans and machines
-                ocrData: JSON.stringify(ocrServiceResponse).split("\\n").map((text2) => ({
-                  type: "paragraph",
-                  children: [{
-                    text: text2
-                  }]
-                }))
-              }
-            });
-            const message = new import_redis_smq.Message();
-            message.setBody({
-              operation: "extract",
-              attachmentId: id,
-              ocrData: ocrServiceResponse
-            }).setTTL(36e5).setQueue(queueName);
-            smqRun(message, config);
-          } catch (err) {
-            console.log("afterOperation catch");
-            throw new Error(`ocrData Service failed with error: ${err}`);
-          }
-        }
-      }
+      afterOperation: attachmentAfterOperation
     }
   }),
   // Chart of Accounts, "kontoplan"

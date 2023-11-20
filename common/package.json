@@ -1,0 +1,11 @@
+{
+  "name": "pbna-common",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "redis-smq": "^7.0.7"
+  }
+}

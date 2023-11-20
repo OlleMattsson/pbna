@@ -13,37 +13,9 @@ import {
 } from '@keystone-6/core/fields';
 import { document } from '@keystone-6/fields-document';
 import type { Lists } from '.keystone/types';
-import {ocrService} from './tesseract'
-import util from 'util'
-import { QueueManager, Message, Producer } from 'redis-smq';
-import {config} from "../common/redis-smq-config"
-/**
- * REDIS SETUP
- */
+import { attachmentAfterOperation } from './hooks/attachment_afteroperation';
 
-const queueName = "llama-data-extraction"
 
-console.log(config)
-
-QueueManager.createInstance(config, (err, queueManager) => {
-  if (err) console.log(err);
-  else queueManager.queue.create(queueName, false, (err) => console.log(err));
-})
-
-function smqRun(message, config) {
-  const producer = new Producer(config);
-  producer.run((err) => {
-      if (err) throw err;
-      message.getId() // null
-      producer.produce(message, (err) => {
-          if (err) console.log(err);
-          else {
-              const msgId = message.getId(); // string
-              console.log('Successfully produced. Message ID is ', msgId);
-          }
-      });
-  })
-}
 
 
 type Session = {
@@ -329,65 +301,7 @@ export const lists: Lists = {
       inferredData: text()
     },
     hooks: {
-      afterOperation: async ({ operation, item, context }) => {
-
-        // add validation to check that file exists :D
-        console.log(item)
-
-        if (operation === 'create') {
-
-          const { file_filename, id  } = item;
-
-          const file_extension = file_filename?.split('.')[1]
-
-          if (file_extension === "pdf") {
-            console.log("PDF not supported")
-            return
-          }
-
-          try {
-
-            const ocrServiceResponse = await ocrService({
-              imagePath: `http://localhost:3000/files/${file_filename}`,
-              language: "fin"
-            }) as string
-            
-
-            await context.db.Attachment.updateOne({
-              where: { id },
-              data: { 
-                // store each line as a separate paragraph in order to make result more readable for humans and machines
-                ocrData: JSON.stringify(ocrServiceResponse).split("\\n").map(text => ({
-                  type: 'paragraph',
-                  children: [{ 
-                    text
-                  }]   
-                }))
-              }
-            });
-
-            // Redis SMQ
-            const message = new Message();
-            message
-                .setBody({
-                  operation: 'extract', 
-                  attachmentId: id,
-                  ocrData: ocrServiceResponse
-                })
-                .setTTL(3600000) // in millis
-                .setQueue(queueName); 
-
-            smqRun(message, config)
-
-          } catch (err) {
-
-            console.log("afterOperation catch")
-            throw new Error(`ocrData Service failed with error: ${err}`)
-
-          }
-        }     
-
-      }      
+      afterOperation: attachmentAfterOperation
     }
   }),
 

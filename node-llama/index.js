@@ -10,7 +10,7 @@ import {fileURLToPath} from "url";
 import path from "path";
 import {LlamaModel, LlamaContext, LlamaChatSession, EmptyChatPromptWrapper, LlamaChatPromptWrapper, LlamaGrammar} from "node-llama-cpp";
 import { Consumer } from 'redis-smq';
-import {config} from "./redis-smq-config.js"
+import {config} from "./common/redis-smq-config.js"
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client/core/core.cjs';
 
 
@@ -19,6 +19,7 @@ import { ApolloClient, InMemoryCache, gql } from '@apollo/client/core/core.cjs';
  */
 
 const queueName = "llama-data-extraction"
+
 const consumer = new Consumer(config);
 
 const messageHandler = async (msg, cb) => {
@@ -28,23 +29,6 @@ const messageHandler = async (msg, cb) => {
     cb(); // acknowledging the message
 };
 
-/**
- * GraphQL
- */
-
-const UPDATE_EXTRACTED_DATA = gql`
-mutation Mutation($where: AttachmentWhereUniqueInput!, $data: AttachmentUpdateInput!) {
-    updateAttachment(where: $where, data: $data) {
-      inferredData
-      id
-    }
-  }
-`;
-
-const gqlApi = new ApolloClient({
-    cache: new InMemoryCache(),
-    uri: 'http://localhost:3000/api/graphql'
-  })
 
 consumer.consume(queueName, messageHandler, (err) => {
     if (err) console.error(err);
@@ -54,6 +38,25 @@ consumer.run((err, status) => {
     if (err) console.error(err);
     if (status) console.log(`${queueName} service at your service`);
 });
+
+
+/**
+ * GraphQL
+ */
+
+const gqlApi = new ApolloClient({
+    cache: new InMemoryCache(),
+    uri: 'http://localhost:3000/api/graphql'
+})
+
+const UPDATE_EXTRACTED_DATA = gql`
+mutation Mutation($where: AttachmentWhereUniqueInput!, $data: AttachmentUpdateInput!) {
+    updateAttachment(where: $where, data: $data) {
+      inferredData
+      id
+    }
+  }
+`;
 
 async function runDataExtraction(_data) {
 
@@ -100,16 +103,6 @@ async function runDataExtraction(_data) {
     
 
 
-   // test
-   /*
-    const a1 = `{
-    "date": "27.09.2023",
-    "description": "MVI-suunnittelu tuntiveloitus / LVI-suunnittelu 9h",
-    "total_amount": 993.24,
-    "without_vat": 801,
-    "vat": 192.24
-    }`
-    */
 
     const endTime = new Date();
     const executionTime = endTime - startTime; // Time in milliseconds
