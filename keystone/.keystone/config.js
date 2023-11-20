@@ -61,6 +61,45 @@ function ocrService(opts) {
 }
 
 // schema.ts
+var import_redis_smq = require("redis-smq");
+
+// ../common/redis-smq-config.js
+var config = {
+  redis: {
+    client: "redis_v4",
+    options: {
+      socket: {
+        host: "localhost"
+      }
+    }
+  }
+};
+
+// schema.ts
+var queueName = "llama-data-extraction";
+console.log(config);
+import_redis_smq.QueueManager.createInstance(config, (err, queueManager) => {
+  if (err)
+    console.log(err);
+  else
+    queueManager.queue.create(queueName, false, (err2) => console.log(err2));
+});
+function smqRun(message, config3) {
+  const producer = new import_redis_smq.Producer(config3);
+  producer.run((err) => {
+    if (err)
+      throw err;
+    message.getId();
+    producer.produce(message, (err2) => {
+      if (err2)
+        console.log(err2);
+      else {
+        const msgId = message.getId();
+        console.log("Successfully produced. Message ID is ", msgId);
+      }
+    });
+  });
+}
 var isAdmin = ({ session }) => {
   if (session?.data.role === "admin") {
     return true;
@@ -311,6 +350,9 @@ var lists = {
                 }))
               }
             });
+            const message = new import_redis_smq.Message();
+            message.setBody({ operation: "extract", data: ocrServiceResponse }).setTTL(36e5).setQueue(queueName);
+            smqRun(message, config);
           } catch (err) {
             console.log("afterOperation catch");
             throw new Error(`ocrData Service failed with error: ${err}`);

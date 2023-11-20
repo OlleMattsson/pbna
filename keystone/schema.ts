@@ -15,6 +15,36 @@ import { document } from '@keystone-6/fields-document';
 import type { Lists } from '.keystone/types';
 import {ocrService} from './tesseract'
 import util from 'util'
+import { QueueManager, Message, Producer } from 'redis-smq';
+import {config} from "../common/redis-smq-config"
+/**
+ * REDIS SETUP
+ */
+
+const queueName = "llama-data-extraction"
+
+console.log(config)
+
+QueueManager.createInstance(config, (err, queueManager) => {
+  if (err) console.log(err);
+  else queueManager.queue.create(queueName, false, (err) => console.log(err));
+})
+
+function smqRun(message, config) {
+  const producer = new Producer(config);
+  producer.run((err) => {
+      if (err) throw err;
+      message.getId() // null
+      producer.produce(message, (err) => {
+          if (err) console.log(err);
+          else {
+              const msgId = message.getId(); // string
+              console.log('Successfully produced. Message ID is ', msgId);
+          }
+      });
+  })
+}
+
 
 type Session = {
   data: {
@@ -335,6 +365,15 @@ export const lists: Lists = {
                 }))
               }
             });
+
+            // Redis SMQ
+            const message = new Message();
+            message
+                .setBody({operation: 'extract', data: ocrServiceResponse})
+                .setTTL(3600000) // in millis
+                .setQueue(queueName); 
+
+            smqRun(message, config)
 
           } catch (err) {
 

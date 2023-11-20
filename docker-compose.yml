@@ -15,8 +15,13 @@ services:
   redis:
     image: redis
     container_name: redis
-    expose:
-      - 6379
+    # use backend in container
+    #expose:
+    #  - 6379
+
+    # map ports for running backend locally (outside container)
+    ports:
+      - "6379:6379"      
 
   backend:
     container_name: pbna_backend
@@ -62,6 +67,7 @@ services:
       - type: bind
         source: ./common
         target: /code/src/common
+    command: node index.js        
 
 volumes:
   pg-data:
