@@ -1,8 +1,8 @@
 import Tesseract from 'tesseract.js';
 
 Tesseract.recognize(
-  'https://tesseract.projectnaptha.com/img/eng_bw.png',
-  'eng',
+  'http://localhost:3000/files/lasku-test-png-1-8xITjUzKvBIn.png',
+  'fin',
   { logger: m => console.log(m) }
 ).then(({ data: { text } }) => {
   console.log(text);
