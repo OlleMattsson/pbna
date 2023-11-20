@@ -414,6 +414,7 @@ type Attachment {
   description: String
   file: FileFieldOutput
   ocrData: Attachment_ocrData_Document
+  inferredData: String
 }
 
 type FileFieldOutput {
@@ -437,12 +438,14 @@ input AttachmentWhereInput {
   id: IDFilter
   name: StringFilter
   description: StringFilter
+  inferredData: StringFilter
 }
 
 input AttachmentOrderByInput {
   id: OrderDirection
   name: OrderDirection
   description: OrderDirection
+  inferredData: OrderDirection
 }
 
 input AttachmentUpdateInput {
@@ -450,6 +453,7 @@ input AttachmentUpdateInput {
   description: String
   file: FileFieldInput
   ocrData: JSON
+  inferredData: String
 }
 
 input FileFieldInput {
@@ -469,6 +473,7 @@ input AttachmentCreateInput {
   description: String
   file: FileFieldInput
   ocrData: JSON
+  inferredData: String
 }
 
 type AccountChart {

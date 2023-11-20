@@ -281,7 +281,8 @@ var lists = {
       name: (0, import_fields.text)(),
       description: (0, import_fields.text)(),
       file: (0, import_fields.file)({ storage: "journal_item_files" }),
-      ocrData: (0, import_fields_document.document)()
+      ocrData: (0, import_fields_document.document)(),
+      inferredData: (0, import_fields.text)()
     },
     hooks: {
       afterOperation: async ({ operation, item, context }) => {

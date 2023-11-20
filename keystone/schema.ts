@@ -295,7 +295,8 @@ export const lists: Lists = {
       name: text(),
       description: text(),
       file: file({storage: "journal_item_files"}),
-      ocrData: document()
+      ocrData: document(),
+      inferredData: text()
     },
     hooks: {
       afterOperation: async ({ operation, item, context }) => {
@@ -334,7 +335,6 @@ export const lists: Lists = {
                 }))
               }
             });
-
 
           } catch (err) {
 
