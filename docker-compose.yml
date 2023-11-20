@@ -32,6 +32,12 @@ services:
       # NODE_ENV: development
       # values should come from postgres env...
       DATABASE_URL: postgres://pbna_pguser:pbna_pgpw@postgres/pbna_pgdb
+    volumes:
+      - type: bind
+        source: ./common
+        target: /code/src/common
+    links:
+      - redis
 
   frontend:
     container_name: pbna_frontend
