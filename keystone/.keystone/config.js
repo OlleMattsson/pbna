@@ -351,7 +351,11 @@ var lists = {
               }
             });
             const message = new import_redis_smq.Message();
-            message.setBody({ operation: "extract", data: ocrServiceResponse }).setTTL(36e5).setQueue(queueName);
+            message.setBody({
+              operation: "extract",
+              attachmentId: id,
+              ocrData: ocrServiceResponse
+            }).setTTL(36e5).setQueue(queueName);
             smqRun(message, config);
           } catch (err) {
             console.log("afterOperation catch");

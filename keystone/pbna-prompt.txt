@@ -1,0 +1,44 @@
+
+
+## context: You are an accountant. You produce entries into a double entry accounting system. The system is described by the graphql schema below.
+
+## task: produce an entry into the journal using the invoice data and accounts below.
+
+## invoice data: 
+Laskun numero 3033 Maksuviite 30339Laskun päiväys 27.09.2023 Huomautusaika 7 päivää12111 Eräpäivä 11.10.2023 Maksuehto 14 päivääMattssoft Ab Viivästyskorko —10.5%Humalniementie 13 K00840 Helsinki Toimitusaika = -30.9.2023Tilaaja Mattsson OlleViitteemme Torvinen TimoViitteenneSopimusnumero1635 / Mattssoft Ab / LVI suunnittelu / LVI-suunnittelu tuntiveloitusNimike Määrä Hinta Alv YhteensäLVI-suunnittelu tuntiveloitus / LVI-suunnittelu 9h 89.00 24 % 801.00Arvonlisävero 24 % 192.24Huomioithan muuttuneen tilinumeron. Uusi tilinumeromme on FIS1 1555 3000 1298 91Veroton yhteensä 801.00 EURAlv Yhteensä 192.24 EURYhteensä 993.24 EURSuomen Talokeskus Oy Puhelin Y-tunnus — 2581730-8 MaksutiedotMannerheimintie 113 029 193 1900 VAT F125817308 FI51 1555 3000 1298 9100280 Helsinki laskutusGtalokeskus.fi Kotipaikka — Helsinki NDEAFIHH
+
+## account ids
+sales: 1000
+bank: 2000
+vat: 3000
+
+## graphql schema
+
+type Entry {
+  id: ID!
+  createdAt: DateTime
+  createdBy: User
+  owner: Company
+  date: CalendarDay
+  entryNumber: Int
+  description: String
+  lineItems(where: LineItemWhereInput! = {}, orderBy: [LineItemOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: LineItemWhereUniqueInput): [LineItem!]
+}
+
+type LineItem {
+  id: ID!
+  createdAt: DateTime
+  createdBy: User
+  owner: Company
+  date: CalendarDay
+  account: Account
+  type: String
+  amount: Decimal
+  description: String
+}
+
+type Mutation {
+  createEntries(data: [EntryCreateInput!]!): [Entry]
+  createLineItem(data: LineItemCreateInput!): LineItem
+  createLineItems(data: [LineItemCreateInput!]!): [LineItem]
+}

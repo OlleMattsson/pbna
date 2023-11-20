@@ -369,7 +369,11 @@ export const lists: Lists = {
             // Redis SMQ
             const message = new Message();
             message
-                .setBody({operation: 'extract', data: ocrServiceResponse})
+                .setBody({
+                  operation: 'extract', 
+                  attachmentId: id,
+                  ocrData: ocrServiceResponse
+                })
                 .setTTL(3600000) // in millis
                 .setQueue(queueName); 
 

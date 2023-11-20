@@ -9,9 +9,10 @@
 import {fileURLToPath} from "url";
 import path from "path";
 import {LlamaModel, LlamaContext, LlamaChatSession, EmptyChatPromptWrapper, LlamaChatPromptWrapper, LlamaGrammar} from "node-llama-cpp";
-
 import { Consumer } from 'redis-smq';
 import {config} from "./redis-smq-config.js"
+import { ApolloClient, InMemoryCache, gql } from '@apollo/client/core/core.cjs';
+
 
 /**
  * REDIS
@@ -23,9 +24,27 @@ const consumer = new Consumer(config);
 const messageHandler = async (msg, cb) => {
     console.log(msg)
     const payload = msg.getBody();
-    await runDataExtraction(payload.data)
+    await runDataExtraction(payload)
     cb(); // acknowledging the message
 };
+
+/**
+ * GraphQL
+ */
+
+const UPDATE_EXTRACTED_DATA = gql`
+mutation Mutation($where: AttachmentWhereUniqueInput!, $data: AttachmentUpdateInput!) {
+    updateAttachment(where: $where, data: $data) {
+      inferredData
+      id
+    }
+  }
+`;
+
+const gqlApi = new ApolloClient({
+    cache: new InMemoryCache(),
+    uri: 'http://localhost:3000/api/graphql'
+  })
 
 consumer.consume(queueName, messageHandler, (err) => {
     if (err) console.error(err);
@@ -33,10 +52,13 @@ consumer.consume(queueName, messageHandler, (err) => {
 
 consumer.run((err, status) => {
     if (err) console.error(err);
-    if (status) console.error(`status: ${status}`);
+    if (status) console.log(`${queueName} service at your service`);
 });
 
-async function runDataExtraction(ocrData) {
+async function runDataExtraction(_data) {
+
+    const {ocrData, attachmentId} = _data
+
     const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
     const model = new LlamaModel({
@@ -66,6 +88,7 @@ async function runDataExtraction(ocrData) {
     
     const startTime = new Date();
     
+    
     const a1 = await session.prompt(prompt, {
         maxTokens: 200,
         temperature: 0.5,
@@ -75,6 +98,19 @@ async function runDataExtraction(ocrData) {
         grammar
     });
     
+
+
+   // test
+   /*
+    const a1 = `{
+    "date": "27.09.2023",
+    "description": "MVI-suunnittelu tuntiveloitus / LVI-suunnittelu 9h",
+    "total_amount": 993.24,
+    "without_vat": 801,
+    "vat": 192.24
+    }`
+    */
+
     const endTime = new Date();
     const executionTime = endTime - startTime; // Time in milliseconds
     
@@ -83,5 +119,23 @@ async function runDataExtraction(ocrData) {
     console.log(a1);
     
     console.log(`inference time: ${executionTime / 1000} seconds`);
+
+    const variables = {
+        where: {
+          id: attachmentId
+        },
+        data: {
+          inferredData: a1
+        }
+      }
+
+    gqlApi.mutate({
+        mutation: UPDATE_EXTRACTED_DATA,
+        variables
+      }).then(response => {
+        console.log('Mutation response:', response);
+      }).catch(error => {
+        console.error('Error executing mutation:', error);
+      });
     
 }
