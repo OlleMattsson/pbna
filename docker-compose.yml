@@ -80,8 +80,13 @@ services:
       - type: bind
         source: ./common
         target: /code/common
-    command: node index.js
-
+      - type: bind
+        source: ./models
+        target: /code/models           
+      - type: bind
+        source: ./node-llama/src
+        target: /code/src        
+    command: npm run dev
 
   tesseract:
     container_name: tesseract

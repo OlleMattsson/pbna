@@ -10,7 +10,7 @@ import {fileURLToPath} from "url";
 import path from "path";
 import {LlamaModel, LlamaContext, LlamaChatSession, EmptyChatPromptWrapper, LlamaChatPromptWrapper, LlamaGrammar} from "node-llama-cpp";
 import { Consumer, QueueManager} from 'redis-smq';
-import { queueNames, config } from "./common/redis-smq-config.js"
+import { queueNames, config } from "../common/redis-smq-config.js"
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client/core/core.cjs';
 
 
@@ -64,14 +64,17 @@ mutation Mutation($where: AttachmentWhereUniqueInput!, $data: AttachmentUpdateIn
   }
 `;
 
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const modelPath = path.join(__dirname, "../models", "llama-2-13b.Q5_K_M.gguf")
+console.log(`model path: ${modelPath}`)
+
 async function runDataExtraction(_data) {
 
     const {ocrData, attachmentId} = _data
 
-    const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
     const model = new LlamaModel({
-        modelPath: path.join(__dirname, "models", "llama-2-13b.Q5_K_M.gguf"),
+        modelPath,
         useMlock: true
     });
     const context = new LlamaContext({

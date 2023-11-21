@@ -1,7 +1,16 @@
 # PBNA
 
 ## installation
+
+### requirements
+docker 24.0.7 or later
+
+### common files
 `cd common && npm install`
+
+### llama model
+1. download llama model: https://huggingface.co/TheBloke/Llama-2-13B-GGUF/blob/main/llama-2-13b.Q5_K_M.gguf  
+2. place gguf file in `./models`` directory  
 
 ## run
 in the root folder, run `docker compose up`
