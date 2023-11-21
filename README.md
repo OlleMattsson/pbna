@@ -12,7 +12,7 @@ in the root folder, run `docker compose up`
 - the `src` folder is mounted into the container, so any changes made to files residing inside this folder structure
   are automatically reflected in the running container.
 - Ie, no need to restart containers in between iterations.
-- if package.json or other folders outside the service's src folder, the container has to be rebuilt with `docker compose up <container> --build`
+- if package.json or other folders outside the service's src folder, the container has to be stopped rebuilt with `docker compose build <container> `. Alternatively the container can be rebuilt with the up command like so `docker compose up <container> --build`
 
 
 ## trouble shooting

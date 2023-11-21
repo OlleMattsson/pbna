@@ -96,10 +96,10 @@ services:
         source: ./common
         target: /code/common
       - type: bind
-        source: ./frontend/src
+        source: ./tesseract/src
         target: /code/src
     # command: tail -f /dev/null
-    command: node index.js
+    command: npm run dev
 
 volumes:
   pg-data:

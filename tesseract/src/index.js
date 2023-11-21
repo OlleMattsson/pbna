@@ -1,9 +1,8 @@
 import Tesseract from 'tesseract.js';
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client/core/core.cjs';
-import { sendMessage } from './common/smqSendMessage.js';
+import { sendMessage } from '../common/smqSendMessage.js';
 import { Consumer, QueueManager, Message } from 'redis-smq';
-import {config, queueNames} from "./common/redis-smq-config.js"
-import util from "util"
+import {config, queueNames} from "../common/redis-smq-config.js"
 
 /**
  * REDIS
@@ -22,9 +21,8 @@ consumer.run((err, status) => {
 });
 
 const messageHandler = async (msg, cb) => {
-    console.log(msg)
     const msgBody = msg.getBody();
-    await runTesseract(msgBody)
+    await runOCR(msgBody)
     cb(); // acknowledging the message
 };
 
@@ -49,7 +47,6 @@ mutation Mutation($where: AttachmentWhereUniqueInput!, $data: AttachmentUpdateIn
   }
 `;
 
-
 /*
 type ocrServiceOpts = {
     imagePath: string,
@@ -57,22 +54,22 @@ type ocrServiceOpts = {
 }
 */
 
-export function ocrService(opts) {
+export function tesseract(opts) {
 
     const {imagePath, language} = opts;
     const basePath = `http://keystone:3000/files/`
 
-    return new Promise((resolve, reject) => {
-        Tesseract.recognize(
-            basePath + imagePath,
-            language,
-            { logger: m => console.log(m) }
+    return new Promise(async (resolve, reject) => {
+      await Tesseract.setLogging(false)
+      Tesseract.recognize(
+          basePath + imagePath,
+          language,
         ).then(({ data: { text } }) => {
-            resolve(text)
+          resolve(text)
         }).catch(err => {
-            console.log("CAUGHT!")
-            console.log(err)
-            reject(err)
+          console.log("CAUGHT!")
+          console.log(err)
+          reject(err)
         })
     })
 }
@@ -80,53 +77,46 @@ export function ocrService(opts) {
 /**
  * Tesseract
  */
-async function runTesseract(params) {
+async function runOCR(params) {
   const {attachmentId, imagePath, language} = params;
 
-  let ocrServiceResponse;
-  let _ocrData;
+  let tesseractResponse;
 
+  // run the tesseract OCR engine
   try {
-    ocrServiceResponse = await ocrService({
+    tesseractResponse = await tesseract({
       imagePath: imagePath,
       language
     });
-
-    console.log(`\n\nOCR Service: \n${ocrServiceResponse}`)
-
-    // prepare OCR data for keystone document field
-    _ocrData = JSON.stringify(ocrServiceResponse).split("\\n").map(text => ({
-      type: 'paragraph',
-      children: [{ 
-        text
-      }]   
-    }))
-
-    //console.log(`\n\nOCR Service: \n${util.inspect(ocrData, {depth:null, showHidden: false, colors: true})}`)
-
   } catch(error) {
     console.log(error)
   }  
 
 
-    const variables = {
+  // prepare OCR data for keystone document field
+  const ocrData = JSON.stringify(tesseractResponse).split("\\n").map(text => ({
+    type: 'paragraph',
+    children: [{ 
+      text
+    }]   
+  }))
+
+  // store OCR results in keystone
+  gqlApi.mutate({
+    mutation: UPDATE_OCR_DATA,
+    variables: {
       where: {
         id: attachmentId
       },
       data: {
-        ocrData: _ocrData,     
+        ocrData   
       }
     }
-    console.log(`\n\variables: \n${util.inspect(variables, {depth:null, showHidden: false, colors: true})}`)
-
-    gqlApi.mutate({
-      mutation: UPDATE_OCR_DATA,
-      variables
-    }).then(response => {
-      console.log('Mutation response:', response);
-    }).catch(error => {
-      console.error('Error executing mutation:', error);
-    });
+  }).then(response => {
+    console.log('Mutation response:', response);
+  }).catch(error => {
+    console.error('Error executing mutation:', error);
+  });
 
   // send message to llama to initiate data extraction
   try {
@@ -134,9 +124,9 @@ async function runTesseract(params) {
     message
       .setBody({
         attachmentId: attachmentId,
-        ocrData: ocrServiceResponse
+        ocrData: tesseractResponse
       })
-      .setTTL(1000 * 60) // in millis
+      .setTTL(1000 * 60 * 60) // in millis
       .setQueue(queueNames.llamaDataExtraction); 
 
     sendMessage(message, config)
