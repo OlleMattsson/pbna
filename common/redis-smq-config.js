@@ -1,6 +1,6 @@
 // set this to true when running anything dependent on redis locally
 // set to false when running in the container
-const DEV = true;
+const DEV = false;
 
 export const config = {
     redis: {

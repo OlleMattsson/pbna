@@ -55,8 +55,10 @@ var queueNames = {
 import_redis_smq.QueueManager.createInstance(config, (err, queueManager) => {
   if (err)
     console.log(err);
-  else
+  else {
+    queueManager.queue.create(queueNames.tesseract, false, (err2) => console.log(err2));
     queueManager.queue.create(queueNames.llamaDataExtraction, false, (err2) => console.log(err2));
+  }
 });
 function smqRun(message, config3) {
   const producer = new import_redis_smq.Producer(config3);

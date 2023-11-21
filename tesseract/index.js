@@ -1,12 +1,14 @@
 import Tesseract from 'tesseract.js';
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client/core/core.cjs';
 import { sendMessage } from './common/smqSendMessage.js';
-import { Consumer, QueueManager } from 'redis-smq';
+import { Consumer, QueueManager, Message } from 'redis-smq';
 import {config, queueNames} from "./common/redis-smq-config.js"
+import util from "util"
 
 /**
  * REDIS
- */
+*/
+
 QueueManager.createInstance(config, (err, queueManager) => {
   if (err) console.log(err);
   else queueManager.queue.create(queueNames.tesseract, false, (err) => console.log(err));
@@ -16,7 +18,7 @@ const consumer = new Consumer(config);
 
 consumer.run((err, status) => {
   if (err) console.error(err);
-  if (status) console.log(`${queueName.tesseract} service at your service`);
+  if (status) console.log(`${queueNames.tesseract} queue ready`);
 });
 
 const messageHandler = async (msg, cb) => {
@@ -36,13 +38,12 @@ consumer.consume(queueNames.tesseract, messageHandler, (err) => {
 
 const gqlApi = new ApolloClient({
     cache: new InMemoryCache(),
-    uri: 'http://localhost:3000/api/graphql'
+    uri: 'http://keystone:3000/api/graphql'
 })
 
 const UPDATE_OCR_DATA = gql`
 mutation Mutation($where: AttachmentWhereUniqueInput!, $data: AttachmentUpdateInput!) {
     updateAttachment(where: $where, data: $data) {
-      ocrData
       id
     }
   }
@@ -59,10 +60,11 @@ type ocrServiceOpts = {
 export function ocrService(opts) {
 
     const {imagePath, language} = opts;
+    const basePath = `http://keystone:3000/files/`
 
     return new Promise((resolve, reject) => {
         Tesseract.recognize(
-            imagePath,
+            basePath + imagePath,
             language,
             { logger: m => console.log(m) }
         ).then(({ data: { text } }) => {
@@ -81,56 +83,60 @@ export function ocrService(opts) {
 async function runTesseract(params) {
   const {attachmentId, imagePath, language} = params;
 
+  let ocrServiceResponse;
+  let _ocrData;
+
   try {
-    const ocrServiceResponse = await ocrService({
+    ocrServiceResponse = await ocrService({
       imagePath: imagePath,
       language
     });
 
-  } catch (err) {
-    console.error('OCR service error', error);
+    console.log(`\n\nOCR Service: \n${ocrServiceResponse}`)
 
-  }
-
-
-
-  // store ocr result in keystone
-  try {
     // prepare OCR data for keystone document field
-    const ocrData = JSON.stringify(ocrServiceResponse).split("\\n").map(text => ({
+    _ocrData = JSON.stringify(ocrServiceResponse).split("\\n").map(text => ({
       type: 'paragraph',
       children: [{ 
         text
       }]   
     }))
 
-    const res = await gqlApi.mutate({
-      mutation: UPDATE_OCR_DATA,
-      variables: {
-        where: {
-          id: attachmentId
-        },
-        data: {
-          ocrData
-        }
+    //console.log(`\n\nOCR Service: \n${util.inspect(ocrData, {depth:null, showHidden: false, colors: true})}`)
+
+  } catch(error) {
+    console.log(error)
+  }  
+
+
+    const variables = {
+      where: {
+        id: attachmentId
+      },
+      data: {
+        ocrData: _ocrData,     
       }
-    })
+    }
+    console.log(`\n\variables: \n${util.inspect(variables, {depth:null, showHidden: false, colors: true})}`)
 
-    console.log('Mutation response:', res)
-
-  } catch (error) {
-    console.error('Error executing mutation:', error);
-  }
+    gqlApi.mutate({
+      mutation: UPDATE_OCR_DATA,
+      variables
+    }).then(response => {
+      console.log('Mutation response:', response);
+    }).catch(error => {
+      console.error('Error executing mutation:', error);
+    });
 
   // send message to llama to initiate data extraction
   try {
     const message = new Message();
     message
       .setBody({
-        attachmentId: id,
+        attachmentId: attachmentId,
         ocrData: ocrServiceResponse
       })
-      .setTTL(3600000) // in millis
+      .setTTL(1000 * 60) // in millis
       .setQueue(queueNames.llamaDataExtraction); 
 
     sendMessage(message, config)

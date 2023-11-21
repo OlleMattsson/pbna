@@ -32,6 +32,13 @@ On macOS, running postgress instances can be killed like so
 `sudo -u postgres /Library/PostgreSQL/<postgres_version>/bin/pg_ctl -D /Library/PostgreSQL/<postgres_version>/data stop`
 Change <postgres_version> to whatever is installed on the system
 
+
+### flush redis
+Assuming redis is running in docker, run  
+`docker compose exec redis /bin/sh`  
+`redis-cli`  
+`FLUSHDB` or `FLUSHALL`
+
 # license
 Copyright 2023 Mattssoft Ab (www.mattssoft.com)
 

@@ -9,8 +9,8 @@
 import {fileURLToPath} from "url";
 import path from "path";
 import {LlamaModel, LlamaContext, LlamaChatSession, EmptyChatPromptWrapper, LlamaChatPromptWrapper, LlamaGrammar} from "node-llama-cpp";
-import { Consumer } from 'redis-smq';
-import {config} from "./common/redis-smq-config.js"
+import { Consumer, QueueManager} from 'redis-smq';
+import { queueNames, config } from "./common/redis-smq-config.js"
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client/core/core.cjs';
 
 
@@ -18,7 +18,13 @@ import { ApolloClient, InMemoryCache, gql } from '@apollo/client/core/core.cjs';
  * REDIS
  */
 
-const queueName = "llama-data-extraction"
+QueueManager.createInstance(config, (err, queueManager) => {
+  if (err) console.log(err);
+  else {
+    queueManager.queue.create(queueNames.llamaDataExtraction, false, (err) => console.log(err));
+  }
+})
+
 
 const consumer = new Consumer(config);
 
@@ -30,13 +36,13 @@ const messageHandler = async (msg, cb) => {
 };
 
 
-consumer.consume(queueName, messageHandler, (err) => {
+consumer.consume(queueNames.llamaDataExtraction, messageHandler, (err) => {
     if (err) console.error(err);
 });
 
 consumer.run((err, status) => {
     if (err) console.error(err);
-    if (status) console.log(`${queueName} service at your service`);
+    if (status) console.log(`${queueNames.llamaDataExtraction} queue ready`);
 });
 
 
@@ -46,7 +52,7 @@ consumer.run((err, status) => {
 
 const gqlApi = new ApolloClient({
     cache: new InMemoryCache(),
-    uri: 'http://localhost:3000/api/graphql'
+    uri: 'http://keystone:3000/api/graphql'
 })
 
 const UPDATE_EXTRACTED_DATA = gql`

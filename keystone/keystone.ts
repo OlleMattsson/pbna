@@ -3,7 +3,7 @@ import { lists } from './schema';
 import { withAuth, session } from './auth';
 
 export default 
-withAuth(
+//withAuth(
   config({
     server: {
       cors: { 
@@ -15,13 +15,13 @@ withAuth(
     },
     db: {
       provider: 'postgresql',
-      url: "postgres://pbna_pguser:pbna_pgpw@localhost/pbna_pgdb", 
+      url: "postgres://pbna_pguser:pbna_pgpw@postgres/pbna_pgdb", 
       //url: process.env.DATABASE_URL as string,
       enableLogging: true,
       idField: { kind: 'uuid' }
     },
     lists,
-    session,
+    //session,
     storage: {
       journal_item_files: {
         kind: 'local',
@@ -34,4 +34,4 @@ withAuth(
       }
     }
   })
-);
+//);

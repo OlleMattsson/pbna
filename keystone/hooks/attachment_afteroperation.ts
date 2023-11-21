@@ -10,7 +10,10 @@ import {config, queueNames} from "../common/redis-smq-config.js"
 
 QueueManager.createInstance(config, (err, queueManager) => {
   if (err) console.log(err);
-  else queueManager.queue.create(queueNames.llamaDataExtraction, false, (err) => console.log(err));
+  else {
+    queueManager.queue.create(queueNames.tesseract, false, (err) => console.log(err));
+    queueManager.queue.create(queueNames.llamaDataExtraction, false, (err) => console.log(err));
+  }
 })
 
 function smqRun(message, config) {
@@ -58,10 +61,10 @@ export async function attachmentAfterOperation ({ operation, item, context }) {
         ocrmsg
             .setBody({
                 attachmentId: id,
-                imagePath: `http://localhost:3000/files/${file_filename}`,
+                imagePath: file_filename,
                 language: "fin"
             })
-            .setTTL(3600000) // in millis
+            .setTTL(1000 * 60) // in millis
             .setQueue(queueNames.tesseract); 
         
         smqRun(ocrmsg, config)
