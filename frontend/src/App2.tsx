@@ -1,8 +1,6 @@
 import { useQuery, gql, useMutation } from '@apollo/client';
 import { useState } from "react";
 
-
-
 const GET_USERS = gql`
   query User {
     user(where: {email: "user@company.com" } ) {

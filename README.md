@@ -1,26 +1,19 @@
 # PBNA
 
-## development
+## installation
+`cd common && npm install`
 
-While developing it can be convenient to run the containers separately. This makes it 
-possible to reload containers as needed. One way of achieving this is to run the following
-commands in separate terminals.
+## run
+in the root folder, run `docker compose up`
 
-### start backend
-1. cd to the `keystone` folder
-2. In terminal 1, Start database: `npm run startpg`. This is an alias for `docker compose up postgres`
-3. In terminal 2, Start keystone backend `npm run dev`
+## developing the services
+- run the project using `docker compose up`
+- service's source code is inside their corresponding `src` folder
+- the `src` folder is mounted into the container, so any changes made to files residing inside this folder structure
+  are automatically reflected in the running container.
+- Ie, no need to restart containers in between iterations.
+- if package.json or other folders outside the service's src folder, the container has to be rebuilt with `docker compose up <container> --build`
 
-### start frontend
-1. cd to `frontend` folder
-2. In terminal 3, Start frontend `npm run start`
-
-The keystone server runs on http://localhost:3000
-The frontend client runs on http://localhost:8080
-
-## running production 
-In the project root, run `docker compose up --build`
-This starts all the containers
 
 ## trouble shooting
 
@@ -39,8 +32,9 @@ Assuming redis is running in docker, run
 `redis-cli`  
 `FLUSHDB` or `FLUSHALL`
 
+
 # license
 Copyright 2023 Mattssoft Ab (www.mattssoft.com)
 
-Licensed under CC BY NC 
+CreaticeCommons BY NC 
 (https://creativecommons.org/licenses/by-nc/4.0/deed.en)

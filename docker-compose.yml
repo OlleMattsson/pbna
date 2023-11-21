@@ -62,6 +62,10 @@ services:
     environment:
       PORT: 8080   
       GRAPHQL_API_URL: "http://backend:3000/api/graphql"
+    volumes:
+      - type: bind
+        source: ./frontend/src
+        target: /code/src
 
 
   llama:
@@ -91,6 +95,9 @@ services:
       - type: bind
         source: ./common
         target: /code/common
+      - type: bind
+        source: ./frontend/src
+        target: /code/src
     # command: tail -f /dev/null
     command: node index.js
 
