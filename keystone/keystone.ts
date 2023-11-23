@@ -8,7 +8,8 @@ export default
     server: {
       cors: { 
         origin: [
-          'http://localhost:8080'
+          'http://localhost:8080',
+          'http://localhost:5173'
         ], 
         credentials: true 
       }
@@ -16,7 +17,6 @@ export default
     db: {
       provider: 'postgresql',
       url: "postgres://pbna_pguser:pbna_pgpw@postgres/pbna_pgdb", 
-      //url: process.env.DATABASE_URL as string,
       enableLogging: true,
       idField: { kind: 'uuid' }
     },
