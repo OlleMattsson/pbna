@@ -8,12 +8,28 @@ docker 24.0.7 or later
 ### common files
 `cd common && npm install`
 
+### react-admin (for now, until containerized)
+1. `cd react-admin && npm install`
+2. `cd node_modules/ra-data-graphql-simple-keystone6/ && npm run build`
+
 ### llama model
 1. download llama model: https://huggingface.co/TheBloke/Llama-2-13B-GGUF/blob/main/llama-2-13b.Q5_K_M.gguf  
 2. place gguf file in `./models`` directory  
 
 ## run
 in the root folder, run `docker compose up`
+
+## developing keystone
+
+### when changing schema or keystone configs
+1. In ./docker-compose.yml change 
+1. `docker compose up keystone --build`
+2. in another terminal `docker compose exec keystone /bin/sh`
+3. `npx keystone dev`
+
+## when changing files in "hooks" folder
+These files are mounted to the container. Changes made are immediately available. 
+
 
 ## developing the services
 - run the project using `docker compose up`
