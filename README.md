@@ -1,5 +1,7 @@
 # PBNA
 
+AI Augmented Accounting software
+
 ## installation
 
 ### requirements
@@ -18,8 +20,24 @@ docker 24.0.7 or later
 
 ## run
 in the root folder, run `docker compose up`
+note: client facing ui (react-admin) has to be started manually `cd react-admin && npm run dev`
 
 ## developing keystone
+
+### project folder structure
+
+- Common: files shared between the services, currently only stuff related to redis. This could potentially be converted to a package for easier installation
+- Frontend: old frontend `localhost:8000` that contains some interesting account, entry and lineItem test data, also contains business logic for building an income statement and balancing the books
+- keystone: cms, data storage, schema and graphql api accessible on `localhost:3000`
+- models: for storing llm models
+- node-llama: a microservice running llama
+- read-admin: customer facing UI accessible on `localhost:5173`
+- tesseract: a microservice running tesseract for OCR
+
+#### Other things worth noting
+
+docker compose: the system is designed to run in docker containers and spun up using docker compose 
+redis-smq: microservices within the docker network can talk to one another with messages (events) sent over redis-smq
 
 ### when changing schema or keystone configs
 1. In ./docker-compose.yml change 
@@ -27,11 +45,11 @@ in the root folder, run `docker compose up`
 2. in another terminal `docker compose exec keystone /bin/sh`
 3. `npx keystone dev`
 
-## when changing files in "hooks" folder
+### when changing files in "hooks" folder
 These files are mounted to the container. Changes made are immediately available. 
 
 
-## developing the services
+### developing the services
 - run the project using `docker compose up`
 - service's source code is inside their corresponding `src` folder
 - the `src` folder is mounted into the container, so any changes made to files residing inside this folder structure
