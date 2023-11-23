@@ -21,6 +21,6 @@
     "jsx": "react-jsx"
   },
   "include": [
-    "__srcc-demo"
+    "src"
   ]
 }
