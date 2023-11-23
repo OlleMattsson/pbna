@@ -34,6 +34,7 @@ function smqRun(message, config) {
 export async function attachmentAfterOperation ({ operation, item, context }) {
 
     // add validation to check that file exists :D
+    
     console.log(item)
 
     if (operation === 'create') {
@@ -49,12 +50,13 @@ export async function attachmentAfterOperation ({ operation, item, context }) {
 
       try {
 
-        /*
-        const ocrServiceResponse = await ocrService({
-          imagePath: `http://localhost:3000/files/${file_filename}`,
-          language: "fin"
-        }) as string
-        */
+        await context.db.Attachment.updateOne({
+          where: { id },
+          data: { 
+            ocrStatus: "queued",
+            dataExtractionStatus: "queued"
+          }
+        });
 
         // tesseract ocr
         const ocrmsg = new Message();
@@ -69,44 +71,8 @@ export async function attachmentAfterOperation ({ operation, item, context }) {
         
         smqRun(ocrmsg, config)
     
-        
-        /*    
-        await context.db.Attachment.updateOne({
-          where: { id },
-          data: { 
-            // store each line as a separate paragraph in order to make result more readable for humans and machines
-            ocrData: JSON.stringify(ocrServiceResponse).split("\\n").map(text => ({
-              type: 'paragraph',
-              children: [{ 
-                text
-              }]   
-            }))
-          }
-        });
-        */
-
-        // llama data extraction
-        /*
-        const message = new Message();
-        message
-            .setBody({
-              operation: 'extract', 
-              attachmentId: id,
-              ocrData: ocrServiceResponse
-            })
-            .setTTL(3600000) // in millis
-            .setQueue(queueNames.llamaDataExtraction); 
-
-        smqRun(message, config)
-        */
-
       } catch (err) {
-
-        console.log("afterOperation catch")
-        throw new Error(`ocrData Service failed with error: ${err}`)
-
+        console.log(err)
       }
-      
     }     
-
   }      
