@@ -1,0 +1,5 @@
+{
+    "watch": ["schema.ts","keystone.ts", "hooks"],
+    "ext": "js,json,ts, tsx",
+    "exec": "npx keystone dev"
+  }
