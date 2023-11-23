@@ -1,7 +1,7 @@
 import Tesseract from 'tesseract.js';
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client/core/core.cjs';
-import { sendMessage } from '../common/smqSendMessage.js';
 import { Consumer, QueueManager, Message } from 'redis-smq';
+import { sendMessage } from '../common/smqSendMessage.js';
 import {config, queueNames} from "../common/redis-smq-config.js"
 
 /**
@@ -90,6 +90,7 @@ async function runOCR(params) {
     });
   } catch(error) {
     console.log(error)
+
   }  
 
 
@@ -102,21 +103,23 @@ async function runOCR(params) {
   }))
 
   // store OCR results in keystone
-  gqlApi.mutate({
-    mutation: UPDATE_OCR_DATA,
-    variables: {
-      where: {
-        id: attachmentId
-      },
-      data: {
-        ocrData   
+  try {
+    await gqlApi.mutate({
+      mutation: UPDATE_OCR_DATA,
+      variables: {
+        where: {
+          id: attachmentId
+        },
+        data: {
+          ocrData,
+          ocrStatus: "success"
+        }
       }
-    }
-  }).then(response => {
-    console.log('Mutation response:', response);
-  }).catch(error => {
-    console.error('Error executing mutation:', error);
-  });
+    })
+  } catch (err) {
+    console.error('Error executing mutation:', err);
+  }
+
 
   // send message to llama to initiate data extraction
   try {
@@ -124,7 +127,7 @@ async function runOCR(params) {
     message
       .setBody({
         attachmentId: attachmentId,
-        ocrData: tesseractResponse
+        ocrData: tesseractResponse,
       })
       .setTTL(1000 * 60 * 60) // in millis
       .setQueue(queueNames.llamaDataExtraction); 
