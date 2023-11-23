@@ -58,7 +58,6 @@ const gqlApi = new ApolloClient({
 const UPDATE_EXTRACTED_DATA = gql`
 mutation Mutation($where: AttachmentWhereUniqueInput!, $data: AttachmentUpdateInput!) {
     updateAttachment(where: $where, data: $data) {
-      inferredData
       id
     }
   }
@@ -80,7 +79,7 @@ async function runDataExtraction(_data) {
     const context = new LlamaContext({
         model,
         batchSize: 1024,
-        contextSize: 1024,
+        contextSize: 2048,
         threads: 6    
     });
     const session = new LlamaChatSession({
@@ -95,8 +94,10 @@ async function runDataExtraction(_data) {
     `Extract the date, description (max 20 words), total amount, amount without vat and the vat of the following transaction. Data is in Finnish. Your response must be in JSON format. Transaction data:`  
     
     const prompt = `${task} ${ocrData}`
-    
-    console.log(prompt);
+
+
+    console.log(`\n\n### task ###\n${task}`);
+    console.log(`\n\n### data ###\n${ocrData}`);
     
     const startTime = new Date();
     
@@ -127,7 +128,8 @@ async function runDataExtraction(_data) {
           id: attachmentId
         },
         data: {
-          inferredData: a1
+          extractedData: a1,
+          dataExtractionStatus: "success"
         }
       }
 
