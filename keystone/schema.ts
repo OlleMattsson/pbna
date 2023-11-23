@@ -219,6 +219,9 @@ export const lists: Lists = {
       listView: {
         initialColumns: ["entryNumber", "date", "description"]
       }
+    },
+    graphql: {
+      plural: "entrys" // we need to rename this from entries -> entrys for react-admins gql introsepction package
     }
   }),
 
@@ -298,11 +301,19 @@ export const lists: Lists = {
       description: text(),
       file: file({storage: "journal_item_files"}),
       ocrData: document(),
-      inferredData: text()
+      ocrStatus: text(), // queued / inprogress / success / failed
+      extractedData: text(),
+      dataExtractionStatus: text() // queued / inprogress/ success / failed
     },
     hooks: {
       afterOperation: attachmentAfterOperation
-    }
+    },
+    ui: {
+      isHidden: false,
+      listView: {
+        initialColumns: ["name", "ocrStatus", "dataExtractionStatus"]
+      }
+    },
   }),
 
   // Chart of Accounts, "kontoplan"
