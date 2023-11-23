@@ -14,30 +14,45 @@ const customizeBuildQuery = introspectionResults => (raFetchType, resourceName, 
    
     const builtQuery = buildQuery(introspectionResults)(raFetchType, resourceName, params);
 
-    return {
-        ...builtQuery,
-        parseResponse: response => {
+    switch (raFetchType){
+        case "GET_LIST":
             return {
-                data: response.data.items,
-                total: response.data.items.length
+                ...builtQuery,
+                parseResponse: response => {
+                    return {
+                        data: response.data.items,
+                        total: response.data.items.length
+                    }
+                }        
             }
-        }        
+           
+        case "GET_ONE": {
+            return {
+                ...builtQuery,
+                parseResponse: response => {
+                    return {
+                        data: response.data.data
+                    }
+                }        
+            }
+        }
     }
-
 }
 
 export default buildGraphQLProvider({ 
     client: client, 
     buildQuery: customizeBuildQuery,
     introspection: {
-        exclude: ["User", "LineItem", "AccountChart", "Account", "AccountingPeriod", "Organization"],
-
         /**
-         * the schema introspection expects list to have the format allItem
+         * the schema introspection expects list to have the format "item" -> "allItem"
+         * here, the builder is configured to use "items" 
          */
         operationNames: {
             "GET_LIST": resource => {
                 return `${resource.name.toLowerCase()}s`
+            },
+            "GET_ONE": resource => {
+                return `${resource.name.toLowerCase()}`
             }
         }
     }

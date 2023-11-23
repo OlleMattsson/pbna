@@ -32,8 +32,9 @@ services:
       context: ./keystone
       dockerfile: keystone.Dockerfile
     #command: "npm run start"
-    command: tail -f /dev/null
+    #command: tail -f /dev/null
     #command: "npm run dev"
+    command: npx keystone dev
     ports:
       - "3000:3000"
     expose:

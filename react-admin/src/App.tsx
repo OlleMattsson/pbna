@@ -1,13 +1,17 @@
 // in App.js
 import React from 'react';
 import { Admin, Resource } from 'react-admin';
+import authProvider from './authProvider'
+import buildGraphQLProvider from './buildQuery';
 import {EntryList} from "./entry/EntryList"
 import {AttachmentList} from "./attachment/AttachmentList"
-import buildGraphQLProvider from './buildQuery';
+import account from "./account"
+
 
 export const App = () => {
 
     const [dataProvider, setDataProvider] = React.useState(null);
+
     React.useEffect(() => {
         buildGraphQLProvider.then(graphQlDataProvider => setDataProvider(() => graphQlDataProvider));
     }, []);
@@ -17,9 +21,13 @@ export const App = () => {
     }
 
     return (
-        <Admin dataProvider= { dataProvider } >
-            <Resource name="Entry" list = { EntryList }/>
-            <Resource name="Attachment" list = { AttachmentList }/>
+        <Admin 
+            authProvider={authProvider} 
+            dataProvider={dataProvider} 
+        >
+            <Resource name="Entry" list = {EntryList}/>
+            <Resource name="Attachment" list = {AttachmentList}/>
+            <Resource name="Account" {...account}/>
         </Admin>
     );
 }
