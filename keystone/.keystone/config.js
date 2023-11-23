@@ -35,13 +35,12 @@ var import_fields_document = require("@keystone-6/fields-document");
 var import_redis_smq = require("redis-smq");
 
 // ../common/redis-smq-config.js
-var DEV = true;
 var config = {
   redis: {
     client: "redis_v4",
     options: {
       socket: {
-        host: DEV ? "localhost" : "redis"
+        host: "redis"
       }
     }
   }
@@ -86,16 +85,22 @@ async function attachmentAfterOperation({ operation, item, context }) {
       return;
     }
     try {
+      await context.db.Attachment.updateOne({
+        where: { id },
+        data: {
+          ocrStatus: "queued",
+          dataExtractionStatus: "queued"
+        }
+      });
       const ocrmsg = new import_redis_smq.Message();
       ocrmsg.setBody({
         attachmentId: id,
-        imagePath: `http://localhost:3000/files/${file_filename}`,
+        imagePath: file_filename,
         language: "fin"
-      }).setTTL(36e5).setQueue(queueNames.tesseract);
+      }).setTTL(1e3 * 60).setQueue(queueNames.tesseract);
       smqRun(ocrmsg, config);
     } catch (err) {
-      console.log("afterOperation catch");
-      throw new Error(`ocrData Service failed with error: ${err}`);
+      console.log(err);
     }
   }
 }
@@ -257,6 +262,11 @@ var lists = {
       listView: {
         initialColumns: ["entryNumber", "date", "description"]
       }
+    },
+    graphql: {
+      itemQueryName: "Entry",
+      listQueryName: "allEntry"
+      //plural: "entrys"
     }
   }),
   LineItem: (0, import_core.list)({
@@ -322,10 +332,20 @@ var lists = {
       description: (0, import_fields.text)(),
       file: (0, import_fields.file)({ storage: "journal_item_files" }),
       ocrData: (0, import_fields_document.document)(),
-      inferredData: (0, import_fields.text)()
+      ocrStatus: (0, import_fields.text)(),
+      // queued / inprogress / success / failed
+      extractedData: (0, import_fields.text)(),
+      dataExtractionStatus: (0, import_fields.text)()
+      // queued / inprogress/ success / failed
     },
     hooks: {
       afterOperation: attachmentAfterOperation
+    },
+    ui: {
+      isHidden: false,
+      listView: {
+        initialColumns: ["name", "ocrStatus", "dataExtractionStatus"]
+      }
     }
   }),
   // Chart of Accounts, "kontoplan"
@@ -443,15 +463,15 @@ var keystone_default = (
     server: {
       cors: {
         origin: [
-          "http://localhost:8080"
+          "http://localhost:8080",
+          "http://localhost:5173"
         ],
         credentials: true
       }
     },
     db: {
       provider: "postgresql",
-      url: "postgres://pbna_pguser:pbna_pgpw@localhost/pbna_pgdb",
-      //url: process.env.DATABASE_URL as string,
+      url: "postgres://pbna_pguser:pbna_pgpw@postgres/pbna_pgdb",
       enableLogging: true,
       idField: { kind: "uuid" }
     },
