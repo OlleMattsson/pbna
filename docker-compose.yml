@@ -32,8 +32,8 @@ services:
       context: ./keystone
       dockerfile: keystone.Dockerfile
     #command: "npm run start"
-    command: "npm run dev"
-    #command: tail -f /dev/null
+    command: tail -f /dev/null
+    #command: "npm run dev"
     ports:
       - "3000:3000"
     expose:
@@ -47,6 +47,9 @@ services:
       - type: bind
         source: ./common
         target: /code/common
+      - type: bind
+        source: ./keystone/hooks
+        target: /code/hooks        
     links:
       - redis
 
