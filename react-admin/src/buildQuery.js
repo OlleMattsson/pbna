@@ -1,7 +1,8 @@
 import { ApolloClient, InMemoryCache, HttpLink } from '@apollo/client';
 
 // use a modified adapter based on ra-data-graphql-simple
-import buildGraphQLProvider, { buildQuery } from 'ra-data-graphql-simple-keystone6';
+import buildGraphQLProvider, { buildQuery } from './ra-data-keystone6/src';
+
 
 const client = new ApolloClient({
     cache: new InMemoryCache(),
@@ -12,6 +13,10 @@ const client = new ApolloClient({
 
 const customizeBuildQuery = introspectionResults => (raFetchType, resourceName, params) => {
     const builtQuery = buildQuery(introspectionResults)(raFetchType, resourceName, params);
+
+    //console.log(params)
+    console.log("builtQieru", builtQuery)
+
 
     // customizations go here
 
