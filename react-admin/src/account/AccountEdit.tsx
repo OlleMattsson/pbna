@@ -7,6 +7,7 @@ import {
     DateField,
     EditProps,
     Labeled,
+    NumberInput
 } from 'react-admin';
 import { Box, Grid, Stack, IconButton, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
@@ -40,7 +41,7 @@ const AccountEdit = ({ id, onCancel }: Props) => {
                     sx={{ pt: 0, pb: 0 }}
                     toolbar={<AccountEditToolbar />}
                 >
-                    <TextInput
+                    <NumberInput
                         source="account"
                         fullWidth
                     />

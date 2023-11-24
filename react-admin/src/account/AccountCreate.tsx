@@ -9,6 +9,8 @@ import {
     useNotify,
     useRedirect,
     getRecordFromLocation,
+    NumberInput,
+    SelectInput    
 } from 'react-admin';
 import { useLocation } from 'react-router';
 
@@ -21,33 +23,35 @@ const AccountCreate = () => {
     const onSuccess = (_: any) => {
         const record = getRecordFromLocation(location);
         notify('ra.notification.created');
-        if (record && record.product_id) {
-            redirect(`/products/${record.product_id}/reviews`);
+        if (record && record.id) {
+            redirect(`/account/${record.product_id}`);
         } else {
-            redirect(`/reviews`);
+            redirect(`/account`);
         }
     };
 
     return (
         <Create mutationOptions={{ onSuccess }}>
-            <SimpleForm defaultValues={{ status: 'pending' }}>
-                <ReferenceInput source="account" reference="customers">
-                    <AutocompleteInput validate={required()} />
-                </ReferenceInput>
-                <ReferenceInput source="name" reference="products">
-                    <AutocompleteInput
-                        optionText="reference"
-                        validate={required()}
-                    />
-                </ReferenceInput>
-
+            <SimpleForm>
+                <NumberInput
+                    source="account"
+                    fullWidth
+                />
+                <TextInput
+                    source="name"
+                    fullWidth
+                />
                 <TextInput
                     source="description"
-                    multiline
                     fullWidth
-                    resettable
-                    validate={required()}
                 />
+                <SelectInput source="type" label="Account Type" choices={[
+                        { name: 'Asset', id: '0' },
+                        { name: 'Liability', id: '1' },
+                        { name: 'VAT', id: '2' },
+                        { name: 'IncomeStatement', id: '3' },
+                        { name: 'Noop', id: '4' },
+                ]} />
             </SimpleForm>
         </Create>
     );

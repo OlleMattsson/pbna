@@ -8,6 +8,8 @@ import {
     ReferenceField,
     NumberField,
     DateInput,
+    SearchInput,
+    TextInput
 } from 'react-admin';
 import { matchPath, useLocation, useNavigate } from 'react-router-dom';
 
@@ -17,8 +19,7 @@ import AccountEdit from './AccountEdit';
 
 
 const listFilters = [
-    <DateInput source="date_gte" alwaysOn />,
-    <DateInput source="date_lte" alwaysOn />,
+    <TextInput label="Name" source="name"/>,
 ];
 
 export const AccountList = () => {
@@ -36,7 +37,7 @@ export const AccountList = () => {
             <List
                 filters={listFilters}
                 perPage={25}
-                sort={{ field: 'date', order: 'DESC' }}
+                sort={{ field: 'account', order: 'DESC' }}
             >
                 <Datagrid
                     rowClick="edit"

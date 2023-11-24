@@ -36,7 +36,7 @@ const AccountEditToolbar = (props: ToolbarProps) => {
                                 messageArgs: { smart_count: 1 },
                                 undoable: true,
                             });
-                            redirect('list', 'reviews');
+                            redirect('list', 'account');
                         },
                     }}
                     type="button"
