@@ -5,20 +5,31 @@ import { ApolloQueryResult } from '@apollo/client';
 
 export default (_introspectionResults: IntrospectionResult) => (
     raFetchMethod: string,
-    _resource: IntrospectedResource,
-    _queryType: IntrospectionField
+    params
 ) => (response: ApolloQueryResult<any>) => {
     const data = response.data;
+ 
+    console.log("data", data)
+    console.log("params", params)
 
     if (
         raFetchMethod === GET_LIST ||
         raFetchMethod === GET_MANY ||
         raFetchMethod === GET_MANY_REFERENCE
     ) {
-        return {
-            data: response.data.items.map(sanitizeResource),
-            total: response.data.items.length,
-        };
+
+        if (Object.keys(params.filter).length) {
+            return {
+                data: data.items.map(sanitizeResource),
+                total: data.items.length
+            };      
+        } else {
+            return {
+                data: data.items.map(sanitizeResource),
+                total: data.totalCount
+            };
+        }
+  
     }
 
     return { data: sanitizeResource(data.data) };

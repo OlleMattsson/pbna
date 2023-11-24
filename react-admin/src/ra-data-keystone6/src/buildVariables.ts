@@ -70,17 +70,25 @@ export default (introspectionResults: IntrospectionResult) => (
                     orderBy,
                 };
             }
-
+            
+            return {
+                take: builtVars.perPage, 
+                skip: builtVars.page * builtVars.perPage,
+                orderBy,
+            };
+            /*
             return {
                 page: builtVars.page,
                 perPage: builtVars.perPage,
                 orderBy,
             };
+            */           
         }
         case GET_MANY:
             return {
                 filter: { ids: preparedParams.ids },
             };
+
         case GET_MANY_REFERENCE: {
             let variables = buildGetListVariables(introspectionResults)(
                 resource,

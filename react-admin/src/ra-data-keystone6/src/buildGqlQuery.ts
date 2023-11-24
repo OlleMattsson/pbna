@@ -45,8 +45,20 @@ export default (introspectionResults: IntrospectionResult) => (
                         args,
                         null,
                         gqlTypes.selectionSet(fields)
-                    )
-                ]),
+                    ),
+                
+                gqlTypes.field(
+                    gqlTypes.name(`${queryType.name}Count`),
+                    gqlTypes.name('totalCount'),
+                    //metaArgs,
+                    null,
+                    /*
+                    gqlTypes.selectionSet([
+                        gqlTypes.field(gqlTypes.name('accountsCount')),
+                    ])
+                    */
+                ),               
+            ]), 
                 gqlTypes.name(queryType.name),
                 apolloArgs
             ),

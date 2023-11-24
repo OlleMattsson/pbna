@@ -45,8 +45,7 @@ export const buildQueryFactory = (
         );
         const parseResponse = getResponseParserImpl(introspectionResults)(
             raFetchType,
-            resource,
-            queryType
+            params
         );
 
         return {
