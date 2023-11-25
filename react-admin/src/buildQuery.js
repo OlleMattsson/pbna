@@ -12,10 +12,12 @@ const client = new ApolloClient({
 });
 
 const customizeBuildQuery = introspectionResults => (raFetchType, resourceName, params) => {
+    console.log("introspectionResults", introspectionResults)
     const builtQuery = buildQuery(introspectionResults)(raFetchType, resourceName, params);
 
     //console.log(params)
-    console.log("builtQieru", builtQuery)
+    console.log("builtQuery", builtQuery)
+
 
 
     // customizations go here
@@ -33,7 +35,7 @@ export default buildGraphQLProvider({
              * keystone has all lowercase resource names
              */
             "GET_ONE": resource => {
-                return `${resource.name.toLowerCase()}`
+                return `${lowercaseFirstLetter(resource.name)}`
             },
 
             /**
@@ -41,8 +43,13 @@ export default buildGraphQLProvider({
             * here, the builder is configured to use "items" 
             */
             "GET_LIST": resource => {
-                return `${resource.name.toLowerCase()}s`
+                return `${lowercaseFirstLetter(resource.name)}s`
             }
         }
     }
 })
+
+const lowercaseFirstLetter = (str) => {
+    if (!str) return str; // Return the original string if it's empty
+    return str.charAt(0).toLowerCase() + str.slice(1);
+}

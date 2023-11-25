@@ -29,7 +29,6 @@ export default (introspectionResults: IntrospectionResult) => (
     const args = buildArgs(queryType, variables);
     const metaArgs = buildArgs(queryType, metaVariables);
     const fields = buildFields(introspectionResults)(resource.type.fields);
-
     if (
         raFetchMethod === GET_LIST ||
         raFetchMethod === GET_MANY ||
@@ -122,6 +121,10 @@ export const buildFields = (
         );
 
         if (linkedResource) {
+
+            const fields = linkedResource.type.fields.map(field => 
+                gqlTypes.field(gqlTypes.name(field.name))
+            )
             return [
                 ...acc,
                 gqlTypes.field(
@@ -129,7 +132,11 @@ export const buildFields = (
                     null,
                     null,
                     null,
-                    gqlTypes.selectionSet([gqlTypes.field(gqlTypes.name('id'))])
+                    gqlTypes.selectionSet([
+                        ...fields
+                        //gqlTypes.field(gqlTypes.name('id')),
+                        //gqlTypes.field(gqlTypes.name('name'))
+                    ])
                 ),
             ];
         }
