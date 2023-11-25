@@ -6,6 +6,7 @@ import buildGraphQLProvider from './buildQuery';
 import {EntryList} from "./entry/EntryList"
 import {AttachmentList} from "./attachment/AttachmentList"
 import account from "./account"
+import accountChart from "./accountChart"
 
 
 export const App = () => {
@@ -28,6 +29,7 @@ export const App = () => {
             <Resource name="Entry" list = {EntryList}/>
             <Resource name="Attachment" list = {AttachmentList}/>
             <Resource name="Account" {...account}/>
+            <Resource name="AccountChart" {...accountChart}/>
         </Admin>
     );
 }
