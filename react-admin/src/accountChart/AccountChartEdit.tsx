@@ -39,14 +39,24 @@ const Accounts = ({source}) => {
     const record = useRecordContext();
     if (!record) return null;
 
+
     const nestedData = record[source];
+    console.log(">>nestedData<<", nestedData)
 
     return (
         <div>
             {nestedData.map((item, index) => (
                 <div key={index}>
+                    <p>
+                    <span>{item.account}</span> - 
+                    <span>{item.name}</span>
+                    </p>
+                    <p>
+                    <span>{item.vatAccount?.name}</span>
+                    </p>
+                    <hr />
                     {/* Render your nested data here */}
-                    <span>{item.id}</span>
+
                 </div>
             ))}
         </div>

@@ -106,6 +106,7 @@ export const buildFields = (
     paths = []
 ) => fields =>
     fields.reduce((acc, field) => {
+
         const type = getFinalType(field.type);
 
         if (type.name.startsWith('_')) {
@@ -120,11 +121,89 @@ export const buildFields = (
             r => r.type.name === type.name
         );
 
-        if (linkedResource) {
+        
 
-            const fields = linkedResource.type.fields.map(field => 
-                gqlTypes.field(gqlTypes.name(field.name))
-            )
+        /*
+        
+            Linked resources - ie.
+            field {
+                field2 {
+                    ...
+                }
+            }
+        */
+
+        if (linkedResource) {
+            console.log("LINKED resource lvl 1", linkedResource.type.name)
+
+            const fields = linkedResource.type.fields.reduce((_acc, _field) => {
+
+
+                const _type = getFinalType(_field.type);
+        
+                if (_type.name.startsWith('_')) {
+                    return _acc;
+                }
+        
+                if (_type.kind !== TypeKind.OBJECT && _type.kind !== TypeKind.INTERFACE) {
+                    return [..._acc, gqlTypes.field(gqlTypes.name(_field.name))];
+                }
+                       
+                const nestedLinkedResource = introspectionResults.resources.find( 
+                    r => r.type.name === _type.name
+                );
+
+
+                /* 
+                Go one level deeper into the nested structure if needed.
+
+                    field {
+                        field2 {
+                            field3 {
+
+                            }
+                        }
+                    }
+                */ 
+                
+                if (nestedLinkedResource) {
+                    const nestedFields =  nestedLinkedResource.type.fields.reduce((__acc, __field) => {
+                        
+                        // hard coded temporary escape hatch for vatAccount since it should never refer to anything
+                        // not needed when the depth is hardcode like this, it would be needed if depth was handle
+                        // by recursive function calls
+                        if (__field.name === "vatAccount") {
+                            return _acc
+                        }
+                        __acc.push(
+                             gqlTypes.field(gqlTypes.name(__field.name))
+                        )
+                        return __acc
+                    }, [])
+                  
+                    return [
+                        ..._acc,
+                        gqlTypes.field(
+                            gqlTypes.name(_field.name),
+                            null,
+                            null,
+                            null,
+                            gqlTypes.selectionSet([
+                                ...nestedFields
+
+                            ])
+                        ),
+                    ];
+                    
+                }
+                               
+                _acc.push(
+                    gqlTypes.field(gqlTypes.name(_field.name))
+                )
+
+                return _acc
+            }, [])
+            
             return [
                 ...acc,
                 gqlTypes.field(
@@ -134,8 +213,6 @@ export const buildFields = (
                     null,
                     gqlTypes.selectionSet([
                         ...fields
-                        //gqlTypes.field(gqlTypes.name('id')),
-                        //gqlTypes.field(gqlTypes.name('name'))
                     ])
                 ),
             ];
