@@ -101,11 +101,68 @@ export default (introspectionResults: IntrospectionResult) => (
     ]);
 };
 
+const buildNestedFields = (_linkedResource, existingFields, currentField, introspectionResults, level = 0) => {
+    console.log("LINKED resource lvl ", level)
+
+
+    if (level === 4) {
+        return [...existingFields]
+    }
+
+    const fields = _linkedResource.type.fields.reduce((__acc, __field) => {
+        console.log(__field.name)
+
+        const type = getFinalType(__field.type);
+
+        if (type.name.startsWith('_')) {
+            return __acc;
+        }
+
+        if (type.kind !== TypeKind.OBJECT && type.kind !== TypeKind.INTERFACE) {
+            return [...__acc, gqlTypes.field(gqlTypes.name(__field.name))];
+        }
+
+        const linkedResource = introspectionResults.resources.find(
+            r => r.type.name === type.name
+        );
+
+        if (linkedResource) {
+            console.log("Detected NESTED FIELDS", linkedResource.type.name, __field.name)
+            level += 1
+            return buildNestedFields(linkedResource, __acc, __field, introspectionResults, level)
+        }
+    
+                        
+        __acc.push(
+             gqlTypes.field(gqlTypes.name(__field.name))
+        )
+        return __acc
+    }, [])
+
+    console.log("existing fields", existingFields)
+    console.log("nested fields", fields)
+    
+   
+    return [
+        ...existingFields,
+        gqlTypes.field(
+            gqlTypes.name(currentField.name),
+            null,
+            null,
+            null,
+            gqlTypes.selectionSet([
+                ...fields
+            ])
+        ),
+    ];
+}
+
 export const buildFields = (
     introspectionResults: IntrospectionResult,
     paths = []
 ) => fields =>
     fields.reduce((acc, field) => {
+        console.log(field.name)
 
         const type = getFinalType(field.type);
 
@@ -113,16 +170,16 @@ export const buildFields = (
             return acc;
         }
 
+        // base case, add field to query
         if (type.kind !== TypeKind.OBJECT && type.kind !== TypeKind.INTERFACE) {
             return [...acc, gqlTypes.field(gqlTypes.name(field.name))];
         }
 
+        // check if the resource is a linked resource
         const linkedResource = introspectionResults.resources.find(
             r => r.type.name === type.name
         );
-
-        
-
+      
         /*
         
             Linked resources - ie.
@@ -134,7 +191,10 @@ export const buildFields = (
         */
 
         if (linkedResource) {
-            console.log("LINKED resource lvl 1", linkedResource.type.name)
+            return buildNestedFields(linkedResource, acc, field, introspectionResults)
+
+            /*
+            
 
             const fields = linkedResource.type.fields.reduce((_acc, _field) => {
 
@@ -165,7 +225,7 @@ export const buildFields = (
                         }
                     }
                 */ 
-                
+                /*
                 if (nestedLinkedResource) {
                     const nestedFields =  nestedLinkedResource.type.fields.reduce((__acc, __field) => {
                         
@@ -204,6 +264,7 @@ export const buildFields = (
                 return _acc
             }, [])
             
+            
             return [
                 ...acc,
                 gqlTypes.field(
@@ -216,6 +277,10 @@ export const buildFields = (
                     ])
                 ),
             ];
+            */
+
+
+            
         }
 
         const linkedType = introspectionResults.types.find(
@@ -247,6 +312,9 @@ export const buildFields = (
         // ending with endless circular dependencies
         return acc;
     }, []);
+
+
+
 
 export const buildFragments = (introspectionResults: IntrospectionResult) => (
     possibleTypes: readonly IntrospectionNamedTypeRef<IntrospectionObjectType>[]
