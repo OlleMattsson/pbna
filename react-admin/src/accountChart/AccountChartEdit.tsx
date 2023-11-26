@@ -41,24 +41,29 @@ const Accounts = ({source}) => {
 
 
     const nestedData = record[source];
-    console.log(">>nestedData<<", nestedData)
 
     return (
         <div>
-            {nestedData.map((item, index) => (
-                <div key={index}>
+            {nestedData.map((item, index) => {
+                return (<div key={index}>
                     <p>
                     <span>{item.account}</span> - 
                     <span>{item.name}</span>
                     </p>
-                    <p>
-                    <span>{item.vatAccount?.name}</span>
-                    </p>
+                    
+                    { item.vatAccount &&
+                        <p>
+                            <span>VAT Account</span><br />
+                            <span>{item.vatAccount.account}</span> - <span>{item.vatAccount.name}</span> 
+                        </p>
+                    }
+                    
                     <hr />
-                    {/* Render your nested data here */}
 
                 </div>
-            ))}
+                )
+            }
+            )}
         </div>
     );
 }

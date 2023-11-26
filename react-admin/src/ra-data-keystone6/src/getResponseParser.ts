@@ -8,9 +8,6 @@ export default (_introspectionResults: IntrospectionResult) => (
     params
 ) => (response: ApolloQueryResult<any>) => {
     const data = response.data;
- 
-    console.log("data", data)
-    console.log("params", params)
 
     if (
         raFetchMethod === GET_LIST ||
