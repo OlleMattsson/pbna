@@ -34,7 +34,12 @@ export default buildGraphQLProvider({
             */
             "GET_LIST": resource => {
                 return `${lowercaseFirstLetter(resource.name)}s`
-            }
+            },
+            
+            "GET_MANY": resource => {
+                return `${lowercaseFirstLetter(resource.name)}s`
+            } 
+                 
         }
     }
 })
