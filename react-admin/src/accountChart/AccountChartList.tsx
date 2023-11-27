@@ -19,10 +19,6 @@ import { Box, Drawer, useMediaQuery, Theme } from '@mui/material';
 import AccountChartEdit from './AccountChartEdit';
 
 
-const listFilters = [
-    <TextInput label="Name" source="name"/>,
-];
-
 export const AccountChartList = () => {
     const location = useLocation();
     const navigate = useNavigate();
@@ -33,12 +29,12 @@ export const AccountChartList = () => {
     }, [navigate]);
 
     return (
+        <>
+  
         <Box display="flex">
-
             <List
-                filters={listFilters}
                 perPage={25}
-                sort={{ field: 'name', order: 'DESC' }}
+                sort={{ field: 'name', order: 'ASC' }}
             >
                 <Datagrid
                     rowClick="edit"
@@ -57,13 +53,16 @@ export const AccountChartList = () => {
                         },
                     }}
                 >
-                    <TextField source="name" />
-                    <TextField source="description" />
+                    <TextField source="name"/>
+                    <TextField source="description" sortable={false} />
 
 
                 </Datagrid>
             </List>
-            <Drawer
+
+        </Box>
+        
+        <Drawer
                 variant="persistent"
                 open={!!match}
                 anchor="right"
@@ -78,7 +77,7 @@ export const AccountChartList = () => {
                     />
                 )}
             </Drawer>
-        </Box>
+                </>
     )
 
 };

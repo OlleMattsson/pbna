@@ -18,7 +18,9 @@ import {
     List,
     useRecordContext,
     ReferenceArrayInput,
-    AutocompleteArrayInput
+    AutocompleteArrayInput,
+    AutocompleteInput,
+    NumberField
 } from 'react-admin';
 import { Box, Grid, Stack, IconButton, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
@@ -41,43 +43,29 @@ const Accounts = ({source}) => {
     const record = useRecordContext();
     if (!record) return null;
 
+    const data = record[source];
 
-    const nestedData = record[source];
+    return  (
+        <List     
+            perPage={25}
+            sort={{ field: 'account', order: 'ASC' }}
+        >
+            <Datagrid data={data} >
+                <TextField source="account" sortable={false} />
+                <TextField source="name" sortable={false} />
+            </Datagrid>
+        </List>
+    )
 
-    return (
-        <div>
-            {nestedData.map((item, index) => {
-                return (<div key={index}>
-                    <p>
-                    <span>{item.account}</span> - 
-                    <span>{item.name}</span>
-                    </p>
-                    
-                    { item.vatAccount &&
-                        <p>
-                            <span>VAT Account</span><br />
-                            <span>{item.vatAccount.account}</span> - <span>{item.vatAccount.name}</span> 
-                        </p>
-                    }
-                    
-                    <hr />
 
-                </div>
-                )
-            }
-            )}
-        </div>
-    );
 }
-
 const AccountEdit = ({ id, onCancel }: Props) => {
     const translate = useTranslate();
-
-
 
     return (
         <EditBase id={id}>
             <Box pt={5} width={{ xs: '500vW', sm: 500 }} mt={{ xs: 2, sm: 1 }}>
+
                 <Stack direction="row" p={2}>
                     <Typography variant="h6" flex="1">
                         {translate('resources.reviews.detail')}
@@ -86,6 +74,7 @@ const AccountEdit = ({ id, onCancel }: Props) => {
                         <CloseIcon />
                     </IconButton>
                 </Stack>
+
                 <SimpleForm
                     sx={{ pt: 0, pb: 0, width: '100%' }}
                     toolbar={<AccountChartEditToolbar />}
@@ -105,10 +94,11 @@ const AccountEdit = ({ id, onCancel }: Props) => {
                             fullWidth
                             optionText="name"
                             label="Accounts"
+                            
                         />
                     </ReferenceArrayInput>
-               
 
+                    <Accounts source="accounts" />
 
                 </SimpleForm>
             </Box>
