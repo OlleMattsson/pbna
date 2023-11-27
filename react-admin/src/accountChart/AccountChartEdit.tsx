@@ -16,7 +16,9 @@ import {
     Resource,
     useDataProvider,
     List,
-    useRecordContext
+    useRecordContext,
+    ReferenceArrayInput,
+    AutocompleteArrayInput
 } from 'react-admin';
 import { Box, Grid, Stack, IconButton, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
@@ -75,7 +77,7 @@ const AccountEdit = ({ id, onCancel }: Props) => {
 
     return (
         <EditBase id={id}>
-            <Box pt={5} width={{ xs: '100vW', sm: 400 }} mt={{ xs: 2, sm: 1 }}>
+            <Box pt={5} width={{ xs: '500vW', sm: 500 }} mt={{ xs: 2, sm: 1 }}>
                 <Stack direction="row" p={2}>
                     <Typography variant="h6" flex="1">
                         {translate('resources.reviews.detail')}
@@ -85,7 +87,7 @@ const AccountEdit = ({ id, onCancel }: Props) => {
                     </IconButton>
                 </Stack>
                 <SimpleForm
-                    sx={{ pt: 0, pb: 0 }}
+                    sx={{ pt: 0, pb: 0, width: '100%' }}
                     toolbar={<AccountChartEditToolbar />}
                 >
 
@@ -97,9 +99,15 @@ const AccountEdit = ({ id, onCancel }: Props) => {
                         source="description"
                         fullWidth
                     />
+
+                    <ReferenceArrayInput source="accounts" reference="Account" options={{ fullWidth:true }}>    
+                        <AutocompleteArrayInput
+                            fullWidth
+                            optionText="name"
+                            label="Accounts"
+                        />
+                    </ReferenceArrayInput>
                
-                    <Accounts source="accounts"/>
- 
 
 
                 </SimpleForm>

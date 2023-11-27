@@ -58,6 +58,7 @@ export const AccountList = () => {
                 >
                     <TextField source="account" />
                     <TextField source="name" />
+                    <TextField source="id" />
                     <TextField source="description" />
                     <TextField source="type" />
                     <TextField source="vatAmount" />

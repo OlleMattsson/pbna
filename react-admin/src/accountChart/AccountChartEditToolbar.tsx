@@ -36,7 +36,7 @@ const AccountChartEditToolbar = (props: ToolbarProps) => {
                                 messageArgs: { smart_count: 1 },
                                 undoable: true,
                             });
-                            redirect('list', 'account');
+                            redirect('list', 'accountChart');
                         },
                     }}
                     type="button"
