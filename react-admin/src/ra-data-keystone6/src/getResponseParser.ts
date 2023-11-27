@@ -9,12 +9,19 @@ export default (_introspectionResults: IntrospectionResult) => (
 ) => (response: ApolloQueryResult<any>) => {
     const data = response.data;
 
+    if (raFetchMethod === GET_MANY) {
+        const a = {
+            data: data.items.map(sanitizeResource),
+            total: data.totalCount
+        };
+        console.log(a)
+        return a
+    }
+
     if (
-        raFetchMethod === GET_LIST ||
-        raFetchMethod === GET_MANY ||
+        raFetchMethod === GET_LIST ||  
         raFetchMethod === GET_MANY_REFERENCE
     ) {
-
         if (Object.keys(params.filter).length) {
             return {
                 data: data.items.map(sanitizeResource),
@@ -26,7 +33,6 @@ export default (_introspectionResults: IntrospectionResult) => (
                 total: data.totalCount
             };
         }
-  
     }
 
     return { data: sanitizeResource(data.data) };
