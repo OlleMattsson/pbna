@@ -1,4 +1,4 @@
-import { ApolloClient, InMemoryCache, HttpLink } from '@apollo/client';
+import { ApolloClient, InMemoryCache, HttpLink, gql } from '@apollo/client';
 
 // use a modified adapter based on ra-data-graphql-simple
 import buildGraphQLProvider, { buildQuery } from './ra-data-keystone6/src';
@@ -13,6 +13,53 @@ const client = new ApolloClient({
 
 const customizeBuildQuery = introspectionResults => (raFetchType, resourceName, params) => {
     const builtQuery = buildQuery(introspectionResults)(raFetchType, resourceName, params);
+
+    /*
+        Custom override: Get enteis list
+    */
+    if (raFetchType === "GET_LIST" && resourceName === "Entry") {
+        console.log(params)
+        return {
+            ...builtQuery,
+            query: gql`
+                query entrys($orderBy: [EntryOrderByInput!]!, $take: Int, $skip: Int!) {
+                    items: entrys(orderBy: $orderBy, take: $take, skip: $skip) {
+                    id
+                    createdAt
+                    createdBy {
+                        name
+                    }
+                    date
+                    entryNumber
+                    description
+                    lineItems {
+                        id
+                        createdAt
+                        date
+                        type
+                        amount
+                        account {
+                            account
+                            name
+                        }
+                        description
+                        __typename
+                    }
+                    lineItemsCount
+                    __typename
+                    }
+                    entrysCount
+                }`,
+            variables: {       
+                orderBy: [{
+                    "entryNumber": "asc"
+                }],
+                take: params.pagination.perPage,
+                skip: (params.pagination.page -1) * params.pagination.perPage
+            }
+        }
+    }
+
     return builtQuery
 }
 
