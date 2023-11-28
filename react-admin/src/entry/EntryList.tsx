@@ -8,6 +8,7 @@ import {
     NumberField,
     DateInput,
 } from 'react-admin';
+import {EntryShow} from "./EntryShow"
 
 const listFilters = [
     <DateInput source="date_gte" alwaysOn />,
@@ -22,6 +23,7 @@ export const EntryList = () => (
     >
         <Datagrid
             rowClick="expand"
+            expand={<EntryShow />}
             sx={{
                 '& .column-customer_id': {
                     display: { xs: 'none', md: 'table-cell' },
@@ -37,8 +39,8 @@ export const EntryList = () => (
                 },
             }}
         >
-            <TextField source="id" />
             <DateField source="date" />
+            <TextField source="entryNumber" />
             <NumberField source="description" />
         </Datagrid>
     </List>
