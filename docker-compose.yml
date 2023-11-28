@@ -32,9 +32,9 @@ services:
       context: ./keystone
       dockerfile: keystone.Dockerfile
     #command: "npm run start"
-    #command: tail -f /dev/null
+    command: tail -f /dev/null
     #command: "npm run dev"
-    command: npx keystone dev
+    #command: npx keystone dev
     ports:
       - "3000:3000"
     expose:
@@ -53,23 +53,6 @@ services:
         target: /code/hooks        
     links:
       - redis
-
-
-  frontend:
-    container_name: frontend
-    build: 
-      context: ./frontend
-      dockerfile: frontend.Dockerfile
-    command: "npm run start"
-    ports:
-      - "8080:8080"
-    environment:
-      PORT: 8080   
-      GRAPHQL_API_URL: "http://backend:3000/api/graphql"
-    volumes:
-      - type: bind
-        source: ./frontend/src
-        target: /code/src
 
 
   llama:

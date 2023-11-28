@@ -9,7 +9,9 @@ import {
     NumberField,
     DateInput,
     SearchInput,
-    TextInput
+    TextInput,
+    useRecordContext,
+    ChipField
 } from 'react-admin';
 import { matchPath, useLocation, useNavigate } from 'react-router-dom';
 
@@ -21,6 +23,37 @@ import AccountEdit from './AccountEdit';
 const listFilters = [
     <TextInput label="Name" source="name"/>,
 ];
+
+const AccountType = ({source}) => {
+    const record = useRecordContext();
+    if (!record) return null;
+
+    const data = record[source];
+
+    const map = {
+        0: "Asset",
+        1: "Liability",
+        2: "VAT",
+        3: "IncomeStatement",
+        4: "Noop"
+    }
+    
+    record.customVatAccountFieldName = map[data]
+
+    return <ChipField source="customVatAccountFieldName" color='primary' />
+}
+
+const VATAccount = ({source}) => {
+    const record = useRecordContext();
+    if (!record) return null;
+    const data = record[source];
+    
+    if (data) return (
+        <span>{data.account} - {data.name}</span>
+    )
+    
+    return null
+}
 
 export const AccountList = () => {
     const location = useLocation();
@@ -38,6 +71,14 @@ export const AccountList = () => {
                 filters={listFilters}
                 perPage={25}
                 sort={{ field: 'account', order: 'DESC' }}
+                sx={{
+                    flexGrow: 1,
+                    transition: (theme: any) =>
+                        theme.transitions.create(['all'], {
+                            duration: theme.transitions.duration.enteringScreen,
+                        }),
+                    marginRight: !!match ? '400px' : 0,
+                }}
             >
                 <Datagrid
                     rowClick="edit"
@@ -58,11 +99,10 @@ export const AccountList = () => {
                 >
                     <TextField source="account" />
                     <TextField source="name" />
-                    <TextField source="id" />
                     <TextField source="description" />
-                    <TextField source="type" />
+                    <AccountType source="type" />
                     <TextField source="vatAmount" />
-                    <TextField source="vatAccount" />
+                    <VATAccount source="vatAccount" />
                 </Datagrid>
             </List>
             <Drawer

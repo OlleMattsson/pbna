@@ -22,19 +22,26 @@ import AccountChartEdit from './AccountChartEdit';
 export const AccountChartList = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    //console.log(location.pathname)
     const match = matchPath('/accountChart/:id', location.pathname);
+    console.log(location.pathname, match)
+
     const handleClose = useCallback(() => {
         navigate('/accountChart');
     }, [navigate]);
 
     return (
-        <>
-  
         <Box display="flex">
             <List
                 perPage={25}
                 sort={{ field: 'name', order: 'ASC' }}
+                sx={{
+                    flexGrow: 1,
+                    transition: (theme: any) =>
+                        theme.transitions.create(['all'], {
+                            duration: theme.transitions.duration.enteringScreen,
+                        }),
+                    marginRight: !!match ? '400px' : 0,
+                }}
             >
                 <Datagrid
                     rowClick="edit"
@@ -53,16 +60,14 @@ export const AccountChartList = () => {
                         },
                     }}
                 >
-                    <TextField source="name"/>
+                    <TextField source="name" sortable={false} />
                     <TextField source="description" sortable={false} />
 
 
                 </Datagrid>
             </List>
 
-        </Box>
-        
-        <Drawer
+            <Drawer
                 variant="persistent"
                 open={!!match}
                 anchor="right"
@@ -77,7 +82,7 @@ export const AccountChartList = () => {
                     />
                 )}
             </Drawer>
-                </>
+        </Box>
     )
 
 };

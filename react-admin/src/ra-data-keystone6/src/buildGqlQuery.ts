@@ -97,7 +97,7 @@ export default (introspectionResults: IntrospectionResult) => (
 
 // a list of fields that will always be skipped by the introspection
 // TODO make this configurable
-const denylist = ["password", "file", "ocrData"]
+const denylist = ["password", "file"]
 
 const buildNestedFields = ({
     resource, 

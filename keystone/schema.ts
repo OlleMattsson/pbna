@@ -297,6 +297,15 @@ export const lists: Lists = {
   Attachment :list({
     access: allowAll,
     fields: {
+      createdAt: timestamp({
+        defaultValue: { kind: 'now' },
+        validation: {isRequired: true},
+        ui: { 
+          createView: {
+            fieldMode: "hidden" 
+          } 
+        }
+      }),      
       name: text(),
       description: text(),
       file: file({storage: "journal_item_files"}),

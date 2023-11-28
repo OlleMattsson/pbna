@@ -1,12 +1,15 @@
 // in App.js
 import React from 'react';
-import { Admin, Resource } from 'react-admin';
+import { Route } from "react-router-dom";
+import { Admin, Resource, CustomRoutes } from 'react-admin';
 import authProvider from './authProvider'
 import buildGraphQLProvider from './buildQuery';
 import {EntryList} from "./entry/EntryList"
-import {AttachmentList} from "./attachment/AttachmentList"
 import account from "./account"
+import attachment from "./attachment"
 import accountChart from "./accountChart"
+import CustomPage from './CustomPage';
+
 
 
 export const App = () => {
@@ -25,11 +28,17 @@ export const App = () => {
         <Admin 
             authProvider={authProvider} 
             dataProvider={dataProvider} 
+
         >
             <Resource name="Entry" list = {EntryList}/>
-            <Resource name="Attachment" list = {AttachmentList}/>
+            <Resource name="Attachment" {...attachment}/>
             <Resource name="Account" {...account}/>
             <Resource name="AccountChart" {...accountChart}/>
+           
+            <CustomRoutes>
+                <Route path="/custom" element={<CustomPage />} />
+            </CustomRoutes>
+
         </Admin>
     );
 }
