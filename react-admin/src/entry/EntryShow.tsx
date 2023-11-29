@@ -110,10 +110,6 @@ export const EntryShow = () => {
                     source="description" 
                     fullWidth 
                     onBlur={e => {
-
-                        // only works for two line items atm - line item
-                        // data variables has to be created dyynamically
-
                         client.mutate({
                             mutation: UPDATE_ENTRY_DESCRIPTION,
                             variables: {
@@ -123,24 +119,15 @@ export const EntryShow = () => {
                                 data: {
                                       description: e.target.value
                                 },
-                                updateLineItemsData: [
-                                  {
+                                updateLineItemsData: record.lineItems.map(item => ({
                                     where: {
-                                      id: record.lineItems[0].id
+                                        id: item.id
                                     },
                                     data: {
-                                      description: e.target.value
+                                        description: e.target.value
                                     }
-                                  },
-                                { 
-                                    where: {
-                                      id: record.lineItems[1].id
-                                    },
-                                    data: {
-                                      description: e.target.value
                                     }
-                                  }    
-                                ]
+                                ))
                               }
                         }).then( r => {
                             console.log(r)
