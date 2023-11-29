@@ -337,7 +337,7 @@ export const LineItems = ({lineItems, entryId}) => {
                           padding: 0,
                           margin: 0,
                         }}
-                        value={lineItem.debit}
+                        value={lineItem.debit || ""}
                         onChange={(event) =>
                           handleUpdate(
                             event.target.value,
@@ -357,7 +357,7 @@ export const LineItems = ({lineItems, entryId}) => {
                           padding: 0,
                           margin: 0,
                         }}
-                        value={lineItem.credit}
+                        value={lineItem.credit || ""}
                         onChange={(event) =>
                           handleUpdate(event.target.value, lineItem.id, "credit")
                         }
@@ -369,12 +369,11 @@ export const LineItems = ({lineItems, entryId}) => {
                 )
             } 
             )}
-            <Row key={9999}>
+            <Row key={Math.floor(Math.random() * (1000 - 9999 + 1)) + 9999}>
                 <Cell></Cell>
                 <Cell>
                 <select
                     value={selectedOption}
-                    type="text"
                     style={{
                       width: "100%",
                       border: "none",
@@ -397,6 +396,7 @@ export const LineItems = ({lineItems, entryId}) => {
                 </Cell>
                 <Cell>
                   <input
+                    value={""}
                     type="text"
                     style={{
                       width: "100%",
@@ -405,13 +405,15 @@ export const LineItems = ({lineItems, entryId}) => {
                       padding: 0,
                       margin: 0,
                     }}
-                    onBlur={(event) =>
-                        console.log(event)
+                    onChange={(event) =>
+                        console.log("NOT YET IMPLEMENTED")
                     }
+                    disabled
                   />
                 </Cell>
                 <Cell>
                   <input
+                    value={""}
                     type="text"
                     style={{
                       width: "100%",
@@ -420,8 +422,10 @@ export const LineItems = ({lineItems, entryId}) => {
                       padding: 0,
                       margin: 0,
                     }}
-                    onBlur={(event) =>
-                        console.log(event)                    }
+                    onChange={(event) =>
+                        console.log("NOT YET IMPLEMENTED")
+                    }
+                    disabled
                   >
                   </input>
                 </Cell>                                
