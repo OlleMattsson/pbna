@@ -25,12 +25,36 @@ const GET_ACCOUNTS = gql`
     query AccountChart($where: AccountChartWhereUniqueInput!) {
         accountChart(where: $where) {
             accounts {
+                id
                 account
                 name
             }
         }
     }       
-    `
+`;
+
+const UPDATE_LINEITEM_ACCOUNT = gql`
+    mutation Mutation($where: LineItemWhereUniqueInput!, $data: LineItemUpdateInput!) {
+        updateLineItem(where: $where, data: $data) {
+            id
+            account {
+                id
+            }
+        }
+    }
+`
+
+const UPDATE_LINEITEM_DEBCRED = gql`
+    mutation Mutation($where: LineItemWhereUniqueInput!, $data: LineItemUpdateInput!) {
+        updateLineItem(where: $where, data: $data) {
+            id
+            debit
+            credit
+        }
+    }
+`
+
+
 
 let accounts = null
 
@@ -45,24 +69,65 @@ client.query({
     accounts = r.data.accountChart.accounts;
 })
 
-export const LineItems = ({items}) => {
+export const LineItems = ({lineItems}) => {
 
-  const [data, setData] = React.useState({ nodes: items });
+  const [data, setData] = React.useState({ nodes: lineItems });
 
-  const handleUpdate = (value, id, property) => {
+  const handleUpdate = (newValue, lineItemId, property) => {
     
     setData((state) => ({
       ...state,
       nodes: state.nodes.map((node) => {
 
         
-        if (node.id === id) {
+        if (node.id === lineItemId) {
 
+            // UPDATE DB 
+
+            // ACCOUNT
             if (property === "account") {
+                client.mutate({
+                    mutation: UPDATE_LINEITEM_ACCOUNT,
+                    variables: {
+                        "where": {
+                          "id": lineItemId
+                        },
+                        "data": {
+                          "account": {
+                            "connect": {
+                              "id": newValue
+                            }
+                          }
+                        }
+                      }
+                }).then(r => {
+                    console.log("UPDATE_LINEITEM_ACCOUNT success", r)
+                }).catch(e => [
+                    console.log(e)
+                ])
+
                 const accountProps = node.account.account
-                return {...node, account: { account: value, ...accountProps}}
+                return {...node, account: { account: newValue, ...accountProps}}
             } else {
-                return { ...node, [property]: value };
+
+            // DEBIT & CREDIT
+            client.mutate({
+                mutation: UPDATE_LINEITEM_DEBCRED,
+                variables: {
+                    "where": {
+                      "id": lineItemId
+                    },
+                    "data": {
+                        [property]: newValue.replace(',', '.')              
+                    }
+                  }
+            }).then(r => {
+                console.log("UPDATE_LINEITEM_ACCOUNT success", r)
+            }).catch(e => [
+                console.log(e)
+            ])
+
+                return { ...node, [property]: newValue };
             }
 
         } else {
@@ -72,8 +137,11 @@ export const LineItems = ({items}) => {
       }),
       
     }));
-    
   };
+
+  const handleCreate = (value, property) => {
+    return
+  }
 
   return (
     <Table data={data}>
@@ -88,10 +156,75 @@ export const LineItems = ({items}) => {
           </Header>
 
           <Body>
-            {tableList.map((item) => (
-              <Row key={item.id} item={item}>
+            {tableList.sort((a,b)=> a.order - b.order).map((lineItem) => {
+                return (
+                  <Row key={lineItem.id}>
+                    <Cell>
+                      <select
+                        type="text"
+                        style={{
+                          width: "100%",
+                          border: "none",
+                          fontSize: "1rem",
+                          padding: 0,
+                          margin: 0,
+                        }}
+                        value={lineItem.account.id}
+                        onChange={(event) =>
+                          handleUpdate(event.target.value, lineItem.id, "account")
+                        }
+                      >
+                        {accounts.map((a, i) => {
+                            return (<option key={i} value={a.id}>{a.account}  {a.name}</option>)
+                        })}
+    
+                        </select>
+                    </Cell>
+                    <Cell>
+                      <input
+                        type="text"
+                        style={{
+                          width: "100%",
+                          border: "none",
+                          fontSize: "1rem",
+                          padding: 0,
+                          margin: 0,
+                        }}
+                        value={lineItem.debit}
+                        onChange={(event) =>
+                          handleUpdate(
+                            event.target.value,
+                            lineItem.id,
+                            "debit"
+                          )
+                        }
+                      />
+                    </Cell>
+                    <Cell>
+                      <input
+                        type="text"
+                        style={{
+                          width: "100%",
+                          border: "none",
+                          fontSize: "1rem",
+                          padding: 0,
+                          margin: 0,
+                        }}
+                        value={lineItem.credit}
+                        onChange={(event) =>
+                          handleUpdate(event.target.value, lineItem.id, "credit")
+                        }
+                      >
+                      </input>
+                    </Cell>
+    
+                  </Row>
+                )
+            } 
+            )}
+            <Row key={9999}>
                 <Cell>
-                  <select
+                <select
                     type="text"
                     style={{
                       width: "100%",
@@ -100,11 +233,12 @@ export const LineItems = ({items}) => {
                       padding: 0,
                       margin: 0,
                     }}
-                    value={item.account.account}
-                    onChange={(event) =>
-                      handleUpdate(event.target.value, item.id, "account")
-                    }
+                    onChange={(event) => {
+                        console.log(event)
+                        handleCreate(event.target.value, "account")
+                    }}
                   >
+                    <option></option>
                     {accounts.map((a, i) => {
                         return (<option key={i} value={a.account}>{a.account}  {a.name}</option>)
                     })}
@@ -121,13 +255,8 @@ export const LineItems = ({items}) => {
                       padding: 0,
                       margin: 0,
                     }}
-                    value={item.debit}
-                    onChange={(event) =>
-                      handleUpdate(
-                        event.target.value,
-                        item.id,
-                        "debit"
-                      )
+                    onBlur={(event) =>
+                        console.log(event)
                     }
                   />
                 </Cell>
@@ -141,16 +270,12 @@ export const LineItems = ({items}) => {
                       padding: 0,
                       margin: 0,
                     }}
-                    value={item.credit}
-                    onChange={(event) =>
-                      handleUpdate(event.target.value, item.id, "credit")
-                    }
+                    onBlur={(event) =>
+                        console.log(event)                    }
                   >
                   </input>
-                </Cell>
-
-              </Row>
-            ))}
+                </Cell>                                
+            </Row>
           </Body>
         </>
       )}

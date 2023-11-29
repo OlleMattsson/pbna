@@ -191,7 +191,7 @@ export const EntryShow = () => {
                 />
 
                 </SimpleForm>
-                <LineItems items={record.lineItems}/>
+                <LineItems lineItems={record.lineItems}/>
             </CardContent >
         </Card>
     );

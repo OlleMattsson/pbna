@@ -38,9 +38,10 @@ const customizeBuildQuery = introspectionResults => (raFetchType, resourceName, 
                         debit
                         credit
                         account {
-                            account
+                            id
                         }
                         description
+                        order
                         __typename
                     }
                     lineItemsCount

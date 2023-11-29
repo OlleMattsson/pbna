@@ -268,22 +268,21 @@ export const lists: Lists = {
       account: relationship({
         ref: 'Account',
         ui: {
-          labelField: "description",
+          labelField: "name",
         }
       }),
 
       debit: decimal({
         scale: 2,
-        validation: { isRequired: true},
       }),
 
       credit: decimal({
         scale: 2,
-        validation: { isRequired: true},
       }),
       
-      
       description: text(),
+
+      order: integer(),
     },
     
   }),
