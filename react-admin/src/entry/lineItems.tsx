@@ -54,6 +54,17 @@ const UPDATE_LINEITEM_DEBCRED = gql`
     }
 `
 
+const UPDATE_ENTRY_CREATE_LINEITEM = gql`
+mutation Mutation($where: EntryWhereUniqueInput!, $data: EntryUpdateInput!) {
+    updateEntry(where: $where, data: $data) {
+      id
+      lineItems {
+        id
+        order
+      }
+    }
+  }
+`
 
 
 let accounts = null
@@ -69,9 +80,11 @@ client.query({
     accounts = r.data.accountChart.accounts;
 })
 
-export const LineItems = ({lineItems}) => {
+export const LineItems = ({lineItems, entryId}) => {
 
   const [data, setData] = React.useState({ nodes: lineItems });
+  const [selectedOption, setSelectedOption] = useState('blank');
+
 
   const handleUpdate = (newValue, lineItemId, property) => {
     
@@ -139,8 +152,99 @@ export const LineItems = ({lineItems}) => {
     }));
   };
 
-  const handleCreate = (value, property) => {
-    return
+  const handleCreate = (value, property, entryId, lineItemsCount) => {
+
+    const createVars = (property, value, lineItemsCount) => {
+
+        let vars
+
+        if (property === "account") {
+            vars = [{
+                account : {
+                    connect: {
+                        id: value
+                    }
+                }
+            }]
+        } else {          
+            vars =  [{
+                [property]: value.replace(',', '.')              
+            }]
+        }
+
+        vars[0].order = lineItemsCount + 1
+
+        return vars
+    } 
+
+
+
+    // update db
+    client.mutate({
+        mutation: UPDATE_ENTRY_CREATE_LINEITEM,
+        variables: {
+            where: {
+                id: entryId
+            },
+            data:{
+                lineItems: {
+                  create: createVars(property, value, lineItemsCount)
+                }
+              }
+
+        }
+    }).then(r => {
+        console.log("UPDATE_LINEITEM_ACCOUNT success", r)
+
+        // graphql includes all lineItems in the response
+        // here we use lineItem.order to find the latest id
+        const newLineItemId = r.data.updateEntry.lineItems
+            .sort((a, b) => (a.order || 0) - (b.order || 0))
+            .pop()
+            .id
+
+        console.log(newLineItemId)
+
+        // now we're ready to update the UI state, i think - same as handleUpdate but without the DB calls
+
+
+        const updatedNodes = () => {
+    
+            if (property === "account") {
+                return [...data.nodes, {
+                    id: newLineItemId,
+                    account: {
+                        id: value
+                    }
+                }]
+            }
+
+            return [...data.nodes, {
+                [property]:value,
+                id: newLineItemId
+             }]
+        }
+
+        const nodes = updatedNodes()
+
+        setData((state) => {
+            return {
+                ...state,
+                nodes
+            }
+        });
+         
+
+
+
+        //////
+
+    }).catch(e => [
+        console.log(e)
+    ])
+
+    
+
   }
 
   return (
@@ -149,6 +253,7 @@ export const LineItems = ({lineItems}) => {
         <>
           <Header>
             <HeaderRow>
+              <HeaderCell>Delete</HeaderCell>
               <HeaderCell>Account</HeaderCell>
               <HeaderCell>Debit</HeaderCell>
               <HeaderCell>Credit</HeaderCell>
@@ -159,6 +264,48 @@ export const LineItems = ({lineItems}) => {
             {tableList.sort((a,b)=> a.order - b.order).map((lineItem) => {
                 return (
                   <Row key={lineItem.id}>
+                    <Cell>
+                        <button onClick={() => {
+                            
+                            /**
+                              DELETE LINE ITEM
+                             */
+                            client.mutate({
+                                mutation: gql `
+                                    mutation Mutation($where: [LineItemWhereUniqueInput!]!) {
+                                        deleteLineItems(where: $where) {
+                                        id
+                                        }
+                                    }
+                                `,
+                                variables: {
+                                    "where": [
+                                        {
+
+                                            "id": lineItem.id
+                                        }
+                                    ]
+                                }
+                            }).then(r => {
+                                const deletedItemId = r.data.deleteLineItems[0].id
+                                console.log("DELETE_LINEITEM success", deletedItemId)
+
+                                const updatedNodes = data.nodes.filter(item => item.id !== deletedItemId);
+                                setData((state) => {
+                                    return {
+                                        ...state,
+                                        nodes: updatedNodes
+                                    }
+                                });
+
+                            }).catch(e => [
+                                console.log(e)
+                            ])
+
+
+
+                        }}>X</button>
+                        </Cell>
                     <Cell>
                       <select
                         type="text"
@@ -223,8 +370,10 @@ export const LineItems = ({lineItems}) => {
             } 
             )}
             <Row key={9999}>
+                <Cell></Cell>
                 <Cell>
                 <select
+                    value={selectedOption}
                     type="text"
                     style={{
                       width: "100%",
@@ -235,12 +384,13 @@ export const LineItems = ({lineItems}) => {
                     }}
                     onChange={(event) => {
                         console.log(event)
-                        handleCreate(event.target.value, "account")
+                        handleCreate(event.target.value, "account", entryId, lineItems.length)
+                        setSelectedOption('blank')
                     }}
                   >
-                    <option></option>
+                    <option value="blank"></option>
                     {accounts.map((a, i) => {
-                        return (<option key={i} value={a.account}>{a.account}  {a.name}</option>)
+                        return (<option key={i} value={a.id}>{a.account}  {a.name}</option>)
                     })}
 
                     </select>

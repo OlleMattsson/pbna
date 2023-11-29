@@ -97,6 +97,7 @@ export const AccountList = () => {
                         },
                     }}
                 >
+                    <TextField source="id" />
                     <TextField source="account" />
                     <TextField source="name" />
                     <TextField source="description" />
