@@ -11,7 +11,8 @@ import {
     SimpleForm,
     TextInput,
     TextField,
-    useInput
+    useInput,
+    Labeled
 } from 'react-admin';
 import LineItemEditToolbar from './LineItemEditToolbar';
 import Paper from '@mui/material/Paper';
@@ -49,13 +50,29 @@ mutation Mutation($where: EntryWhereUniqueInput!, $data: EntryUpdateInput!, $upd
     }
   } 
 `
+const UPDATE_ENTRY_DATE = gql`
+mutation Mutation($where: EntryWhereUniqueInput!, $data: EntryUpdateInput!, $updateLineItemsData: [LineItemUpdateArgs!]!) {
+    updateEntry(where: $where, data: $data) {
+      date
+      id
+    }
+    updateLineItems(data: $updateLineItemsData) {
+      date
+      id
+    }
+  }
+`
+
+
 
 
 const EntryNumberInput = ({ source, label, onBlur }) => {
     const { id, field, fieldState } = useInput({ source, onBlur });
     delete field.ref
     return (
-        <TextInput {...field}/>
+        <Labeled>
+            <TextInput label={label}  {...field}/>
+        </Labeled>
     )
 };
 
@@ -68,6 +85,19 @@ const DescriptionInput = ({ source, label, onBlur }) => {
     )
 };
 
+const CustomDateInput = ({ source, label, onBlur }) => {
+    const { id, field, fieldState } = useInput({ source, onBlur });
+    delete field.ref
+    return (
+        <DateInput {...field}/>
+    )
+};
+
+const FormToolbar = () => {
+    return (null)
+}
+
+
 export const EntryShow = () => {
     const record = useRecordContext();
     if (!record) return null;
@@ -75,10 +105,9 @@ export const EntryShow = () => {
     return (
         <Card sx={{ width: 800}}>
             <CardContent>
-                <SimpleForm onSubmit={(data) => {
-                    console.log(data)
-                }}>
-                                <TextField source="id" />
+                <SimpleForm 
+                    toolbar={null}>
+                    <TextInput source="id" />
 
                     <Grid container columns={2} spacing={2}>
                         <Grid item xs={1}  >
@@ -103,9 +132,35 @@ export const EntryShow = () => {
                             />
                         </Grid>
                         <Grid item xs={1} style={{textAlign: 'right'}}>
-                            <DateInput source="date" />
+                            <CustomDateInput 
+                                source="date" 
+                                onBlur={e => {
+                                    client.mutate({
+                                        mutation: UPDATE_ENTRY_DATE,
+                                        variables: {
+                                            where: {
+                                                id: record.id
+                                            },
+                                            data: {
+                                                date: e.target.value
+                                            },
+                                            updateLineItemsData: record.lineItems.map(item => ({
+                                                where: {
+                                                    id: item.id
+                                                },
+                                                data: {
+                                                    date: e.target.value
+                                                }
+                                            }))                                            
+                                        }
+                                    }).then( r => {
+                                        console.log(r)
+                                    })  
+                                }}
+                            />
                         </Grid>
                     </Grid>
+
                 <DescriptionInput 
                     source="description" 
                     fullWidth 
@@ -134,6 +189,7 @@ export const EntryShow = () => {
                         })      
                     }}
                 />
+
                 </SimpleForm>
                 <LineItems items={record.lineItems}/>
             </CardContent >
