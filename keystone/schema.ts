@@ -199,11 +199,11 @@ export const lists: Lists = {
         many: true,
         ui: {
           displayMode: 'cards',
-          cardFields: ["createdAt", "createdBy", "owner", "account", "type", "amount", "description"],
+          cardFields: ["createdAt", "createdBy", "owner", "account", "debit", "credit", "description"],
           linkToItem: true,
           removeMode: 'disconnect',
-          inlineCreate: { fields: ["createdAt", "createdBy", "owner", "account", "type", "amount", "description"] },
-          inlineEdit: { fields: ["createdAt", "createdBy", "owner", "account", "type", "amount", "description"] },
+          inlineCreate: { fields: ["createdAt", "createdBy", "owner", "account", "debit", "credit", "description"] },
+          inlineEdit: { fields: ["createdAt", "createdBy", "owner", "account", "debit", "credit", "description"] },
           inlineConnect: true,        
         }
       }),
@@ -231,7 +231,7 @@ export const lists: Lists = {
     ui: {
       isHidden: false,
       listView: {
-        initialColumns: ["description", "account", "type", "amount"]
+        initialColumns: ["description", "account", "debit", "credit"]
       }
     },
 
@@ -272,22 +272,17 @@ export const lists: Lists = {
         }
       }),
 
-      // debit or credit
-      type: select({
-        type: "string",
-        options: [
-          { label: 'Debit', value: 'd' },
-          { label: 'Credit', value: 'c' },
-        ],
-        validation: { isRequired: true},
-        ui: { displayMode: 'radio' }
-      }),
-
-      amount: decimal({
+      debit: decimal({
         scale: 2,
         validation: { isRequired: true},
       }),
 
+      credit: decimal({
+        scale: 2,
+        validation: { isRequired: true},
+      }),
+      
+      
       description: text(),
     },
     

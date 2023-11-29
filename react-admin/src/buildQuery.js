@@ -18,7 +18,6 @@ const customizeBuildQuery = introspectionResults => (raFetchType, resourceName, 
         Custom override: Get enteis list
     */
     if (raFetchType === "GET_LIST" && resourceName === "Entry") {
-        console.log(params)
         return {
             ...builtQuery,
             query: gql`
@@ -36,11 +35,10 @@ const customizeBuildQuery = introspectionResults => (raFetchType, resourceName, 
                         id
                         createdAt
                         date
-                        type
-                        amount
+                        debit
+                        credit
                         account {
                             account
-                            name
                         }
                         description
                         __typename
