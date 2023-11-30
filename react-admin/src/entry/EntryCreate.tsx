@@ -148,8 +148,20 @@ const EntryCreate = () => {
                 </Create>
                         
                 {newEntryId && 
+                <>
                     <LineItems lineItems={lineItems} entryId={newEntryId}/>
+                    <button onClick={() => {
+                        notify('ra.notification.updated', {
+                            type: 'info',
+                            messageArgs: { smart_count: 1 },
+                            undoable: true,
+                        });
+                        redirect('list', 'entry');
+                    }}>Save & Close</button>
+                </>
                 }
+
+
             </Box>
         );
         
@@ -170,18 +182,7 @@ const notify = useNotify();
         >
             <Fragment>
                 {!entryId &&
-                <SaveButton
-                    mutationOptions={{
-                        onSuccess: () => {
-                            notify('ra.notification.updated', {
-                                type: 'info',
-                                messageArgs: { smart_count: 1 },
-                                undoable: true,
-                            });
-                            //redirect('list', 'account');
-                        }
-                    }}
-                />
+                <SaveButton label="Add Lines"/>
                 }
 
             </Fragment>
