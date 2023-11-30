@@ -11,13 +11,22 @@ import {
     getRecordFromLocation,
     NumberInput,
     SelectInput,
-    DateInput    
+    DateInput,
+    useRecordContext    
 } from 'react-admin';
 import { useLocation } from 'react-router';
 import {LineItems} from './lineItems'
 import { Box, Drawer, useMediaQuery, Theme } from '@mui/material';
 import { ApolloClient, InMemoryCache, gql, useQuery } from '@apollo/client';
 import {useState, useEffect} from 'react'
+import {
+    UPDATE_ENTRY_NUMBER, 
+    UPDATE_ENTRY_DESCRIPTION, 
+    UPDATE_ENTRY_DATE,
+    EntryNumberInput,
+    DescriptionInput,
+    CustomDateInput
+} from './EntryShow'
 
 const client = new ApolloClient({
     cache: new InMemoryCache(),
@@ -40,11 +49,11 @@ const createdByUserId = "2ca63449-b1d7-491c-8093-94c79f40e2d3"
 const EntryCreate = () => {    
     
     const [newEntryId, setNewEntryId] = useState(null)
+    const lineItems = []
 
 
     useEffect(() => {
         const initEntry = async () => {
-
             await client.mutate({
                 mutation: ENTRY_CREATE,
                 variables: {
@@ -79,28 +88,96 @@ const EntryCreate = () => {
         }
     };
 
-    return (
-        <Box>
-            <Create mutationOptions={{ onSuccess }}>
-                <SimpleForm>
-                    <NumberInput
-                        source="entryNumber"
-                        fullWidth
-                    />
-                    <DateInput
-                        source="Date"
-                        fullWidth
-                    />
-                    <TextInput
-                        source="description"
-                        fullWidth
-                    />
-                </SimpleForm>
-            </Create>
+    if (newEntryId !== null) {
 
-            <LineItems lineItems={[]}/>
-        </Box>
-    );
+        return (
+            <Box>
+                <Create mutationOptions={{ onSuccess }}>
+                    <SimpleForm 
+                        toolbar={null}
+                    >
+                            <EntryNumberInput 
+                                fullWidth
+                                source="entryNumber"
+                                onBlur={(e) => {
+                                    client.mutate({
+                                        mutation: UPDATE_ENTRY_NUMBER,
+                                        variables: {
+                                            where: {
+                                                id: newEntryId
+                                            },
+                                            data: {
+                                                entryNumber: parseInt(e.target.value)
+                                            }
+                                        }
+                                    }).then( r => {
+                                        console.log(r)
+                                    })                                                         
+                                }}
+                            />
+                            <CustomDateInput 
+                                source="date" 
+                                onBlur={e => {
+                                    client.mutate({
+                                        mutation: UPDATE_ENTRY_DATE,
+                                        variables: {
+                                            where: {
+                                                id: newEntryId
+                                            },
+                                            data: {
+                                                date: e.target.value
+                                            },
+                                            updateLineItemsData: lineItems.map(item => ({
+                                                where: {
+                                                    id: item.id
+                                                },
+                                                data: {
+                                                    date: e.target.value
+                                                }
+                                            }))                                            
+                                        }
+                                    }).then( r => {
+                                        console.log(r)
+                                    })  
+                                }}
+                            />
+                <DescriptionInput 
+                    source="description" 
+                    fullWidth 
+                    onBlur={e => {
+                        client.mutate({
+                            mutation: UPDATE_ENTRY_DESCRIPTION,
+                            variables: {
+                                where: {
+                                  id: newEntryId
+                                },
+                                data: {
+                                      description: e.target.value
+                                },
+                                updateLineItemsData: lineItems.map(item => ({
+                                    where: {
+                                        id: item.id
+                                    },
+                                    data: {
+                                        description: e.target.value
+                                    }
+                                    }
+                                ))
+                              }
+                        }).then( r => {
+                            console.log(r)
+                        })      
+                    }}
+                />
+                    </SimpleForm>
+                </Create>
+    
+                <LineItems lineItems={lineItems} entryId={newEntryId}/>
+            </Box>
+        );
+    }
+
+    return null
 };
 
 export default EntryCreate;

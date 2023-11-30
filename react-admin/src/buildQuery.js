@@ -13,6 +13,7 @@ const client = new ApolloClient({
 
 const customizeBuildQuery = introspectionResults => (raFetchType, resourceName, params) => {
     const builtQuery = buildQuery(introspectionResults)(raFetchType, resourceName, params);
+
     /*
         Custom override: Get enteis list
     */

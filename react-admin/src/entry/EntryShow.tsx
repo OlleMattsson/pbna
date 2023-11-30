@@ -28,7 +28,7 @@ const client = new ApolloClient({
 // hardcoded accountchart for now
 const accountChart = "0c0fc14c-3fe1-4ade-a898-37361947ee63"
 
-const UPDATE_ENTRY_NUMBER = gql`
+export const UPDATE_ENTRY_NUMBER = gql`
 mutation Mutation($where: EntryWhereUniqueInput!, $data: EntryUpdateInput!) {
     updateEntry(where: $where, data: $data) {
       description
@@ -37,7 +37,7 @@ mutation Mutation($where: EntryWhereUniqueInput!, $data: EntryUpdateInput!) {
   }   
 `
 
-const UPDATE_ENTRY_DESCRIPTION = gql`
+export const UPDATE_ENTRY_DESCRIPTION = gql`
 mutation Mutation($where: EntryWhereUniqueInput!, $data: EntryUpdateInput!, $updateLineItemsData: [LineItemUpdateArgs!]!) {
     updateEntry(where: $where, data: $data) {
       description
@@ -50,7 +50,7 @@ mutation Mutation($where: EntryWhereUniqueInput!, $data: EntryUpdateInput!, $upd
     }
   } 
 `
-const UPDATE_ENTRY_DATE = gql`
+export const UPDATE_ENTRY_DATE = gql`
 mutation Mutation($where: EntryWhereUniqueInput!, $data: EntryUpdateInput!, $updateLineItemsData: [LineItemUpdateArgs!]!) {
     updateEntry(where: $where, data: $data) {
       date
@@ -66,7 +66,7 @@ mutation Mutation($where: EntryWhereUniqueInput!, $data: EntryUpdateInput!, $upd
 
 
 
-const EntryNumberInput = ({ source, label, onBlur }) => {
+export const EntryNumberInput = ({ source, label, onBlur }) => {
     const { id, field, fieldState } = useInput({ source, onBlur });
     delete field.ref
     return (
@@ -77,7 +77,7 @@ const EntryNumberInput = ({ source, label, onBlur }) => {
 };
 
 
-const DescriptionInput = ({ source, label, onBlur }) => {
+export const DescriptionInput = ({ source, label, onBlur }) => {
     const { id, field, fieldState } = useInput({ source, onBlur });
     delete field.ref
     return (
@@ -85,18 +85,13 @@ const DescriptionInput = ({ source, label, onBlur }) => {
     )
 };
 
-const CustomDateInput = ({ source, label, onBlur }) => {
+export const CustomDateInput = ({ source, label, onBlur }) => {
     const { id, field, fieldState } = useInput({ source, onBlur });
     delete field.ref
     return (
         <DateInput {...field}/>
     )
 };
-
-const FormToolbar = () => {
-    return (null)
-}
-
 
 export const EntryShow = () => {
     const record = useRecordContext();
