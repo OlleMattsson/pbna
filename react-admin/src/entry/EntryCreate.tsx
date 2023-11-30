@@ -12,7 +12,9 @@ import {
     NumberInput,
     SelectInput,
     DateInput,
-    useRecordContext    
+    useRecordContext,
+    SaveButton,
+    
 } from 'react-admin';
 import { useLocation } from 'react-router';
 import {LineItems} from './lineItems'
@@ -27,6 +29,9 @@ import {
     DescriptionInput,
     CustomDateInput
 } from './EntryShow'
+import Toolbar from '@mui/material/Toolbar';
+import { Fragment } from 'react';
+
 
 const client = new ApolloClient({
     cache: new InMemoryCache(),
@@ -47,12 +52,14 @@ mutation Mutation($data: EntryCreateInput!) {
 const createdByUserId = "2ca63449-b1d7-491c-8093-94c79f40e2d3"
 
 const EntryCreate = () => {    
-    
-    const [newEntryId, setNewEntryId] = useState(null)
+
+   const [newEntryId, setNewEntryId] = useState(null)
+   //const newEntryId = ""
     const lineItems = []
 
-
+/*
     useEffect(() => {
+        console.log('Component mounted');
         const initEntry = async () => {
             await client.mutate({
                 mutation: ENTRY_CREATE,
@@ -67,13 +74,19 @@ const EntryCreate = () => {
                   }
             }).then(r => {
                 const id = r.data.createEntry.id
-                setNewEntryId(id)
+                //setNewEntryId(id)
             })
         }
-
         initEntry()
+        return () => {
+            console.log('Component will unmount');
+            // Perform cleanup actions here, if needed
+          };
     }, [])
+    */
 
+
+    
     const notify = useNotify();
     const redirect = useRedirect();
     const location = useLocation();
@@ -88,96 +101,92 @@ const EntryCreate = () => {
         }
     };
 
-    if (newEntryId !== null) {
-
         return (
             <Box>
                 <Create mutationOptions={{ onSuccess }}>
                     <SimpleForm 
-                        toolbar={null}
-                    >
-                            <EntryNumberInput 
-                                fullWidth
-                                source="entryNumber"
-                                onBlur={(e) => {
-                                    client.mutate({
-                                        mutation: UPDATE_ENTRY_NUMBER,
-                                        variables: {
-                                            where: {
-                                                id: newEntryId
-                                            },
-                                            data: {
-                                                entryNumber: parseInt(e.target.value)
-                                            }
-                                        }
-                                    }).then( r => {
-                                        console.log(r)
-                                    })                                                         
-                                }}
-                            />
-                            <CustomDateInput 
-                                source="date" 
-                                onBlur={e => {
-                                    client.mutate({
-                                        mutation: UPDATE_ENTRY_DATE,
-                                        variables: {
-                                            where: {
-                                                id: newEntryId
-                                            },
-                                            data: {
-                                                date: e.target.value
-                                            },
-                                            updateLineItemsData: lineItems.map(item => ({
-                                                where: {
-                                                    id: item.id
-                                                },
-                                                data: {
-                                                    date: e.target.value
-                                                }
-                                            }))                                            
-                                        }
-                                    }).then( r => {
-                                        console.log(r)
-                                    })  
-                                }}
-                            />
-                <DescriptionInput 
-                    source="description" 
-                    fullWidth 
-                    onBlur={e => {
-                        client.mutate({
-                            mutation: UPDATE_ENTRY_DESCRIPTION,
-                            variables: {
-                                where: {
-                                  id: newEntryId
-                                },
-                                data: {
-                                      description: e.target.value
-                                },
-                                updateLineItemsData: lineItems.map(item => ({
-                                    where: {
-                                        id: item.id
-                                    },
+                        toolbar={<EntryCreateToolbar entryId={newEntryId}/>}
+                        onSubmit={(data) =>{
+                            const {entryNumber, description, date} = data
+                            client.mutate({
+                                mutation: ENTRY_CREATE,
+                                variables: {
                                     data: {
-                                        description: e.target.value
+                                        createdBy: {
+                                            connect: {
+                                                id: createdByUserId // admin@mattssoft.com
+                                            }
+                                        },
+                                        entryNumber: parseInt(entryNumber),
+                                        description,
+                                        date
                                     }
-                                    }
-                                ))
-                              }
-                        }).then( r => {
-                            console.log(r)
-                        })      
-                    }}
-                />
+                                }
+                            }).then(r => {
+                                const id = r.data.createEntry.id
+                                setNewEntryId(id)
+                            })
+                        }}
+                    >
+                        <EntryNumberInput 
+                            fullWidth
+                            source="entryNumber"
+                            label="Entry Number"
+  
+                        />
+                        <CustomDateInput 
+                            source="date" 
+                            label="Transaction Date"
+
+                        />
+                        <DescriptionInput 
+                            source="description" 
+                            label="Description"
+                            fullWidth 
+                        />
                     </SimpleForm>
                 </Create>
-    
-                <LineItems lineItems={lineItems} entryId={newEntryId}/>
+                        
+                {newEntryId && 
+                    <LineItems lineItems={lineItems} entryId={newEntryId}/>
+                }
             </Box>
         );
-    }
+        
 
-    return null
 };
 
+
+const EntryCreateToolbar = ({entryId}) => {
+const redirect = useRedirect();
+const notify = useNotify();
+    return (
+        <Toolbar
+            sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                minHeight: { sm: 0 },
+            }}
+        >
+            <Fragment>
+                {!entryId &&
+                <SaveButton
+                    mutationOptions={{
+                        onSuccess: () => {
+                            notify('ra.notification.updated', {
+                                type: 'info',
+                                messageArgs: { smart_count: 1 },
+                                undoable: true,
+                            });
+                            //redirect('list', 'account');
+                        }
+                    }}
+                />
+                }
+
+            </Fragment>
+        </Toolbar>
+  
+  );
+};
 export default EntryCreate;

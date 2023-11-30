@@ -63,34 +63,23 @@ mutation Mutation($where: EntryWhereUniqueInput!, $data: EntryUpdateInput!, $upd
   }
 `
 
-
-
-
 export const EntryNumberInput = ({ source, label, onBlur }) => {
     const { id, field, fieldState } = useInput({ source, onBlur });
     delete field.ref
-    return (
-        <Labeled>
-            <TextInput label={label}  {...field}/>
-        </Labeled>
-    )
+    return  <TextInput label={label}  {...field}/>
 };
 
 
 export const DescriptionInput = ({ source, label, onBlur }) => {
     const { id, field, fieldState } = useInput({ source, onBlur });
     delete field.ref
-    return (
-        <TextInput {...field}/>
-    )
+    return <TextInput label={label} {...field}/>
 };
 
 export const CustomDateInput = ({ source, label, onBlur }) => {
     const { id, field, fieldState } = useInput({ source, onBlur });
     delete field.ref
-    return (
-        <DateInput {...field}/>
-    )
+    return <DateInput label={label} {...field}/>
 };
 
 export const EntryShow = () => {
@@ -107,6 +96,7 @@ export const EntryShow = () => {
                     <Grid container columns={2} spacing={2}>
                         <Grid item xs={1}  >
                             <EntryNumberInput 
+                                label="Entry Number"
                                 fullWidth
                                 source="entryNumber"
                                 onBlur={(e) => {
@@ -129,6 +119,7 @@ export const EntryShow = () => {
                         <Grid item xs={1} style={{textAlign: 'right'}}>
                             <CustomDateInput 
                                 source="date" 
+                                label="Transaction Date"
                                 onBlur={e => {
                                     client.mutate({
                                         mutation: UPDATE_ENTRY_DATE,
@@ -158,7 +149,8 @@ export const EntryShow = () => {
 
                 <DescriptionInput 
                     source="description" 
-                    fullWidth 
+                    fullWidth
+                    label="Description"
                     onBlur={e => {
                         client.mutate({
                             mutation: UPDATE_ENTRY_DESCRIPTION,
