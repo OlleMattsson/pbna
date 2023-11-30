@@ -18,7 +18,7 @@ const client = new ApolloClient({
     uri: 'http://localhost:3000/api/graphql'
 });
 
-// hardcoded accountchart for now
+// TODO: fetch AccountChart from AccountingPeriod
 const accountChart = "0c0fc14c-3fe1-4ade-a898-37361947ee63"
 
 const GET_ACCOUNTS = gql`
@@ -388,7 +388,7 @@ export const LineItems = ({lineItems, entryId}) => {
                     }}
                   >
                     <option value="blank"></option>
-                    {accounts.map((a, i) => {
+                    {accounts && accounts.map((a, i) => {
                         return (<option key={i} value={a.id}>{a.account}  {a.name}</option>)
                     })}
 

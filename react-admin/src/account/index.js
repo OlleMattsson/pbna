@@ -1,4 +1,4 @@
-import AccountIcon from '@mui/icons-material/Comment';
+import AccountIcon from '@mui/icons-material/Article';
 import AccountList from './AccountList';
 import AccountCreate from './AccountCreate';
 

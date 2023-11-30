@@ -4,7 +4,7 @@ import { Route } from "react-router-dom";
 import { Admin, Resource, CustomRoutes } from 'react-admin';
 import authProvider from './authProvider'
 import buildGraphQLProvider from './buildQuery';
-import {EntryList} from "./entry/EntryList"
+import EntryList from "./entry"
 import account from "./account"
 import attachment from "./attachment"
 import accountChart from "./accountChart"
@@ -30,7 +30,7 @@ export const App = () => {
             dataProvider={dataProvider} 
 
         >
-            <Resource name="Entry" list = {EntryList}/>
+            <Resource name="Entry" {...EntryList}/>
             <Resource name="Attachment" {...attachment}/>
             <Resource name="Account" {...account}/>
             <Resource name="AccountChart" {...accountChart}/>

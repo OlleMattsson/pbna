@@ -184,12 +184,10 @@ export const lists: Lists = {
 
       date: calendarDay({
         label: "Transaction Date",
-        validation: {isRequired: true},
       }),
 
       entryNumber: integer({
         label: "Entry Number",
-        validation: {isRequired: true},
       }),
 
       description: text(),
