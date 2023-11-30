@@ -7,6 +7,7 @@ import {
     ReferenceField,
     NumberField,
     DateInput,
+    BulkDeleteButton
     
 } from 'react-admin';
 import {EntryShow} from "./EntryShow"
@@ -22,6 +23,12 @@ const listFilters = [
     <DateInput source="date_lte" alwaysOn />,
 ];
 
+const PostBulkActionButtons = () => (
+    <>
+        <BulkDeleteButton />
+    </>
+)
+
 export const EntryList = () => {
 
 
@@ -33,6 +40,7 @@ export const EntryList = () => {
                 sort={{ field: 'date', order: 'DESC' }}
             >
                 <Datagrid
+                    bulkActionButtons={<PostBulkActionButtons />}
                     rowClick="expand"
                     expand={<EntryShow />}
                     sx={{

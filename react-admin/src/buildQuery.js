@@ -13,50 +13,78 @@ const client = new ApolloClient({
 
 const customizeBuildQuery = introspectionResults => (raFetchType, resourceName, params) => {
     const builtQuery = buildQuery(introspectionResults)(raFetchType, resourceName, params);
-
     /*
         Custom override: Get enteis list
     */
-    if (raFetchType === "GET_LIST" && resourceName === "Entry") {
-        return {
-            ...builtQuery,
-            query: gql`
-                query entrys($orderBy: [EntryOrderByInput!]!, $take: Int, $skip: Int!) {
-                    items: entrys(orderBy: $orderBy, take: $take, skip: $skip) {
-                    id
-                    createdAt
-                    createdBy {
-                        name
-                    }
-                    date
-                    entryNumber
-                    description
-                    lineItems {
-                        id
-                        createdAt
-                        date
-                        debit
-                        credit
-                        account {
+    if ( resourceName === "Entry") {
+
+        switch(raFetchType) {
+            case "GET_LIST": {
+                return {
+                    ...builtQuery,
+                    query: gql`
+                        query entrys($orderBy: [EntryOrderByInput!]!, $take: Int, $skip: Int!) {
+                            items: entrys(orderBy: $orderBy, take: $take, skip: $skip) {
                             id
-                        }
-                        description
-                        order
-                        __typename
+                            createdAt
+                            createdBy {
+                                name
+                            }
+                            date
+                            entryNumber
+                            description
+                            lineItems {
+                                id
+                                createdAt
+                                date
+                                debit
+                                credit
+                                account {
+                                    id
+                                }
+                                description
+                                order
+                                __typename
+                            }
+                            lineItemsCount
+                            __typename
+                            }
+                            entrysCount
+                        }`,
+                    variables: {       
+                        orderBy: [{
+                            "entryNumber": "asc"
+                        }],
+                        take: params.pagination.perPage,
+                        skip: (params.pagination.page -1) * params.pagination.perPage
                     }
-                    lineItemsCount
-                    __typename
-                    }
-                    entrysCount
-                }`,
-            variables: {       
-                orderBy: [{
-                    "entryNumber": "asc"
-                }],
-                take: params.pagination.perPage,
-                skip: (params.pagination.page -1) * params.pagination.perPage
+                }
             }
+            case "DELETE": {
+                return {
+                    ...builtQuery,
+                    query: gql`
+                        mutation Mutation($where: EntryWhereUniqueInput!) {
+                            deleteEntry(where: $where) {
+                            id
+                            }
+                        }
+                    `,
+                    variables: {                   
+                        "where": {
+                            "id": params.id
+                        }                                           
+                    },
+                    parseResponse: () => {
+                        return { data: { id: params.id } };
+                    }
+                    
+                }
+            }
+
         }
+
+
     }
 
     return builtQuery
