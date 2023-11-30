@@ -1,8 +1,9 @@
 import * as React from 'react';
-import { Box, 
+import { 
     Card, 
     CardContent,
-    Grid
+    Grid,
+    Box
 } from '@mui/material';
 
 import { 
@@ -10,14 +11,10 @@ import {
     DateInput,
     SimpleForm,
     TextInput,
-    TextField,
     useInput,
-    Labeled
 } from 'react-admin';
-import LineItemEditToolbar from './LineItemEditToolbar';
-import Paper from '@mui/material/Paper';
 import {LineItems} from './lineItems'
-import { ApolloClient, InMemoryCache, gql, useQuery } from '@apollo/client';
+import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
 
 
 const client = new ApolloClient({
@@ -25,10 +22,8 @@ const client = new ApolloClient({
     uri: 'http://localhost:3000/api/graphql'
 });
 
-// hardcoded accountchart for now
-const accountChart = "0c0fc14c-3fe1-4ade-a898-37361947ee63"
 
-export const UPDATE_ENTRY_NUMBER = gql`
+const UPDATE_ENTRY_NUMBER = gql`
 mutation Mutation($where: EntryWhereUniqueInput!, $data: EntryUpdateInput!) {
     updateEntry(where: $where, data: $data) {
       description
@@ -37,7 +32,7 @@ mutation Mutation($where: EntryWhereUniqueInput!, $data: EntryUpdateInput!) {
   }   
 `
 
-export const UPDATE_ENTRY_DESCRIPTION = gql`
+const UPDATE_ENTRY_DESCRIPTION = gql`
 mutation Mutation($where: EntryWhereUniqueInput!, $data: EntryUpdateInput!, $updateLineItemsData: [LineItemUpdateArgs!]!) {
     updateEntry(where: $where, data: $data) {
       description
@@ -50,7 +45,7 @@ mutation Mutation($where: EntryWhereUniqueInput!, $data: EntryUpdateInput!, $upd
     }
   } 
 `
-export const UPDATE_ENTRY_DATE = gql`
+const UPDATE_ENTRY_DATE = gql`
 mutation Mutation($where: EntryWhereUniqueInput!, $data: EntryUpdateInput!, $updateLineItemsData: [LineItemUpdateArgs!]!) {
     updateEntry(where: $where, data: $data) {
       date
@@ -66,14 +61,15 @@ mutation Mutation($where: EntryWhereUniqueInput!, $data: EntryUpdateInput!, $upd
 export const EntryNumberInput = ({ source, label, onBlur }) => {
     const { id, field, fieldState } = useInput({ source, onBlur });
     delete field.ref
-    return  <TextInput label={label}  {...field}/>
+    return  <TextInput label={label}  {...field} style={{width: "px"}}/>
 };
 
 
 export const DescriptionInput = ({ source, label, onBlur }) => {
     const { id, field, fieldState } = useInput({ source, onBlur });
     delete field.ref
-    return <TextInput label={label} {...field}/>
+    return <TextInput label={label} {...field} style={{width: "100%"}}
+    />
 };
 
 export const CustomDateInput = ({ source, label, onBlur }) => {
@@ -91,8 +87,6 @@ export const EntryShow = () => {
             <CardContent>
                 <SimpleForm 
                     toolbar={null}>
-                    <TextInput source="id" />
-
                     <Grid container columns={2} spacing={2}>
                         <Grid item xs={1}  >
                             <EntryNumberInput 
@@ -146,6 +140,8 @@ export const EntryShow = () => {
                             />
                         </Grid>
                     </Grid>
+                <Grid container columns={1}>
+                    <Grid item xs={12}>
 
                 <DescriptionInput 
                     source="description" 
@@ -176,6 +172,9 @@ export const EntryShow = () => {
                         })      
                     }}
                 />
+                                    </Grid>
+
+                </Grid>
 
                 </SimpleForm>
                 <LineItems lineItems={record.lineItems} entryId={record.id}/>
