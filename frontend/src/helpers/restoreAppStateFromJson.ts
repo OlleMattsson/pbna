@@ -36,9 +36,13 @@ export const restoreAppStateFromJson = async ({
       console.log(t)
 
       const rows = t.rows.map((r) => {
-        return new Row({...r, date: t.date, description: t.description, precision: 0});
+        return new Row({
+          ...r, 
+          date: r.date, 
+          description: r.description, 
+          precision: r.precision
+        });
       });
-
 
       return new Transaction(rows, t.attachments);
     });
