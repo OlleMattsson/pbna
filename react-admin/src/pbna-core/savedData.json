@@ -1,0 +1,514 @@
+{
+  "accounts": [
+    {
+      "id": 1000,
+      "type": "4",
+      "name": "Tillgångar",
+      "description": "",
+      "vatAmount": 0,
+      "vatAccount": 0
+    },
+    {
+      "id": 1100,
+      "type": "0",
+      "name": "Försäljningsfordringar",
+      "description": "Skickade räkningar som inte ännu betalats",
+      "vatAmount": 0,
+      "vatAccount": 0
+    },
+    {
+      "id": 1700,
+      "type": "0",
+      "name": "momsfordran",
+      "description": "24%",
+      "vatAmount": 0,
+      "vatAccount": 0
+    },
+    {
+      "id": 1940,
+      "type": "0",
+      "name": "bankkonto",
+      "description": "OP 1234 2345 3456 4567",
+      "vatAmount": 0,
+      "vatAccount": 0
+    },
+    {
+      "id": 2000,
+      "type": "4",
+      "name": "Eget kapital",
+      "description": "",
+      "vatAmount": 0,
+      "vatAccount": 0
+    },
+    {
+      "id": 2001,
+      "type": "1",
+      "name": "främmande kapital",
+      "description": "egna insättningar",
+      "vatAmount": 0,
+      "vatAccount": 0
+    },
+    {
+      "id": 2100,
+      "type": 1,
+      "name": "Kortfristiga skulder",
+      "description": "Inkomna räkningar som inte betalats",
+      "vatAmount": 0,
+      "vatAccount": 0
+    },
+    {
+      "id": 2400,
+      "type": "1",
+      "name": "momsskuld",
+      "description": "24%",
+      "vatAmount": 0,
+      "vatAccount": 0
+    },
+    {
+      "id": 3000,
+      "type": "4",
+      "name": "Intäkter",
+      "description": "",
+      "vatAmount": 0,
+      "vatAccount": 0
+    },
+    {
+      "id": 3001,
+      "type": "3",
+      "name": "Försäljning",
+      "description": "inkomster från försäljning",
+      "vatAmount": 0,
+      "vatAccount": 0
+    },
+    {
+      "id": 5000,
+      "type": "4",
+      "name": "Rörelsekostnader",
+      "description": "",
+      "vatAmount": 0,
+      "vatAccount": 0
+    },
+    {
+      "id": 5001,
+      "type": "3",
+      "name": "Kontorsmaterial",
+      "description": "kontorsmaterial etc",
+      "vatAmount": 0,
+      "vatAccount": 0
+    },
+    {
+      "id": 5002,
+      "type": "3",
+      "name": "Representation",
+      "description": "god mat & dryck efter kl 18",
+      "vatAmount": 0,
+      "vatAccount": 0
+    },
+    {
+      "id": 5003,
+      "type": "3",
+      "name": "Telefon & Internet",
+      "description": "",
+      "vatAmount": 0,
+      "vatAccount": 0
+    },
+    {
+      "id": 5004,
+      "type": "3",
+      "name": "Digitala tjänster",
+      "description": "",
+      "vatAmount": 0,
+      "vatAccount": 0
+    },
+    {
+      "id": 5005,
+      "type": "3",
+      "name": "km-ersättning",
+      "description": "",
+      "vatAmount": 0,
+      "vatAccount": 0
+    },
+    {
+      "id": 7000,
+      "type": "4",
+      "name": "Personalkostnader",
+      "description": "",
+      "vatAmount": 0,
+      "vatAccount": 0
+    },
+    {
+      "id": 7001,
+      "type": "3",
+      "name": "Lunch",
+      "description": "",
+      "vatAmount": 0,
+      "vatAccount": 0
+    },
+    {
+      "id": 7002,
+      "type": "3",
+      "name": "Dagtraktamenten",
+      "description": "",
+      "vatAmount": 0,
+      "vatAccount": 0
+    }
+  ],
+  "transactions": [
+    {
+      "rows": [
+        {
+          "id": 3629911507081160,
+          "createdAt": "2022-10-07T12:16:23.670Z",
+          "date": "2022-10-01T12:16:23.000Z",
+          "account": "1940",
+          "amount": 5000,
+          "type": "debit",
+          "precision": 0,
+          "description": "kapital till kassan 123"
+        },
+        {
+          "id": 3551895913073530,
+          "createdAt": "2022-10-07T12:18:35.444Z",
+          "date": "2022-10-01T12:16:23.000Z",
+          "account": "2001",
+          "amount": 5000,
+          "type": "credit",
+          "precision": 0,
+          "description": "kapital till kassan 123"
+        }
+      ]
+    },
+    {
+      "rows": [
+        {
+          "id": 231033646440802,
+          "createdAt": "2022-10-07T12:19:40.086Z",
+          "date": "2022-10-02T12:19:40.000Z",
+          "account": "1940",
+          "amount": 150,
+          "type": "credit",
+          "precision": 0,
+          "description": "köpte grejjer till officen"
+        },
+        {
+          "id": 3326094870236882,
+          "createdAt": "2022-10-07T12:19:53.758Z",
+          "date": "2022-10-02T12:19:40.000Z",
+          "account": "5001",
+          "amount": 150,
+          "type": "debit",
+          "precision": 0,
+          "description": "köpte grejjer till officen"
+        }
+      ]
+    },
+    {
+      "rows": [
+        {
+          "id": 3846412329598528,
+          "createdAt": "2022-10-07T12:20:20.368Z",
+          "date": "2022-10-07T12:20:20.368Z",
+          "account": "1940",
+          "amount": 500,
+          "type": "credit",
+          "precision": 0,
+          "description": "bjudning för viktiga kunder"
+        },
+        {
+          "id": 3381052600254692,
+          "createdAt": "2022-10-07T12:20:27.346Z",
+          "date": "2022-10-07T12:20:27.346Z",
+          "account": "5002",
+          "amount": 500,
+          "type": "debit",
+          "precision": 0,
+          "description": "bjudning för viktiga kunder"
+        }
+      ]
+    },
+    {
+      "rows": [
+        {
+          "id": 3951293127315854,
+          "createdAt": "2022-10-07T12:20:44.555Z",
+          "date": "2022-10-07T12:20:44.555Z",
+          "account": "1940",
+          "amount": 400,
+          "type": "debit",
+          "precision": 0,
+          "description": "gjorde affärer!!"
+        },
+        {
+          "id": 5302091521799614,
+          "createdAt": "2022-10-07T12:21:06.019Z",
+          "date": "2022-10-07T12:21:06.019Z",
+          "account": "3001",
+          "amount": 400,
+          "type": "credit",
+          "precision": 0,
+          "description": "gjorde affärer!!"
+        }
+      ]
+    },
+    {
+      "rows": [
+        {
+          "id": 1014757279658012,
+          "createdAt": "2022-10-07T13:16:06.424Z",
+          "date": "2022-10-07T13:16:06.424Z",
+          "account": "1940",
+          "amount": 123,
+          "type": "credit",
+          "precision": 0,
+          "description": "köpte mera grejjor som firman behövde"
+        },
+        {
+          "id": 861748976498270,
+          "createdAt": "2022-10-07T13:16:14.026Z",
+          "date": "2022-10-07T13:16:14.026Z",
+          "account": "5001",
+          "amount": 123,
+          "type": "debit",
+          "precision": 0,
+          "description": "köpte mera grejjor som firman behövde"
+        }
+      ]
+    },
+    {
+      "rows": [
+        {
+          "id": 8842723278496688,
+          "createdAt": "2022-10-07T14:20:18.102Z",
+          "date": "2022-10-07T14:20:18.102Z",
+          "account": "1940",
+          "amount": 170,
+          "type": "credit",
+          "precision": 0,
+          "description": "elisaräkning"
+        },
+        {
+          "id": 8753258243555876,
+          "createdAt": "2022-10-07T14:23:21.594Z",
+          "date": "2022-10-07T14:23:21.594Z",
+          "account": "5003",
+          "amount": 170,
+          "type": "debit",
+          "precision": 0,
+          "description": "elisaräkning"
+        }
+      ]
+    },
+    {
+      "rows": [
+        {
+          "id": 7943420564455272,
+          "createdAt": "2022-10-07T14:28:27.824Z",
+          "date": "2022-10-07T14:28:27.824Z",
+          "account": "1940",
+          "amount": 1000,
+          "type": "credit",
+          "precision": 0,
+          "description": "köpte en dator"
+        },
+        {
+          "id": 8558462973500366,
+          "createdAt": "2022-10-07T14:28:55.813Z",
+          "date": "2022-10-07T14:28:55.813Z",
+          "account": "5001",
+          "amount": 1000,
+          "type": "debit",
+          "precision": 0,
+          "description": "köpte en dator"
+        }
+      ]
+    },
+    {
+      "rows": [
+        {
+          "id": 658780895689992,
+          "createdAt": "2022-10-08T22:02:32.078Z",
+          "date": "2022-10-08T22:02:32.078Z",
+          "account": "1940",
+          "amount": 100,
+          "type": "credit",
+          "precision": 0,
+          "description": "youtube-prenumeration"
+        },
+        {
+          "id": 358445643940258,
+          "createdAt": "2022-10-08T22:02:42.676Z",
+          "date": "2022-10-08T22:02:42.676Z",
+          "account": "5004",
+          "amount": 100,
+          "type": "debit",
+          "precision": 0,
+          "description": "youtube-prenumeration"
+        }
+      ]
+    },
+    {
+      "rows": [
+        {
+          "id": 6351203162702666,
+          "createdAt": "2022-10-10T11:49:28.037Z",
+          "date": "2022-10-10T11:49:28.037Z",
+          "account": "1940",
+          "amount": 2000,
+          "type": "debit",
+          "precision": 0,
+          "description": "gjorde mera affärer"
+        },
+        {
+          "id": 4067691816879828,
+          "createdAt": "2022-10-10T11:49:33.188Z",
+          "date": "2022-10-10T11:49:33.188Z",
+          "account": "3001",
+          "amount": 2000,
+          "type": "credit",
+          "precision": 0,
+          "description": "gjorde mera affärer"
+        }
+      ]
+    },
+    {
+      "rows": [
+        {
+          "id": 5787599419016786,
+          "createdAt": "2022-10-10T11:51:54.353Z",
+          "date": "2022-10-10T11:51:54.353Z",
+          "account": "1940",
+          "amount": 248,
+          "type": "credit",
+          "precision": 0,
+          "description": "köpte digitala tjänster med moms"
+        },
+        {
+          "id": 6931576455640084,
+          "createdAt": "2022-10-10T11:52:14.747Z",
+          "date": "2022-10-10T11:52:14.747Z",
+          "account": "5004",
+          "amount": 200,
+          "type": "debit",
+          "precision": 0,
+          "description": "köpte digitala tjänster med moms"
+        },
+        {
+          "id": 6412596455383014,
+          "createdAt": "2022-10-10T11:52:26.043Z",
+          "date": "2022-10-10T11:52:26.043Z",
+          "account": "1700",
+          "amount": 48,
+          "type": "debit",
+          "precision": 0,
+          "description": "köpte digitala tjänster med moms"
+        }
+      ]
+    },
+    {
+      "rows": [
+        {
+          "id": 2849966684438530,
+          "createdAt": "2022-10-10T11:53:30.887Z",
+          "date": "2022-10-10T11:53:30.887Z",
+          "account": "1940",
+          "amount": 124,
+          "type": "debit",
+          "precision": 0,
+          "description": "sålde med moms"
+        },
+        {
+          "id": 2910711770787624,
+          "createdAt": "2022-10-10T11:53:41.403Z",
+          "date": "2022-10-10T11:53:41.403Z",
+          "account": "3001",
+          "amount": 100,
+          "type": "credit",
+          "precision": 0,
+          "description": "sålde med moms"
+        },
+        {
+          "id": 7424821435509110,
+          "createdAt": "2022-10-10T11:53:48.587Z",
+          "date": "2022-10-10T11:53:48.587Z",
+          "account": "2400",
+          "amount": 24,
+          "type": "credit",
+          "precision": 0,
+          "description": "sålde med moms"
+        }
+      ]
+    },
+    {
+      "rows": [
+        {
+          "id": 3545295356915524,
+          "createdAt": "2022-10-11T13:34:16.490Z",
+          "date": "2022-10-11T13:34:16.490Z",
+          "account": "1940",
+          "amount": 25,
+          "type": "credit",
+          "precision": 0,
+          "description": "lunch"
+        },
+        {
+          "id": 3870135528983830,
+          "createdAt": "2022-10-11T13:34:26.495Z",
+          "date": "2022-10-11T13:34:26.495Z",
+          "account": "7001",
+          "amount": 25,
+          "type": "debit",
+          "precision": 0,
+          "description": "lunch"
+        }
+      ]
+    },
+    {
+      "rows": [
+        {
+          "id": 6529592436927502,
+          "createdAt": "2022-10-11T13:40:44.840Z",
+          "date": "2022-10-11T13:40:44.840Z",
+          "account": "1940",
+          "amount": 16836,
+          "type": "credit",
+          "precision": 2,
+          "description": "km-ersättning hfors-tammerfors-hfors (366 km)"
+        },
+        {
+          "id": 2141329516804524,
+          "createdAt": "2022-10-11T13:40:56.291Z",
+          "date": "2022-10-11T13:40:56.291Z",
+          "account": "5005",
+          "amount": 16836,
+          "type": "debit",
+          "precision": 2,
+          "description": "km-ersättning hfors-tammerfors-hfors (366 km)"
+        }
+      ]
+    },
+    {
+      "rows": [
+        {
+          "id": 6146356083061910,
+          "createdAt": "2022-10-11T13:43:22.684Z",
+          "date": "2022-10-11T13:43:22.684Z",
+          "account": "1940",
+          "amount": 40,
+          "type": "credit",
+          "precision": 0,
+          "description": "10h"
+        },
+        {
+          "id": 6382098227383298,
+          "createdAt": "2022-10-11T13:43:37.151Z",
+          "date": "2022-10-11T13:43:37.151Z",
+          "account": "7002",
+          "amount": 40,
+          "type": "debit",
+          "precision": 0,
+          "description": "10h"
+        }
+      ]
+    }
+  ]
+}
