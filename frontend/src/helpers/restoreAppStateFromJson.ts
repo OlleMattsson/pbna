@@ -31,13 +31,11 @@ export const restoreAppStateFromJson = async ({
   const restoreTransactions = (transactions: []) => {
     transactionManager.clear();
 
-
-
-    const newTransactions = transactions.map((t: { lineItems: [], attachments: [] }) => {
+    const newTransactions = transactions.map((t: { rows: [], attachments: [] }) => {
 
       console.log(t)
 
-      const rows = t.lineItems.map((r) => {
+      const rows = t.rows.map((r) => {
         return new Row({...r, date: t.date, description: t.description, precision: 0});
       });
 
@@ -70,7 +68,7 @@ export const restoreAppStateFromJson = async ({
    */
   try {
 
-    
+    /*
     const response = await client
     .query({
       query: gql`
@@ -105,12 +103,12 @@ export const restoreAppStateFromJson = async ({
       `,
     })
     console.log(response)
-  
+  */
   
     
-    
-    //restoreAccounts(data.accounts);
-    restoreTransactions(response.data.entries);
+    const parsed = JSON.parse(json)
+    restoreAccounts(parsed.accounts);
+    restoreTransactions(parsed.transactions);
     
   } catch (e) {
     console.error(e);

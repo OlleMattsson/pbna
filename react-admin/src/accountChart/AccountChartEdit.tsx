@@ -51,7 +51,7 @@ const Accounts = ({source}) => {
             sort={{ field: 'account', order: 'ASC' }}
         >
             <Datagrid data={data} >
-                <TextField source="account" sortable={false} />
+                <TextField source="account" sortable={true} />
                 <TextField source="name" sortable={false} />
             </Datagrid>
         </List>

@@ -26,6 +26,7 @@ console.log(transaction)
   return (
     <div style={{ ...solidBlackBorder1px, textAlign: "left", padding: "10px" }}>
       <p>{transactionNumber + 1}</p>
+      {/**
       <div>
         date:
         <DatePicker
@@ -38,6 +39,7 @@ console.log(transaction)
           dateFormat={"dd.MM.yyyy"}
         />
       </div>
+       */}
       <div style={{ margin: "10px 0px 10px 0px" }}>
         <span>description:</span>
         <br />

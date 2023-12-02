@@ -1,5 +1,6 @@
 import { StrictMode } from "react";
-import App from "./App2";
+import App from "./App";
+//import App from "./App2";
 import * as ReactDOMClient from "react-dom/client";
 import { ApolloClient, InMemoryCache, ApolloProvider, gql } from '@apollo/client';
 import createUploadLink from "apollo-upload-client/createUploadLink.mjs"
@@ -7,6 +8,7 @@ import createUploadLink from "apollo-upload-client/createUploadLink.mjs"
 const rootElement = document.getElementById("root") as Element;
 const root = ReactDOMClient.createRoot(rootElement);
 
+/*
 const client = new ApolloClient({
     cache: new InMemoryCache(),
     link: createUploadLink({ 
@@ -14,12 +16,10 @@ const client = new ApolloClient({
       headers: {"Apollo-Require-Preflight": "true"}
     })
   })
-
+*/
 
 root.render(
   <StrictMode>
-    <ApolloProvider client={client}>
       <App />
-    </ApolloProvider>
   </StrictMode>
 );
