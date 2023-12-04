@@ -1,27 +1,66 @@
 import { AuthProvider, HttpError } from "react-admin";
 import data from "./users.json";
+import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
 
-/**
- * This authProvider is only for test purposes. Don't use it in production.
- */
+const client = new ApolloClient({
+  cache: new InMemoryCache(),
+  uri: 'http://localhost:3000/api/graphql'
+});
+
+const AUTHENTICATE = gql`
+mutation AuthenticateUserWithPassword($email: String!, $password: String!) {
+  authenticateUserWithPassword(email: $email, password: $password) {
+    ... on UserAuthenticationWithPasswordSuccess {
+      item {
+        email
+        role
+        id
+        name
+        organizations {
+          id
+          name
+        }
+      }
+      sessionToken
+    }
+    ... on UserAuthenticationWithPasswordFailure {
+      message
+    }
+  }
+}
+`
+
+
 export const authProvider: AuthProvider = {
   login: ({ username, password }) => {
-    const user = data.users.find(
-      (u) => u.username === username && u.password === password
-    );
 
-    if (user) {
-      // eslint-disable-next-line no-unused-vars
-      let { password, ...userToPersist } = user;
-      localStorage.setItem("user", JSON.stringify(userToPersist));
-      return Promise.resolve();
-    }
+    return client.mutate({
+      mutation: AUTHENTICATE,
+      variables: {
+        email: username,
+        password
+      }
+    }).then(r => {
 
-    return Promise.reject(
-      new HttpError("Unauthorized", 401, {
-        message: "Invalid username or password",
-      })
-    );
+      if (r.data.authenticateUserWithPassword.__typename === "UserAuthenticationWithPasswordFailure") {
+        return Promise.reject(
+          r.data.authenticateUserWithPassword.message)
+      }
+
+      if (r.data.authenticateUserWithPassword.sessionToken) {
+        let { ...userToPersist } = r.data.authenticateUserWithPassword.item;
+        localStorage.setItem("user", JSON.stringify(userToPersist));        
+        return Promise.resolve()
+      }
+      
+    }).catch(e => {
+      console.log("error", e)
+    })
+
+
+    
+
+    
   },
   logout: () => {
     localStorage.removeItem("user");

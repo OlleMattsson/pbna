@@ -3,7 +3,7 @@ import { lists } from './schema';
 import { withAuth, session } from './auth';
 
 export default 
-//withAuth(
+withAuth(
   config({
     server: {
       cors: { 
@@ -21,7 +21,7 @@ export default
       idField: { kind: 'uuid' }
     },
     lists,
-    //session,
+    session,
     storage: {
       journal_item_files: {
         kind: 'local',
@@ -34,4 +34,4 @@ export default
       }
     }
   })
-//);
+);
