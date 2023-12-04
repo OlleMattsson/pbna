@@ -1,6 +1,6 @@
 import { config } from '@keystone-6/core';
-import { lists } from './schema';
-import { withAuth, session } from './auth';
+import { lists } from './configs/schema';
+import { withAuth, session } from './configs/auth';
 
 export default 
 withAuth(

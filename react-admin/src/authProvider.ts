@@ -4,7 +4,10 @@ import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
 
 const client = new ApolloClient({
   cache: new InMemoryCache(),
-  uri: 'http://localhost:3000/api/graphql'
+  uri: 'http://localhost:3000/api/graphql',
+  
+  // store cookie in Set-Cookie header
+  credentials: 'include'
 });
 
 const AUTHENTICATE = gql`
@@ -12,13 +15,10 @@ mutation AuthenticateUserWithPassword($email: String!, $password: String!) {
   authenticateUserWithPassword(email: $email, password: $password) {
     ... on UserAuthenticationWithPasswordSuccess {
       item {
-        email
         role
         id
-        name
         organizations {
           id
-          name
         }
       }
       sessionToken
@@ -41,6 +41,8 @@ export const authProvider: AuthProvider = {
         password
       }
     }).then(r => {
+      
+      console.log(r)
 
       if (r.data.authenticateUserWithPassword.__typename === "UserAuthenticationWithPasswordFailure") {
         return Promise.reject(
@@ -50,9 +52,10 @@ export const authProvider: AuthProvider = {
       if (r.data.authenticateUserWithPassword.sessionToken) {
         let { ...userToPersist } = r.data.authenticateUserWithPassword.item;
         localStorage.setItem("user", JSON.stringify(userToPersist));        
+        localStorage.setItem("sessionToken", r.data.authenticateUserWithPassword.sessionToken)
         return Promise.resolve()
       }
-      
+
     }).catch(e => {
       console.log("error", e)
     })

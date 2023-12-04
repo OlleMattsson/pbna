@@ -13,7 +13,7 @@ import {
 } from '@keystone-6/core/fields';
 import { document } from '@keystone-6/fields-document';
 import type { Lists } from '.keystone/types';
-import { attachmentAfterOperation } from './hooks/attachment_afteroperation';
+import { attachmentAfterOperation } from '../hooks/attachment_afteroperation';
 
 
 
@@ -395,7 +395,31 @@ export const lists: Lists = {
   }),
 
   Organization: list({
-    access: allowAll,
+    access:{
+      operation: allowAll,
+      filter: {
+        query: ({ session, context, listKey, operation }) => {
+          
+          console.log(session)
+          //console.log(context)
+
+          if (isAdmin({session})) {
+            return true
+          }
+
+          if (isOwner({session}))  {
+            return {
+              owner: {
+                id: {
+                  equals: session?.data.id}}
+                }
+          } 
+
+          return false
+
+        }
+      }
+    },
     fields: {
       name: text(),
       addressStreet: text(),

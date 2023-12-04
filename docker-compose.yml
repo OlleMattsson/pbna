@@ -51,6 +51,9 @@ services:
       - type: bind
         source: ./keystone/hooks
         target: /code/hooks        
+      - type: bind
+        source: ./keystone/configs
+        target: /code/configs        
     links:
       - redis
 

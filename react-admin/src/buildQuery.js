@@ -3,19 +3,21 @@ import { ApolloClient, InMemoryCache, HttpLink, gql } from '@apollo/client';
 // use a modified adapter based on ra-data-graphql-simple
 import buildGraphQLProvider, { buildQuery } from './ra-data-keystone6/src';
 
-
 const client = new ApolloClient({
     cache: new InMemoryCache(),
     link: new HttpLink({
-      uri: 'http://localhost:3000/api/graphql'
-    })
+        uri: 'http://localhost:3000/api/graphql',        
+        credentials: 'include'  // add Cookie header to requests
+    }) 
 });
+
+
 
 const customizeBuildQuery = introspectionResults => (raFetchType, resourceName, params) => {
     const builtQuery = buildQuery(introspectionResults)(raFetchType, resourceName, params);
 
     /*
-        Custom override: Get enteis list
+        Custom override: Get Entries list
     */
     if ( resourceName === "Entry") {
 

@@ -8,8 +8,7 @@ import EntryList from "./entry"
 import account from "./account"
 import attachment from "./attachment"
 import accountChart from "./accountChart"
-import CustomPage from './CustomPage';
-import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
+import organization from "./organization"
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import {Ledger} from "./ledger/Ledger"
 
@@ -38,6 +37,7 @@ export const App = () => {
             <Resource name="Attachment" {...attachment}/>
             <Resource name="Account" {...account}/>
             <Resource name="AccountChart" {...accountChart}/>
+            <Resource name="Organization" {...organization}/>
            
             <CustomRoutes>
                 <Route path="/ledger" element={<Ledger />} />
