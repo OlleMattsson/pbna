@@ -30,7 +30,7 @@ const customizeBuildQuery = introspectionResults => (raFetchType, resourceName, 
             ...variables.data,
             accountChart: {
                 connect: {
-                    id: variables.data.accountChart
+                    id: variables.data.accountChart.id
                 }
             }
         }
