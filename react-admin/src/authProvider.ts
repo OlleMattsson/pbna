@@ -17,7 +17,7 @@ mutation AuthenticateUserWithPassword($email: String!, $password: String!) {
       item {
         role
         id
-        organizations {
+        organization {
           id
         }
       }

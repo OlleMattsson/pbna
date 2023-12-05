@@ -5,7 +5,9 @@ import {
     Datagrid,
     TextField,
     TextInput,
-    DateField
+    DateField,
+    ChipField,
+    useRecordContext
 } from 'react-admin';
 import { matchPath, useLocation, useNavigate } from 'react-router-dom';
 
@@ -18,6 +20,20 @@ const listFilters = [
     <TextInput label="Name" source="name"/>,
 ];
 
+const IsActive = ({source}) => {
+    const record = useRecordContext();
+    if (!record) return null;
+
+    const isActive = record[source];
+
+    record.customCoaActiveLabel = "yes"
+
+    if(isActive) {
+        return <ChipField source="customCoaActiveLabel" color='success' label="yes"/>
+    }
+    return null
+
+}
 
 export const AccountingPeriodList = () => {
     const location = useLocation();
@@ -56,6 +72,7 @@ export const AccountingPeriodList = () => {
                     }}
                 >
                     <TextField source="label" label="Period Name" />
+                    <IsActive source="isActive" label="Active"/>
                     <DateField source="startDate" label="Start Date" />
                     <DateField source="endDate" label="End Date" />
                     <TextField source="accountChart.name" label="CoA" />

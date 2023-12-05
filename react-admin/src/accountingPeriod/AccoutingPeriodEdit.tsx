@@ -9,7 +9,8 @@ import {
     ReferenceArrayInput,
     ReferenceInput, 
     AutocompleteInput,
-    SelectInput
+    SelectInput,
+    BooleanInput
 } from 'react-admin';
 import { Box, Stack, IconButton, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
@@ -69,6 +70,8 @@ const AccountingPeriodEdit = ({ id, onCancel }: Props) => {
                             label="Chart of Accounts"
                         />
                     </ReferenceInput>
+                    <BooleanInput label="Active" source="isActive" />
+
 
                 </SimpleForm>
 

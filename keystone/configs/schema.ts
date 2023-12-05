@@ -10,6 +10,7 @@ import {
   file,
   calendarDay,
   decimal,
+  checkbox
 } from '@keystone-6/core/fields';
 import { document } from '@keystone-6/fields-document';
 import type { Lists } from '.keystone/types';
@@ -117,7 +118,7 @@ export const lists: Lists = {
         ui: { displayMode: 'select' }
       }),
 
-      organizations: relationship({
+      organization: relationship({
         ref: "Organization",
         many: false,
         ui: {
@@ -128,7 +129,7 @@ export const lists: Lists = {
     },
     ui: {
       listView: {
-        initialColumns: ["name", "email", "organizations", "role", "createdAt"]
+        initialColumns: ["name", "email", "organization", "role", "createdAt"]
       }
     }
   }),
@@ -176,7 +177,7 @@ export const lists: Lists = {
             return {
               owner: {
                 id: {
-                  equals: session?.data.organizations.id}} // TODO: add support for mutliple orgs
+                  equals: session?.data.organization.id}} // TODO: add support for mutliple orgs
                 }
           } 
 
@@ -424,7 +425,7 @@ export const lists: Lists = {
             return {
               owner: {
                 id: {
-                  equals: session?.data.organizations.id}} // TODO: add support for mutliple orgs
+                  equals: session?.data.organization.id}}
                 }
           } 
 
@@ -445,8 +446,9 @@ export const lists: Lists = {
       }),
       startDate: calendarDay({label: "Start Date"}),
       endDate: calendarDay({label: "End Date"}),
-
-
+      isActive: checkbox({
+        defaultValue: false
+      })
     }
   }),
 

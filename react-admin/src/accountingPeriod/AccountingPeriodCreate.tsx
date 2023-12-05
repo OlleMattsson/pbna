@@ -11,7 +11,8 @@ import {
     getRecordFromLocation,
     NumberInput,
     SelectInput,    
-    DateInput
+    DateInput,
+    BooleanInput
 } from 'react-admin';
 import { useLocation } from 'react-router';
 
@@ -46,6 +47,20 @@ const AccountingPeriodCreate = () => {
                     source="endDate"
                     fullWidth
                 />
+                <ReferenceInput 
+                    source="accountChart.id" 
+                    reference="AccountChart" 
+                    options={{ fullWidth:true }
+                }>    
+                    <SelectInput
+                        fullWidth
+                        optionText="name"
+                        optionValue="id"
+                        label="Chart of Accounts"
+                    />
+                </ReferenceInput>                
+                <BooleanInput label="Active" source="isActive" />
+
             </SimpleForm>
         </Create>
     );

@@ -18,32 +18,83 @@ const customizeBuildQuery = introspectionResults => (raFetchType, resourceName, 
 
     console.log(raFetchType, builtQuery)
 
+    const user = JSON.parse(localStorage.getItem("user"))
 
     /**
      * Accounting Period
      */
 
-    if (resourceName === "AccountingPeriod" && raFetchType === "UPDATE") {
-        const variables = builtQuery.variables;
+    if (resourceName === "AccountingPeriod") {
 
-        variables.data = {
-            ...variables.data,
-            accountChart: {
-                connect: {
-                    id: variables.data.accountChart.id
+        switch(raFetchType) {
+            case "UPDATE": {
+                const variables = builtQuery.variables;
+
+                variables.data = {
+                    ...variables.data,
+                    accountChart: {
+                        connect: {
+                            id: variables.data.accountChart.id
+                        }
+                    }
+                }
+        
+                delete variables.data.id
+                delete variables.data.owner
+                delete variables.data["owner.id"]
+                delete variables.data["accountChart.id"]
+                
+                return {
+                    ...builtQuery,
+                    variables
+                }
+            }
+            case "CREATE": {
+                const variables = builtQuery.variables;
+
+                variables.data = {
+                    ...variables.data,
+                    accountChart: {
+                        connect: {
+                            id: variables.data.accountChart.id
+                        }
+                    },
+                    owner: {
+                        connect: {
+                            id: user.organization.id
+                        }
+                    }                    
+                }
+
+                delete variables.data.id
+
+                return {
+                    ...builtQuery,
+                    variables
+                }
+            } 
+            case "DELETE": {
+                return {
+                    query: gql`
+                        mutation DeleteAccountingPeriod($where: AccountingPeriodWhereUniqueInput!) {
+                            deleteAccountingPeriod(where: $where) {
+                                id
+                            }
+                        }                    
+                    `,
+                    variables: {                   
+                        where: {
+                            id: params.id
+                        }                                           
+                    },
+                    parseResponse: () => {
+                        return { data: { id: params.id } };
+                    }
                 }
             }
         }
 
-        delete variables.data.id
-        delete variables.data.owner
-        delete variables.data["owner.id"]
-        delete variables.data["accountChart.id"]
-        
-        return {
-            ...builtQuery,
-            variables
-        }
+
     }
 
     /**
