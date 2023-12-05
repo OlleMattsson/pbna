@@ -5,6 +5,7 @@ import {
     Datagrid,
     TextField,
     TextInput,
+    DateField
 } from 'react-admin';
 import { matchPath, useLocation, useNavigate } from 'react-router-dom';
 
@@ -51,16 +52,13 @@ export const AccountingPeriodList = () => {
                         },
                         '& .column-total_ex_taxes': {
                             display: { xs: 'none', md: 'table-cell' },
-                        },
-                        '& .column-delivery_fees': {
-                            display: { xs: 'none', md: 'table-cell' },
-                        },
-                        '& .column-taxes': {
-                            display: { xs: 'none', md: 'table-cell' },
-                        },
+                        }
                     }}
                 >
-                    <TextField source="label" />
+                    <TextField source="label" label="Period Name" />
+                    <DateField source="startDate" label="Start Date" />
+                    <DateField source="endDate" label="End Date" />
+                    <TextField source="accountChart.name" label="CoA" />
                 </Datagrid>
             </List>
             <Drawer

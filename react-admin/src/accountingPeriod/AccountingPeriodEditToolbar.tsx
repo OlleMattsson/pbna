@@ -36,7 +36,7 @@ const AccountingPeriodEditToolbar = (props: ToolbarProps) => {
                                 messageArgs: { smart_count: 1 },
                                 undoable: true,
                             });
-                            redirect('list', 'account');
+                            redirect('list', 'accountingPeriod');
                         },
                     }}
                     type="button"

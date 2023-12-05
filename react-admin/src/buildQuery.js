@@ -18,21 +18,52 @@ const customizeBuildQuery = introspectionResults => (raFetchType, resourceName, 
 
     console.log(raFetchType, builtQuery)
 
+
+    /**
+     * Accounting Period
+     */
+
+    if (resourceName === "AccountingPeriod" && raFetchType === "UPDATE") {
+        const variables = builtQuery.variables;
+
+        variables.data = {
+            ...variables.data,
+            accountChart: {
+                connect: {
+                    id: variables.data.accountChart
+                }
+            }
+        }
+
+        delete variables.data.id
+        delete variables.data.owner
+        delete variables.data["owner.id"]
+        delete variables.data["accountChart.id"]
+        
+        return {
+            ...builtQuery,
+            variables
+        }
+    }
+
+    /**
+     * Organization
+     */
     if (resourceName === "Organization" && raFetchType === "UPDATE") {
-        const v = builtQuery.variables;
-        delete v.data.id
-        delete v.data.usersCount
-        delete v.data.owner
-        delete v.data["owner.id"]
-        delete v.data.users
+        const variables = builtQuery.variables;
+        delete variables.data.id
+        delete variables.data.usersCount
+        delete variables.data.owner
+        delete variables.data["owner.id"]
+        delete variables.data.users
 
         return {
             ...builtQuery,
-            variables: v
+            variables
         }
     }
     /*
-        Custom override: Get Entries list
+        Entries
     */
     if ( resourceName === "Entry") {
 

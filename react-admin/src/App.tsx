@@ -39,12 +39,21 @@ export const App = () => {
             <Resource name="Entry" {...EntryList}/>
             <Resource name="Attachment" {...attachment}/>
             <Resource name="Account" {...account}/>
-            <Resource name="AccountChart" {...accountChart}/>
+
+            <Resource name="AccountChart"
+                options={{ label: 'CoA' }} 
+                {...accountChart}
+            />
+
             <Resource name="Organization" 
                 options={{ label: 'Organization' }} 
                 {...organization}
-                />
-            <Resource name="AccountingPeriod" {...accountingPeriod}/>
+            />
+
+            <Resource name="AccountingPeriod"
+                options={{ label: 'Accounting Periods' }}                 
+                {...accountingPeriod}
+            />
            
             <CustomRoutes>
                 <Route path="/ledger" element={<Ledger />} />

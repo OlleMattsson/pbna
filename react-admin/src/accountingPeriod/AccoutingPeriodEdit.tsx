@@ -5,7 +5,9 @@ import {
     TextInput,
     SimpleForm,
     EditProps,
-    DateInput
+    DateInput,
+    ReferenceArrayInput,
+    AutocompleteInput
 } from 'react-admin';
 import { Box, Stack, IconButton, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
@@ -52,7 +54,16 @@ const AccountingPeriodEdit = ({ id, onCancel }: Props) => {
                         source="endDate"
                         fullWidth
                     />
-                    </SimpleForm>
+
+                    <ReferenceArrayInput source="accountChart" reference="AccountChart" options={{ fullWidth:true }}>    
+                        <AutocompleteInput
+                            fullWidth
+                            optionText="name"
+                            label="Chart of Accounts"
+                        />
+                    </ReferenceArrayInput>
+
+                </SimpleForm>
 
                     
             </Box>
