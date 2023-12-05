@@ -9,9 +9,11 @@ import account from "./account"
 import attachment from "./attachment"
 import accountChart from "./accountChart"
 import organization from "./organization"
+import OrganizationEdit from './organization/OrganizationEdit';
 import accountingPeriod from "./accountingPeriod"
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import {Ledger} from "./ledger/Ledger"
+import BusinessIcon from '@mui/icons-material/Business';
 
 
 
@@ -38,7 +40,10 @@ export const App = () => {
             <Resource name="Attachment" {...attachment}/>
             <Resource name="Account" {...account}/>
             <Resource name="AccountChart" {...accountChart}/>
-            <Resource name="Organization" {...organization}/>
+            <Resource name="Organization" 
+                options={{ label: 'Organization' }} 
+                {...organization}
+                />
             <Resource name="AccountingPeriod" {...accountingPeriod}/>
            
             <CustomRoutes>

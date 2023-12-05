@@ -8,14 +8,7 @@ import {
 } from 'react-admin';
 import { Box, Stack, IconButton, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-
-/*
-import ProductReferenceField from '../products/ProductReferenceField';
-import CustomerReferenceField from '../visitors/CustomerReferenceField';
-import StarRatingField from './StarRatingField';
-import { Review } from '../types';
-*/
-import AccountEditToolbar from './OrganizationEditToolbar';
+import OrganizationEditToolbar from './OrganizationEditToolbar';
 
 interface Props extends EditProps {
     onCancel: () => void;
@@ -36,7 +29,7 @@ const OrganizationEdit = ({ id, onCancel }: Props) => {
                 </Stack>
                 <SimpleForm
                     sx={{ pt: 0, pb: 0 }}
-                    toolbar={<AccountEditToolbar />}
+                    toolbar={<OrganizationEditToolbar />}
                 >
 
                     <TextInput
@@ -44,9 +37,43 @@ const OrganizationEdit = ({ id, onCancel }: Props) => {
                         fullWidth
                     />
                     <TextInput
+                        source="addressStreet"
+                        fullWidth
+                    />
+                    <TextInput
+                        source="addressPostalCode"
+                        fullWidth
+                    />
+                    <TextInput
+                        source="addressCity"
+                        fullWidth
+                    />
+                    <TextInput
+                        source="addressCountry"
+                        fullWidth
+                    />
+                    <TextInput
+                        source="phone"
+                        fullWidth
+                    />
+                    <TextInput
+                        source="email"
+                        fullWidth
+                    />
+                    <TextInput
                         source="website"
                         fullWidth
                     />
+                    <TextInput
+                        source="businessID"
+                        fullWidth
+                    />
+                    <TextInput
+                        source="vatNumber"
+                        fullWidth
+                    />
+
+
                 </SimpleForm>
             </Box>
         </EditBase>

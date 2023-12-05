@@ -16,6 +16,21 @@ const client = new ApolloClient({
 const customizeBuildQuery = introspectionResults => (raFetchType, resourceName, params) => {
     const builtQuery = buildQuery(introspectionResults)(raFetchType, resourceName, params);
 
+    console.log(raFetchType, builtQuery)
+
+    if (resourceName === "Organization" && raFetchType === "UPDATE") {
+        const v = builtQuery.variables;
+        delete v.data.id
+        delete v.data.usersCount
+        delete v.data.owner
+        delete v.data["owner.id"]
+        delete v.data.users
+
+        return {
+            ...builtQuery,
+            variables: v
+        }
+    }
     /*
         Custom override: Get Entries list
     */

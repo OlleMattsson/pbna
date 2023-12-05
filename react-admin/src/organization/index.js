@@ -5,5 +5,5 @@ import OrganizationCreate from './OrganizationCreate';
 export default {
     icon: BusinessIcon,
     list: OrganizationList,
-    create: OrganizationCreate,
+    OrganizationCreate,
 };

@@ -167,21 +167,23 @@ export default (introspectionResults: IntrospectionResult) => (
                 )
             }
 
-            // purkkaliimaratkaisu
+            // purkkaliimaratkaisu för att updatera AccountChart
             // problemet är att buildCreateUpdateVariables trycker in
             // accountsCount o accountsIds -> BORT
             // accounts ska vara ett object som innehåller connect: [{id: accountId}]
-            const accounts = vars.data.accounts.map(a => ({ id: a}))
+            if (resource.type.name === "AccountChart") {
+                const accounts = vars.data.accounts.map(a => ({ id: a}))
 
-            delete vars.data.id
-            delete vars.data.accountsCount
-            delete vars.data.accountsIds
-            delete vars.data.accounts
+                delete vars.data.id
+                delete vars.data.accountsCount
+                delete vars.data.accountsIds
+                delete vars.data.accounts
 
-            vars.data = {
-                ...vars.data,
-                accounts: {
-                    connect: accounts
+                vars.data = {
+                    ...vars.data,
+                    accounts: {
+                        connect: accounts
+                    }
                 }
             }
 
