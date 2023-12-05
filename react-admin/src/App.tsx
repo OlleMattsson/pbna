@@ -9,6 +9,7 @@ import account from "./account"
 import attachment from "./attachment"
 import accountChart from "./accountChart"
 import organization from "./organization"
+import accountingPeriod from "./accountingPeriod"
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import {Ledger} from "./ledger/Ledger"
 
@@ -38,6 +39,7 @@ export const App = () => {
             <Resource name="Account" {...account}/>
             <Resource name="AccountChart" {...accountChart}/>
             <Resource name="Organization" {...organization}/>
+            <Resource name="AccountingPeriod" {...accountingPeriod}/>
            
             <CustomRoutes>
                 <Route path="/ledger" element={<Ledger />} />

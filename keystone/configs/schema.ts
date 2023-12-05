@@ -14,7 +14,7 @@ import {
 import { document } from '@keystone-6/fields-document';
 import type { Lists } from '.keystone/types';
 import { attachmentAfterOperation } from '../hooks/attachment_afteroperation';
-
+import util from 'util'
 
 
 
@@ -119,7 +119,7 @@ export const lists: Lists = {
 
       organizations: relationship({
         ref: "Organization",
-        many: true,
+        many: false,
         ui: {
           labelField: "name"
         }
@@ -156,7 +156,35 @@ export const lists: Lists = {
   */
 
   Entry: list({
-    access: allowAll,
+    access: {
+      operation: allowAll,
+      filter: {
+        query: ({ session, context, listKey, operation }) => {
+          
+          console.log(
+            util.inspect( session, {
+              depth:null, 
+              showHidden: true, 
+              colors: true
+            }))
+
+          if (isAdmin({session})) {
+            return true
+          }
+
+          if (isOwner({session}))  {
+            return {
+              owner: {
+                id: {
+                  equals: session?.data.organizations.id}} // TODO: add support for mutliple orgs
+                }
+          } 
+
+          return false
+
+        }
+      }
+    },
     fields: {
       createdAt: timestamp({
         defaultValue: { kind: 'now' },
@@ -376,13 +404,41 @@ export const lists: Lists = {
   }),
 
   AccountingPeriod: list({
-    access: allowAll,
+    access: {
+      operation: allowAll,
+      filter: {
+        query: ({ session, context, listKey, operation }) => {
+          
+          console.log(
+            util.inspect( session, {
+              depth:null, 
+              showHidden: true, 
+              colors: true
+            }))
+
+          if (isAdmin({session})) {
+            return true
+          }
+
+          if (isOwner({session}))  {
+            return {
+              owner: {
+                id: {
+                  equals: session?.data.organizations.id}} // TODO: add support for mutliple orgs
+                }
+          } 
+
+          return false
+
+        }
+      }
+    },
     fields: {
-      label: text(),
-      organization: relationship({
+      owner: relationship({
         ref: "Organization",
         many: false
       }),
+      label: text(),
       accountChart: relationship({
         ref: "AccountChart",
         many: false
