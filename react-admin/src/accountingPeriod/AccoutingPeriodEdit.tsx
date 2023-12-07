@@ -1,4 +1,3 @@
-import * as React from 'react';
 import {
     EditBase,
     useTranslate,
@@ -13,13 +12,6 @@ import {
 } from 'react-admin';
 import { Box, Stack, IconButton, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-
-/*
-import ProductReferenceField from '../products/ProductReferenceField';
-import CustomerReferenceField from '../visitors/CustomerReferenceField';
-import StarRatingField from './StarRatingField';
-import { Review } from '../types';
-*/
 import AccountingPeriodEditToolbar from './AccountingPeriodEditToolbar';
 
 interface Props extends EditProps {
