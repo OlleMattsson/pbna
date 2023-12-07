@@ -79,8 +79,7 @@ export default (introspectionResults: IntrospectionResult) => (
          
         }
         case GET_MANY: {
-
-            const a = {
+            return {
                 where: {
                     id: {
                         in: preparedParams.ids.map(item => {
@@ -93,9 +92,6 @@ export default (introspectionResults: IntrospectionResult) => (
                     }
                 }
             }
-            
-            console.log(a)
-            return a
         }
 
         case GET_MANY_REFERENCE: {
