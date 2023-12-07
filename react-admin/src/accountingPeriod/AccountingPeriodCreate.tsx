@@ -59,6 +59,8 @@ const AccountingPeriodCreate = () => {
                         label="Chart of Accounts"
                     />
                 </ReferenceInput>                
+                <NumberInput source="vatReportingDate" label="VAT Reporting Date"/>
+                <NumberInput source="vatReportingFrequency" label="VAT Reporting frequency"/>
                 <BooleanInput label="Active" source="isActive" />
 
             </SimpleForm>

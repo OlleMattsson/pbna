@@ -446,6 +446,8 @@ export const lists: Lists = {
       }),
       startDate: calendarDay({label: "Start Date"}),
       endDate: calendarDay({label: "End Date"}),
+      vatReportingDate: integer({}),
+      vatReportingFrequency: integer(),
       isActive: checkbox({
         defaultValue: false
       })
