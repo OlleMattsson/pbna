@@ -65,7 +65,9 @@ const Accounts2 = ({source}) => {
 
     return (
         <div>
-            {nestedData.sort((a,b) => a.account - b.account).map((item, index) => {
+            {nestedData
+            .sort((a,b) => a.account - b.account)
+            .map((item, index) => {
                 return (<div key={index}>
                     <p>
                     <span>{item.account}</span> - 
@@ -127,12 +129,8 @@ const AccountEdit = ({ id, onCancel }: Props) => {
                                 Parse is run whenever an new item is added to the list of selected items
                                 https://marmelab.com/react-admin/AutocompleteArrayInput.html#working-with-object-values 
                                 */       
-
                                 if (value) {
-                                    console.log("parse", value)
-                                    const r =  value.map(v => ({id: v}))
-                                    console.log(r)
-                                    return r                                    
+                                   return value.map(v => ({id: v}))
                                 }
                                 return []
                             }}
@@ -142,10 +140,8 @@ const AccountEdit = ({ id, onCancel }: Props) => {
                                 https://marmelab.com/react-admin/AutocompleteArrayInput.html#working-with-object-values 
                                 */                                
                                 if (value) {
-                                    console.log("format", value)
-                                    const r = value.map(v => v.id)
-                                    console.log(r)
-                                    return r
+                                    return value.map(v => v.id)
+                                    
                                 }
                                 return                            
                             }}

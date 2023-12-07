@@ -8,10 +8,18 @@ const client = new ApolloClient({
     link: new HttpLink({
         uri: 'http://localhost:3000/api/graphql',        
         credentials: 'include'  // add Cookie header to requests
-    }) 
+    }),
+    defaultOptions: {
+        watchQuery: {
+            fetchPolicy: 'no-cache',
+            errorPolicy: 'ignore',
+          },
+          query: {
+            fetchPolicy: 'no-cache',
+            errorPolicy: 'all',
+          },        
+    } 
 });
-
-
 
 const customizeBuildQuery = introspectionResults => (raFetchType, resourceName, params) => {
     const builtQuery = buildQuery(introspectionResults)(raFetchType, resourceName, params);
@@ -32,6 +40,7 @@ const customizeBuildQuery = introspectionResults => (raFetchType, resourceName, 
                 delete variables.data.id
                 delete variables.data.accountsCount
                 delete variables.data.accountsIds
+                delete variables.data.__typename
                
                 variables.data = {
                     ...variables.data,
@@ -44,6 +53,39 @@ const customizeBuildQuery = introspectionResults => (raFetchType, resourceName, 
                     ...builtQuery
                 }
             }
+            // sort the account references
+            case "GET_ONE": {
+                return {
+                    ...builtQuery,
+                    variables: {
+                        ...builtQuery.variables,
+                        orderBy: [{
+                            account: "asc"
+                        }]
+                    }
+                   
+                }
+            }
+            case "DELETE": {
+                return {
+                    ...builtQuery,
+                    query: gql`
+                    mutation DeleteAccountChart($where: AccountChartWhereUniqueInput!) {
+                        deleteAccountChart(where: $where) {
+                          id
+                        }
+                      }
+                    `,
+                    variables: {                   
+                        "where": {
+                            "id": params.id
+                        }                                           
+                    },
+                    parseResponse: () => {
+                        return { data: { id: params.id } };
+                    }
+                }
+            }
         }
     }
 
@@ -52,15 +94,26 @@ const customizeBuildQuery = introspectionResults => (raFetchType, resourceName, 
     */
     if (resourceName === "Account") {
         switch(raFetchType) {
+            case "GET_LIST": {
+                return {
+                    ...builtQuery,
+                    variables: {
+                        ...builtQuery.variables,
+                        orderBy: [{
+                            account: "asc"
+                        }]
+                    }, 
+                }
+            }
             case "GET_MANY": {
                 return {
-                 ...builtQuery,
-                 parseResponse: (response) => {
-                     return {
-                         data: response.data.items,
-                         total: response.data.totalCount
-                     }
-                 }
+                    ...builtQuery,
+                    variables: {
+                        ...builtQuery.variables,
+                        orderBy: [{
+                            account: "asc"
+                        }]
+                    }
                 }
  
             }
