@@ -16,9 +16,57 @@ const client = new ApolloClient({
 const customizeBuildQuery = introspectionResults => (raFetchType, resourceName, params) => {
     const builtQuery = buildQuery(introspectionResults)(raFetchType, resourceName, params);
 
-    console.log(raFetchType, builtQuery)
+    console.log(resourceName, raFetchType, builtQuery)
 
     const user = JSON.parse(localStorage.getItem("user"))
+
+    /**
+     * Account Chart (CoA)
+     */
+
+    if (resourceName === "AccountChart") {
+        switch(raFetchType) {
+            case "UPDATE": {
+                const variables = builtQuery.variables;
+
+                delete variables.data.id
+                delete variables.data.accountsCount
+                delete variables.data.accountsIds
+               
+                variables.data = {
+                    ...variables.data,
+                    accounts: {
+                        set: variables.data.accounts // set replaces old connections with new ones
+                    }
+                }
+              
+                return {
+                    ...builtQuery
+                }
+            }
+        }
+    }
+
+    /*
+        Account
+    */
+    if (resourceName === "Account") {
+        switch(raFetchType) {
+            case "GET_MANY": {
+                return {
+                 ...builtQuery,
+                 parseResponse: (response) => {
+                     return {
+                         data: response.data.items,
+                         total: response.data.totalCount
+                     }
+                 }
+                }
+ 
+            }
+        }
+    }
+
 
     /**
      * Accounting Period
@@ -27,6 +75,7 @@ const customizeBuildQuery = introspectionResults => (raFetchType, resourceName, 
     if (resourceName === "AccountingPeriod") {
 
         switch(raFetchType) {
+          
             case "UPDATE": {
                 const variables = builtQuery.variables;
 

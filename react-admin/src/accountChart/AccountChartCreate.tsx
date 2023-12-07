@@ -24,19 +24,15 @@ const AccountChartCreate = () => {
         const record = getRecordFromLocation(location);
         notify('ra.notification.created');
         if (record && record.id) {
-            redirect(`/account/${record.product_id}`);
+            redirect(`/accountChart/${record.product_id}`);
         } else {
-            redirect(`/account`);
+            redirect(`/accountChart`);
         }
     };
 
     return (
         <Create mutationOptions={{ onSuccess }}>
             <SimpleForm>
-                <NumberInput
-                    source="account"
-                    fullWidth
-                />
                 <TextInput
                     source="name"
                     fullWidth
@@ -45,13 +41,6 @@ const AccountChartCreate = () => {
                     source="description"
                     fullWidth
                 />
-                <SelectInput source="type" label="Account Type" choices={[
-                        { name: 'Asset', id: '0' },
-                        { name: 'Liability', id: '1' },
-                        { name: 'VAT', id: '2' },
-                        { name: 'IncomeStatement', id: '3' },
-                        { name: 'Noop', id: '4' },
-                ]} />
             </SimpleForm>
         </Create>
     );

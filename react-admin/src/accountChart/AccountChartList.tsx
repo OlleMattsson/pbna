@@ -23,7 +23,6 @@ export const AccountChartList = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const match = matchPath('/accountChart/:id', location.pathname);
-    console.log(location.pathname, match)
 
     const handleClose = useCallback(() => {
         navigate('/accountChart');

@@ -132,26 +132,7 @@ export default (introspectionResults: IntrospectionResult) => (
 
 
         case UPDATE: {
-
-            /**
-            
-{
-  "where": {
-    "id": "4cf18dbb-c4d1-4ea6-93b6-167e45d4d33a"
-  },
-  "data": {
-    "name": "Simpel",
-    "description": "",
-    "accounts": {
-      "connect" :[
-        {"id": "f851f282-2250-48a6-a037-729e267790cc" }
-      ]
-    }
-  }
-}
-
-             */
-            const vars = {
+            return {
                 where: {
                     id: preparedParams.id
                 },
@@ -162,32 +143,6 @@ export default (introspectionResults: IntrospectionResult) => (
                     queryType
                 )
             }
-
-            // purkkaliimaratkaisu för att updatera AccountChart
-            // problemet är att buildCreateUpdateVariables trycker in
-            // accountsCount o accountsIds -> BORT
-            // accounts ska vara ett object som innehåller connect: [{id: accountId}]
-            if (resource.type.name === "AccountChart") {
-                const accounts = vars.data.accounts.map(a => ({ id: a}))
-
-                delete vars.data.id
-                delete vars.data.accountsCount
-                delete vars.data.accountsIds
-                delete vars.data.accounts
-
-                vars.data = {
-                    ...vars.data,
-                    accounts: {
-                        connect: accounts
-                    }
-                }
-            }
-
-
-            console.log("vars", vars)
-
-            return vars
-
         }
     }
 };

@@ -56,9 +56,36 @@ const Accounts = ({source}) => {
             </Datagrid>
         </List>
     )
-
-
 }
+
+const Accounts2 = ({source}) => {
+    const record = useRecordContext();
+    if (!record) return null;
+    const nestedData = record[source];
+
+    return (
+        <div>
+            {nestedData.sort((a,b) => a.account - b.account).map((item, index) => {
+                return (<div key={index}>
+                    <p>
+                    <span>{item.account}</span> - 
+                    <span>{item.name}</span>
+                    </p>
+
+                    { item.vatAccount &&
+                        <p>
+                            <span>VAT Account</span><br />
+                            <span>{item.vatAccount.account}</span> - <span>{item.vatAccount.name}</span> 
+                        </p>
+                    }
+                </div>
+                )
+            }
+            )}
+        </div>
+    );
+}
+
 const AccountEdit = ({ id, onCancel }: Props) => {
     const translate = useTranslate();
 
@@ -92,13 +119,41 @@ const AccountEdit = ({ id, onCancel }: Props) => {
                     <ReferenceArrayInput source="accounts" reference="Account" options={{ fullWidth:true }}>    
                         <AutocompleteArrayInput
                             fullWidth
-                            optionText="name"
+                            optionText={(record) => `${record.account} - ${record.name}`}
+                            optionValue="id"
                             label="Accounts"
+                            parse={(value) => {
+                                /*  
+                                Parse is run whenever an new item is added to the list of selected items
+                                https://marmelab.com/react-admin/AutocompleteArrayInput.html#working-with-object-values 
+                                */       
+
+                                if (value) {
+                                    console.log("parse", value)
+                                    const r =  value.map(v => ({id: v}))
+                                    console.log(r)
+                                    return r                                    
+                                }
+                                return []
+                            }}
+                            format={(value) => {
+                                /*  
+                                In order to render selected items, the components needs a list of Ids
+                                https://marmelab.com/react-admin/AutocompleteArrayInput.html#working-with-object-values 
+                                */                                
+                                if (value) {
+                                    console.log("format", value)
+                                    const r = value.map(v => v.id)
+                                    console.log(r)
+                                    return r
+                                }
+                                return                            
+                            }}
                             
                         />
                     </ReferenceArrayInput>
 
-                    <Accounts source="accounts" />
+                    <Accounts2 source="accounts" />
 
                 </SimpleForm>
             </Box>
