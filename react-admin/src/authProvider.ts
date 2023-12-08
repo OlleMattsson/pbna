@@ -42,8 +42,6 @@ export const authProvider: AuthProvider = {
       }
     }).then(r => {
       
-      console.log(r)
-
       if (r.data.authenticateUserWithPassword.__typename === "UserAuthenticationWithPasswordFailure") {
         return Promise.reject(
           r.data.authenticateUserWithPassword.message)
@@ -52,7 +50,6 @@ export const authProvider: AuthProvider = {
       if (r.data.authenticateUserWithPassword.sessionToken) {
         let { ...userToPersist } = r.data.authenticateUserWithPassword.item;
         localStorage.setItem("user", JSON.stringify(userToPersist));        
-        localStorage.setItem("sessionToken", r.data.authenticateUserWithPassword.sessionToken)
         return Promise.resolve()
       }
 
