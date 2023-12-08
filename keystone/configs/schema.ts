@@ -162,13 +162,6 @@ export const lists: Lists = {
       filter: {
         query: ({ session, context, listKey, operation }) => {
           
-          console.log(
-            util.inspect( session, {
-              depth:null, 
-              showHidden: true, 
-              colors: true
-            }))
-
           if (isAdmin({session})) {
             return true
           }
@@ -410,13 +403,6 @@ export const lists: Lists = {
       filter: {
         query: ({ session, context, listKey, operation }) => {
           
-          console.log(
-            util.inspect( session, {
-              depth:null, 
-              showHidden: true, 
-              colors: true
-            }))
-
           if (isAdmin({session})) {
             return true
           }
@@ -459,9 +445,6 @@ export const lists: Lists = {
       operation: allowAll,
       filter: {
         query: ({ session, context, listKey, operation }) => {
-          
-          console.log(session)
-          //console.log(context)
 
           if (isAdmin({session})) {
             return true

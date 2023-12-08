@@ -18,13 +18,14 @@ const client = new ApolloClient({
             fetchPolicy: 'no-cache',
             errorPolicy: 'all',
           },        
-    } 
+    },
+
 });
 
 const customizeBuildQuery = introspectionResults => (raFetchType, resourceName, params) => {
     const builtQuery = buildQuery(introspectionResults)(raFetchType, resourceName, params);
 
-    console.log(resourceName, raFetchType, builtQuery)
+    //console.log(resourceName, raFetchType, builtQuery)
 
     const user = JSON.parse(localStorage.getItem("user"))
 

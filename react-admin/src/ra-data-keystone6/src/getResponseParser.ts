@@ -14,7 +14,6 @@ export default (_introspectionResults: IntrospectionResult) => (
             data: data.items.map(sanitizeResource),
             total: data.totalCount
         };
-        console.log(a)
         return a
     }
 

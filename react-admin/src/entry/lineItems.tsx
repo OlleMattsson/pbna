@@ -1,5 +1,5 @@
 import * as React from "react";
-import {useState} from "react";
+import {useState, useEffect} from "react";
 
 import {
   Table,
@@ -15,7 +15,8 @@ import { ApolloClient, InMemoryCache, gql, useQuery } from '@apollo/client';
 
 const client = new ApolloClient({
     cache: new InMemoryCache(),
-    uri: 'http://localhost:3000/api/graphql'
+    uri: 'http://localhost:3000/api/graphql',
+    credentials: 'include'
 });
 
 // TODO: fetch AccountChart from AccountingPeriod
@@ -67,23 +68,34 @@ mutation Mutation($where: EntryWhereUniqueInput!, $data: EntryUpdateInput!) {
 `
 
 
-let accounts = null
-
-client.query({
-    query: GET_ACCOUNTS,
-    variables: {
-        where: {
-          id: accountChart
-        }
-      }
-}).then( r => {
-    accounts = r.data.accountChart.accounts;
-})
 
 export const LineItems = ({lineItems, entryId}) => {
 
   const [data, setData] = React.useState({ nodes: lineItems });
+  
   const [selectedOption, setSelectedOption] = useState('blank');
+
+  const [accounts, setAccounts] = useState([])
+  
+  const user = JSON.parse(localStorage.getItem("user"));
+  
+  const { id: userId, organization: {id: organizationId} } = user;
+
+  useEffect(() => {
+    client.query({
+      query: GET_ACCOUNTS,
+      variables: {
+          where: {
+            id: accountChart
+          }
+        }
+    }).then( r => {
+        setAccounts(r.data.accountChart.accounts)
+    })
+  }, []);
+
+
+  
 
 
   const handleUpdate = (newValue, lineItemId, property) => {
@@ -156,45 +168,62 @@ export const LineItems = ({lineItems, entryId}) => {
 
     const createVars = (property, value, lineItemsCount) => {
 
-        let vars
+      let vars
 
-        if (property === "account") {
-            vars = [{
-                account : {
-                    connect: {
-                        id: value
-                    }
-                }
-            }]
-        } else {          
-            vars =  [{
-                [property]: value.replace(',', '.')              
-            }]
+      // adding accounts
+      if (property === "account") {
+          vars = [{
+              account : {
+                  connect: {
+                      id: value
+                  }
+              }
+          }]
+      } else {    
+      
+      // updating other props
+        vars =  [{
+            [property]: value.replace(',', '.')          
+        }]
+      }
+
+      vars[0].order = lineItemsCount + 1
+
+      debugger;
+
+      return {
+        ...vars[0], 
+        createdBy: {
+          connect: {
+              id: userId
+          }
+        },
+        owner: {
+          connect: {
+            id: organizationId
+          }
         }
-
-        vars[0].order = lineItemsCount + 1
-
-        return vars
+      }
     } 
 
 
 
     // update db
     client.mutate({
-        mutation: UPDATE_ENTRY_CREATE_LINEITEM,
-        variables: {
-            where: {
-                id: entryId
-            },
-            data:{
-                lineItems: {
-                  create: createVars(property, value, lineItemsCount)
-                }
-              }
+      mutation: UPDATE_ENTRY_CREATE_LINEITEM,
+      variables: {
+        where: {
+            id: entryId
+        },
+        data:{
+          lineItems: {
+            create: createVars(property, value, lineItemsCount)
+          },
 
         }
+      }
     }).then(r => {
-        console.log("UPDATE_LINEITEM_ACCOUNT success", r)
+        console.log("UPDATE_ENTRY_CREATE_LINEITEM success", r)
 
         // graphql includes all lineItems in the response
         // here we use lineItem.order to find the latest id
@@ -234,11 +263,6 @@ export const LineItems = ({lineItems, entryId}) => {
             }
         });
          
-
-
-
-        //////
-
     }).catch(e => [
         console.log(e)
     ])

@@ -6,6 +6,7 @@ import {
     useRedirect,
     getRecordFromLocation,
     SaveButton,
+    localStorageStore,
 } from 'react-admin';
 import { useLocation } from 'react-router';
 import {LineItems} from './lineItems'
@@ -22,7 +23,8 @@ import { Fragment } from 'react';
 
 const client = new ApolloClient({
     cache: new InMemoryCache(),
-    uri: 'http://localhost:3000/api/graphql'
+    uri: 'http://localhost:3000/api/graphql',
+    credentials: 'include'
 });
 
 const ENTRY_CREATE = gql`
@@ -33,16 +35,13 @@ mutation Mutation($data: EntryCreateInput!) {
   }
 `
 
-// create entry and retrieve ID
 
-// TODO: user should be logged in user
-const createdByUserId = "2ca63449-b1d7-491c-8093-94c79f40e2d3"
 
 const EntryCreate = () => {    
 
-   const [newEntryId, setNewEntryId] = useState(null)
+    const [newEntryId, setNewEntryId] = useState(null)
 
-   const lineItems = []
+    const lineItems = []
 
     
     const notify = useNotify();
@@ -53,72 +52,87 @@ const EntryCreate = () => {
         const record = getRecordFromLocation(location);
         notify('ra.notification.created');
         if (record && record.id) {
-            redirect(`/account/${record.product_id}`);
+            redirect(`/entry/${record.product_id}`);
         } else {
-            redirect(`/account`);
+            redirect(`/entry`);
         }
     };
 
-    return (
-        <Box>
-            <Create mutationOptions={{ onSuccess }}>
-                <SimpleForm 
-                    toolbar={<EntryCreateToolbar entryId={newEntryId}/>}
-                    onSubmit={(data) =>{
-                        const {entryNumber, description, date} = data
-                        client.mutate({
-                            mutation: ENTRY_CREATE,
-                            variables: {
-                                data: {
-                                    createdBy: {
-                                        connect: {
-                                            id: createdByUserId // admin@mattssoft.com
-                                        }
-                                    },
-                                    entryNumber: parseInt(entryNumber),
-                                    description,
-                                    date
+    const user = JSON.parse(localStorage.getItem("user"));
+    const { id, organization: {id: organizationId} } = user;
+
+    if (id && organizationId) {
+        console.log(`user: ${id} org: ${organizationId}`)
+        return (
+            <Box>
+                <Create mutationOptions={{ onSuccess }}>
+                    <SimpleForm 
+                        toolbar={<EntryCreateToolbar entryId={newEntryId}/>}
+                        onSubmit={(data) =>{
+                            const {entryNumber, description, date} = data
+                            client.mutate({
+                                mutation: ENTRY_CREATE,
+                                variables: {
+                                    data: {
+                                        createdBy: {
+                                            connect: {
+                                                id
+                                            }
+                                        },
+                                        owner: {
+                                            connect: {
+                                                id: organizationId
+                                            }
+                                        },
+                                        entryNumber: parseInt(entryNumber),
+                                        description,
+                                        date
+                                    }
                                 }
-                            }
-                        }).then(r => {
-                            const id = r.data.createEntry.id
-                            setNewEntryId(id)
-                        })
-                    }}
-                >
-                    <EntryNumberInput 
-                        fullWidth
-                        source="entryNumber"
-                        label="Entry Number"
+                            }).then(r => {
+                                const id = r.data.createEntry.id
+                                setNewEntryId(id)
+                            })
+                        }}
+                    >
+                        <EntryNumberInput 
+                            fullWidth
+                            source="entryNumber"
+                            label="Entry Number"
+    
+                        />
+                        <CustomDateInput 
+                            source="date" 
+                            label="Transaction Date"
+    
+                        />
+                        <DescriptionInput 
+                            source="description" 
+                            label="Description" 
+                        />
+                    </SimpleForm>
+                </Create>
+                        
+                {newEntryId && 
+                    <>
+                        <LineItems lineItems={lineItems} entryId={newEntryId}/>
+                            <button onClick={() => {
+                                notify('ra.notification.updated', {
+                                    type: 'info',
+                                    messageArgs: { smart_count: 1 },
+                                    undoable: true,
+                                });
+                                redirect('list', 'entry');
+                            }}>Save & Close</button>
+                    </>
+                }
+            </Box>
+        );
+    } 
 
-                    />
-                    <CustomDateInput 
-                        source="date" 
-                        label="Transaction Date"
+    return null
 
-                    />
-                    <DescriptionInput 
-                        source="description" 
-                        label="Description" 
-                    />
-                </SimpleForm>
-            </Create>
-                    
-            {newEntryId && 
-                <>
-                    <LineItems lineItems={lineItems} entryId={newEntryId}/>
-                        <button onClick={() => {
-                            notify('ra.notification.updated', {
-                                type: 'info',
-                                messageArgs: { smart_count: 1 },
-                                undoable: true,
-                            });
-                            redirect('list', 'entry');
-                        }}>Save & Close</button>
-                </>
-            }
-        </Box>
-    );
+
 };
 
 
