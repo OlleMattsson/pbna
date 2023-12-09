@@ -19,8 +19,6 @@ const client = new ApolloClient({
     credentials: 'include'
 });
 
-// TODO: fetch AccountChart from AccountingPeriod
-const accountChart = "0c0fc14c-3fe1-4ade-a898-37361947ee63"
 
 const GET_ACCOUNTS = gql`
     query AccountChart($where: AccountChartWhereUniqueInput!) {
@@ -67,6 +65,16 @@ mutation Mutation($where: EntryWhereUniqueInput!, $data: EntryUpdateInput!) {
   }
 `
 
+const GET_COA= gql`
+query Query($where: AccountingPeriodWhereInput!) {
+  accountingPeriods(where: $where) {
+    accountChart {
+      id
+    }
+  }
+}
+`
+
 
 
 export const LineItems = ({lineItems, entryId}) => {
@@ -81,16 +89,44 @@ export const LineItems = ({lineItems, entryId}) => {
   
   const { id: userId, organization: {id: organizationId} } = user;
 
+
   useEffect(() => {
+    // fetch active accountingPeriods for organization
+    // TODO: fetch AccountChart from AccountingPeriod
+
     client.query({
-      query: GET_ACCOUNTS,
-      variables: {
-          where: {
-            id: accountChart
-          }
+      query: GET_COA,
+      variables:{
+        where: {
+          owner: {
+            id: {
+              equals: organizationId
+            }
+          },
+          AND: [
+            {
+              isActive: {
+                equals: true
+              }
+            }
+          ]
         }
-    }).then( r => {
-        setAccounts(r.data.accountChart.accounts)
+      }
+    }).then(r => {
+
+      const accountChartId = r.data.accountingPeriods[0].accountChart.id
+
+      client.query({
+        query: GET_ACCOUNTS,
+        variables: {
+            where: {
+              id: accountChartId
+            }
+          }
+      }).then( r => {
+          setAccounts(r.data.accountChart.accounts)
+      })
+
     })
   }, []);
 
