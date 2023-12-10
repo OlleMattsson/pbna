@@ -41,16 +41,13 @@ export const authProvider: AuthProvider = {
         password
       }
     }).then(r => {
-      const {item: user }  = r.data.authenticateUserWithPassword
+      const {item: user, __typename, message }  = r.data.authenticateUserWithPassword
 
-      console.log(user)
-
-      if (r.data.authenticateUserWithPassword.__typename === "UserAuthenticationWithPasswordFailure") {
-        return Promise.reject(
-          r.data.authenticateUserWithPassword.message)
+      if (__typename === "UserAuthenticationWithPasswordFailure") {
+        return Promise.reject(message)
       }
 
-      if (r.data.authenticateUserWithPassword.__typename === "UserAuthenticationWithPasswordSuccess") {
+      if (__typename === "UserAuthenticationWithPasswordSuccess") {
 
         // TODO: Super odd behavaiour when logging in from a fresh session for the very first time (eg chrome cognito window)
         // user.organization will be null. On second login, organziation is included in response. No idea why.
@@ -58,7 +55,7 @@ export const authProvider: AuthProvider = {
           authProvider.login({username, password})
         }
 
-        localStorage.setItem("user", JSON.stringify(r.data.authenticateUserWithPassword.item));        
+        localStorage.setItem("user", JSON.stringify(user));        
         return Promise.resolve()
       }
 
@@ -76,8 +73,19 @@ export const authProvider: AuthProvider = {
     return Promise.resolve();
   },
   checkError: () => Promise.resolve(),
-  checkAuth: () =>
-    localStorage.getItem("user") ? Promise.resolve() : Promise.reject(),
+  checkAuth: () => {
+
+    const publicRoutes =[
+      '/signup'
+    ]
+
+    if (publicRoutes.includes(window.location.pathname)) {
+      return Promise.resolve()
+  }
+
+
+    return localStorage.getItem("user") ? Promise.resolve() : Promise.reject()
+  },
   getPermissions: () => {
     return Promise.resolve(undefined);
   },
