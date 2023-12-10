@@ -1,7 +1,7 @@
 // in App.js
 import React from 'react';
 import { Route } from "react-router-dom";
-import { Admin, Resource, CustomRoutes, Menu, Layout } from 'react-admin';
+import { Admin, Resource, CustomRoutes, Menu, Layout, useLogin, useNotify } from 'react-admin';
 import authProvider from './authProvider'
 import buildGraphQLProvider from './buildQuery';
 import EntryList from "./entry"
@@ -14,6 +14,11 @@ import accountingPeriod from "./accountingPeriod"
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import {Ledger} from "./ledger/Ledger"
 import BusinessIcon from '@mui/icons-material/Business';
+import Button from '@mui/material/Button'
+import Login from './core/Login'
+import Signup from './core/Signup'
+
+
 
 
 
@@ -34,6 +39,8 @@ export const App = () => {
             authProvider={authProvider} 
             dataProvider={dataProvider} 
             layout={MyLayout}
+            loginPage={Login}
+
 
         >
             <Resource name="Entry" {...EntryList}/>
@@ -58,6 +65,12 @@ export const App = () => {
             <CustomRoutes>
                 <Route path="/ledger" element={<Ledger />} />
             </CustomRoutes>
+
+            <CustomRoutes noLayout>
+                <Route path="/Signup" element={<Signup />}  />
+            </CustomRoutes>
+
+
 
         </Admin>
     );
