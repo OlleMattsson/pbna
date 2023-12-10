@@ -41,15 +41,24 @@ export const authProvider: AuthProvider = {
         password
       }
     }).then(r => {
-      
+      const {item: user }  = r.data.authenticateUserWithPassword
+
+      console.log(user)
+
       if (r.data.authenticateUserWithPassword.__typename === "UserAuthenticationWithPasswordFailure") {
         return Promise.reject(
           r.data.authenticateUserWithPassword.message)
       }
 
-      if (r.data.authenticateUserWithPassword.sessionToken) {
-        let { ...userToPersist } = r.data.authenticateUserWithPassword.item;
-        localStorage.setItem("user", JSON.stringify(userToPersist));        
+      if (r.data.authenticateUserWithPassword.__typename === "UserAuthenticationWithPasswordSuccess") {
+
+        // TODO: Super odd behavaiour when logging in from a fresh session for the very first time (eg chrome cognito window)
+        // user.organization will be null. On second login, organziation is included in response. No idea why.
+        if (user.organization === null) {
+          authProvider.login({username, password})
+        }
+
+        localStorage.setItem("user", JSON.stringify(r.data.authenticateUserWithPassword.item));        
         return Promise.resolve()
       }
 
