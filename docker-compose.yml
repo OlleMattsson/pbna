@@ -14,7 +14,6 @@ services:
     volumes:
       - pg-data:/var/lib/postgresql/data
 
-
   redis:
     image: redis
     container_name: redis
@@ -25,6 +24,27 @@ services:
     ports:
       - "6379:6379"      
 
+
+  http-api:
+    container_name: http-api
+    build: 
+      context: ./http-api
+      dockerfile: http-api.Dockerfile
+    links:
+      - redis
+    volumes:
+      - type: bind
+        source: ./common
+        target: /code/common
+      - type: bind
+        source: ./http-api/src
+        target: /code/src
+
+    command: npm run dev
+    ports:
+      - "8181:8181"
+    expose:
+      - 8181
 
   keystone:
     container_name: keystone
@@ -78,6 +98,8 @@ services:
         target: /code/src        
     command: npm run dev
 
+
+
   tesseract:
     container_name: tesseract
     build: 
@@ -95,6 +117,50 @@ services:
         target: /code/src
     # command: tail -f /dev/null
     command: npm run dev
+
+
+
+  email-verifyer:
+    container_name: email-verifyer
+    build: 
+      context: ./email-verifyer
+      dockerfile: email-verifyer.Dockerfile
+    links:
+      - redis
+      - keystone
+    volumes:
+      - type: bind
+        source: ./common
+        target: /code/common
+      - type: bind
+        source: ./email-verifyer/src
+        target: /code/src
+      - type: bind
+        source: ~/.aws
+        target: /root/.aws
+    environment:
+      - AWS_PROFILE=pbna
+    command: npm run dev
+
+
+
+  react-admin:
+    container_name: react-admin
+    build: 
+      context: ./react-admin
+      dockerfile: react-admin.Dockerfile
+    links:
+      - redis
+      - keystone
+    volumes:
+      - type: bind
+        source: ./common
+        target: /code/common
+      - type: bind
+        source: ./react-admin/src
+        target: /code/src
+    command: npm run dev
+
 
 volumes:
   pg-data:
