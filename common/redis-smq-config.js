@@ -14,5 +14,6 @@ export const config = {
 
  export const queueNames = {
     llamaDataExtraction: "llama-data-extraction",
-    tesseract: "tesseract"
+    tesseract: "tesseract",
+    emailverifyer: "emailverifyer"
  }
