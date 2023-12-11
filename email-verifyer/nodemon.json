@@ -1,0 +1,5 @@
+{
+    "watch": ["src", "common"],
+    "ext": "js,json,ts, tsx",
+    "exec": "AWS_PROFILE=pbna node ./src/index.js"
+  }
