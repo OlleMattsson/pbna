@@ -23,6 +23,23 @@ import {
 
 import Box from '@mui/material/Box';
 
+export const getBackground = (date) => {
+    const hours = date.getHours();
+
+    if (hours >= 0 && hours < 6) {
+        return 'url(public/1.webp)'; // Night
+
+    } else if (hours >= 6 && hours < 12) {
+        return 'url(public/2.webp)'; // Morning
+
+    } else if (hours >= 12 && hours < 17) {
+        return 'url(public/3.webp)'; // Daytime
+
+    } else {
+        return 'url(public/4.webp)'; // Evening
+    }
+}
+
 const Login = () => {
     const [loading, setLoading] = useState(false);
     const translate = useTranslate();
@@ -68,10 +85,10 @@ const Login = () => {
                     minHeight: '100vh',
                     alignItems: 'center',
                     justifyContent: 'flex-start',
-                    background:
-                        'url(https://source.unsplash.com/featured/1600x900)',
+                    background: getBackground(new Date()) ,
                     backgroundRepeat: 'no-repeat',
                     backgroundSize: 'cover',
+                    backgroundPosition: 'center center'
                 }}
             >
                 <Card sx={{ minWidth: 300, marginTop: '6em' }}>

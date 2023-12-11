@@ -23,6 +23,7 @@ import {
 
 import Box from '@mui/material/Box';
 import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
+import {getBackground} from './Login'
 
 
 const Signup = () =>  {
@@ -48,10 +49,10 @@ const Signup = () =>  {
                     minHeight: '100vh',
                     alignItems: 'center',
                     justifyContent: 'flex-start',
-                    background:
-                        'url(https://source.unsplash.com/space/1600x900)',
+                    background: getBackground(new Date()),
                     backgroundRepeat: 'no-repeat',
                     backgroundSize: 'cover',
+                    backgroundPosition: 'center center'
                 }}
             >
                 <Card sx={{ minWidth: 300, marginTop: '6em' }}>
