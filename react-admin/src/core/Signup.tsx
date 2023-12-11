@@ -35,9 +35,21 @@ const Signup = () =>  {
     const location = useLocation();
 
     const handleSubmit = (auth: FormValues) => {
-
+        
         notify("Check your email")
 
+        fetch('http://localhost:8181/verifyemail', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                emailAddress: auth.email
+            }),
+        })
+        .then(response => response.json()) // Parsing the JSON response
+        .then(data => console.log(data))   // Handling the data from the response
+        .catch(error => console.error('Error:', error)); // Handling errors
     };
 
     return (

@@ -4,6 +4,7 @@ import {Server as ioServer} from "socket.io"
 import { Message } from 'redis-smq';
 import {config as smqConfig, queueNames} from "../common/redis-smq-config.js"
 import { sendMessage } from '../common/smqSendMessage.js';
+import cors from 'cors'
 
 /**
  * Start server
@@ -18,6 +19,7 @@ const server = http.createServer(httpApi);
 const socket = new ioServer(server);
 
 httpApi.use(express.json());
+httpApi.use(cors());
 
 server.listen(port, () => {
     console.log(`http-api listening on :${port}`);
