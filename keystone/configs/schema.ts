@@ -124,7 +124,9 @@ export const lists: Lists = {
         ui: {
           labelField: "name"
         }
-      })
+      }),
+
+      invitationToken: text(),
 
     },
     ui: {
@@ -411,9 +413,11 @@ export const lists: Lists = {
             return {
               owner: {
                 id: {
-                  equals: session?.data.organization.id}}
+                  equals: session?.data.organization.id 
                 }
-          } 
+              }
+            }
+          }
 
           return false
 
@@ -454,8 +458,10 @@ export const lists: Lists = {
             return {
               owner: {
                 id: {
-                  equals: session?.data.id}}
+                  equals: session?.data.id
                 }
+              }
+            }
           } 
 
           return false
