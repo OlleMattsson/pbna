@@ -15,7 +15,8 @@
     "@apollo/client": "^3.8.7",
     "@aws-sdk/client-ses": "^3.470.0",
     "aws-sdk": "^2.1515.0",
-    "redis-smq": "^7.2.3"
+    "redis-smq": "^7.2.3",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
