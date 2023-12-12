@@ -17,6 +17,7 @@ import BusinessIcon from '@mui/icons-material/Business';
 import Button from '@mui/material/Button'
 import Login from './core/Login'
 import Signup from './core/Signup'
+import CreateProfile from './core/CreateProfile'
 
 
 
@@ -68,6 +69,7 @@ export const App = () => {
 
             <CustomRoutes noLayout>
                 <Route path="/Signup" element={<Signup />}  />
+                <Route path="/CreateProfile" element={<CreateProfile />}  />
             </CustomRoutes>
 
 
