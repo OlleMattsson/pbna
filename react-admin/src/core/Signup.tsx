@@ -24,7 +24,7 @@ import {
 import Box from '@mui/material/Box';
 import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
 import {getBackground} from './Login'
-
+import EmailIcon from '@mui/icons-material/Email';
 
 const Signup = () =>  {
     const [loading, setLoading] = useState(false);
@@ -76,7 +76,7 @@ const Signup = () =>  {
                         }}
                     >
                         <Avatar sx={{ bgcolor: 'secondary.main' }}>
-                            <EmojiPeopleIcon />
+                            <EmailIcon />
                         </Avatar>
                     </Box>
                     <Box
@@ -85,9 +85,10 @@ const Signup = () =>  {
                             display: 'flex',
                             justifyContent: 'center',
                             color: theme => theme.palette.grey[500],
+                            padding: '0 1em 1em 1em' 
                         }}
                     >
-                       Request an invitation link.
+                       An invitation link will be sent to your email.
                     </Box>
                     <Box sx={{ padding: '0 1em 1em 1em' }}>
                         <Box sx={{ marginTop: '1em' }}>
