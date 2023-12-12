@@ -76,7 +76,8 @@ export const authProvider: AuthProvider = {
   checkAuth: () => {
 
     const publicRoutes =[
-      '/signup'
+      '/signup',
+      '/createprofile'
     ]
 
     if (publicRoutes.includes(window.location.pathname)) {
