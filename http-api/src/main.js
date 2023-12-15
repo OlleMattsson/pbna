@@ -10,6 +10,9 @@ import { HttpLink } from "@apollo/client/link/http/http.cjs";
 import { ApolloLink } from "@apollo/client/link/core/ApolloLink.js"
 import util from 'util'
 import { keystoneAuth, authenticatedClient } from "./keystoneAuth.js";
+import { config } from 'dotenv';
+
+config({ path: './common/.env' });
 
 
 
