@@ -115,9 +115,6 @@ export const LedgerUI = ({ ledger }: { ledger: Ledger }) => {
   const groupedRows = ledger.getRowsGroupedByAccount();
   const balances = ledger.getBalances();
 
-  console.log(balances)
-
-
   return (
     <div>
       {groupedRows.map(({account, rows}: {account: Account, rows: Row[]}) => {

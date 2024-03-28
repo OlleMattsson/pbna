@@ -180,8 +180,6 @@ class Row implements RowInterface {
    */
   getType = (): RowType | null => {
 
-    console.log("")
-
     if (this.credit && this.credit > 0) {
       return RowType.Credit
     }
@@ -189,12 +187,6 @@ class Row implements RowInterface {
     if (this.debit && this.debit > 0) {
       return RowType.Debit
     }
-
-    /*
-    if (this.type) {
-      return this.type;
-    }
-    */
 
     return null;
   };
