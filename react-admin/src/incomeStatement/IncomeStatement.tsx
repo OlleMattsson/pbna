@@ -1,11 +1,12 @@
-import { Ledger as LedgerModel, LedgerUI } from "../pbna-core/Ledger"
-import { Account } from '../pbna-core/Account/Account'
+import { Ledger as LedgerModel } from "../pbna-core/Ledger"
+import { IncomeStatementUI } from "../pbna-core/IncomeStatement";
 import { AccountManager } from '../pbna-core/Account/AccountManager'
 import { TransactionManager } from '../pbna-core/Transaction/TransactionManager'
+import { ApolloClient, InMemoryCache } from '@apollo/client';
+import { ENTRIES, ACCOUNTS_LIST} from '../ledger/queries'
 import { Row } from "../pbna-core/Row/Row";
 import { Transaction } from "../pbna-core/Transaction/Transaction";
-import { ApolloClient, InMemoryCache } from '@apollo/client';
-import { ENTRIES, ACCOUNTS_LIST} from './queries'
+import { Account } from '../pbna-core/Account/Account'
 
 // Sidestepping the RA dataprovider fir this view
 const client = new ApolloClient({
@@ -30,7 +31,6 @@ const accounts = await client.query({
 const entries = await client.query({
   query: ENTRIES
 }).then(response => response.data.entrys)
-
 
 // restore accounts
 const restoreAccounts = (accounts: []) => {
@@ -60,16 +60,14 @@ const restoreTransactions = (transactions: []) => {
 
 };
 
-
 // "main" 
 restoreAccounts(accounts)
 restoreTransactions(entries);
 
-export const Ledger = () => {
+export const IncomeStatement = () =>  {
     return (
         <div>
-            <LedgerUI ledger={ledger}/>
+            <IncomeStatementUI ledger={ledger}/>
         </div>
     )
 }
-

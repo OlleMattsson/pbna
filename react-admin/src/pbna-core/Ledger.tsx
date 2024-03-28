@@ -118,9 +118,11 @@ export const LedgerUI = ({ ledger }: { ledger: Ledger }) => {
   return (
     <div>
       {groupedRows.map(({account, rows}: {account: Account, rows: Row[]}) => {
-        const {account: accountId, name: accountName} = account.get()
+        const {id: accountId, account: accountNumber, name: accountName} = account.get()
 
-        const balance = balances[accountId];
+        const balance = balances[accountNumber];
+
+
 
         if (account.getType() == AccountType.Noop) {
           return (
@@ -138,7 +140,7 @@ export const LedgerUI = ({ ledger }: { ledger: Ledger }) => {
                   marginBottom: "0px"
                 }}
               >
-                {accountId} - {accountName}
+                {accountNumber} - {accountName}
               </p>
               <table style={{ width: "500px" }}>
                 <tbody>
@@ -156,7 +158,8 @@ export const LedgerUI = ({ ledger }: { ledger: Ledger }) => {
                       </tr>
                     );
                   })}
-                  <tr key={accountId}>
+
+                  <tr>
                     <td
                       style={{
                         textAlign: "left"

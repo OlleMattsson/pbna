@@ -1,5 +1,5 @@
 interface AccountConstructorProps {
-  id: number;
+  id: string;
   account: number;
   type: AccountType;
   name: string;
@@ -22,7 +22,7 @@ export enum AccountType {
 }
 
 class Account implements AccountInterface {
-  private id: number;      // system id
+  private id: string;      // system id
   private account: number; // the account id used to identify it in traditional book keeping, eg. "1000" or "1234"
   private type: AccountType;
   private name: string;

@@ -18,8 +18,10 @@ import Button from '@mui/material/Button'
 import Login from './core/Login'
 import Signup from './core/Signup'
 import CreateProfile from './core/CreateProfile'
-
-
+import { BalanceSheet } from './balance/Balance';
+import { IncomeStatement} from './incomeStatement/IncomeStatement'
+import PaidIcon from '@mui/icons-material/Paid';
+import BalanceIcon from '@mui/icons-material/Balance';
 
 
 
@@ -65,6 +67,8 @@ export const App = () => {
            
             <CustomRoutes>
                 <Route path="/ledger" element={<Ledger />} />
+                <Route path="/balance" element={<BalanceSheet />} />
+                <Route path="/income" element={<IncomeStatement />} />
             </CustomRoutes>
 
             <CustomRoutes noLayout>
@@ -83,6 +87,8 @@ export const MyMenu = () => (
         <Menu.DashboardItem />
         <Menu.ResourceItems />
         <Menu.Item to="/ledger" primaryText="Ledger" leftIcon={<AccountBalanceIcon />}/>
+        <Menu.Item to="/balance" primaryText="Balance Sheet" leftIcon={<BalanceIcon />}/>
+        <Menu.Item to="/income" primaryText="Income Statement" leftIcon={<PaidIcon />}/>
     </Menu>
 );
 

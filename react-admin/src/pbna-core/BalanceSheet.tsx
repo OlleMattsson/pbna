@@ -8,15 +8,13 @@ export type AccountWithRows = {account: Account, rows:Row[]}
 
 
 export const BalanceSheetUI = ({ ledger }: { ledger: Ledger }) => {
+
   // Used for containing the account information for the UI
   // They serve a double purpose in also containing the row for each account
   // so that the saldo for each account can be calculated and displayed
   // Like so: [{...Account, rows: [Row]], ...}
 
   // TODO somehow declare a type that combines Account with a list of Rows
-
-
-
   const assetAccountsWithRows: AccountWithRows[] = [];
   const liabilityAccountsWithRows: AccountWithRows[] = [];
 
@@ -37,22 +35,26 @@ export const BalanceSheetUI = ({ ledger }: { ledger: Ledger }) => {
   // should not exist in the account manager!
   const INCOME_ACCOUNT_ID = 2099;
 
+  // Create a temporary account that contains the income row above
+  const temporaryIncomeAccount = new Account({
+    account: INCOME_ACCOUNT_ID,
+    id: INCOME_ACCOUNT_ID as unknown as string, // the id is usually a uuid string, this is a hack
+    type: AccountType.Liability,
+    name: "resultat"
+  });
+
   // Create a temporary row that contains the income amount
   const resultRow = new Row({
     description: "resultat",
-    account: INCOME_ACCOUNT_ID.toString(10),
+    account: temporaryIncomeAccount,
     date: new Date(),
     type: RowType.Credit
   });
 
-  resultRow.setAmount(getIncome({ ledger }));
+  const income = getIncome({ ledger })
 
-  // Create a temporary account that contains the income row above
-  const temporaryIncomeAccount = new Account({
-    id: INCOME_ACCOUNT_ID,
-    type: AccountType.Liability,
-    name: "resultat"
-  });
+  resultRow.setCredit(income);
+
 
   /**
    * 2. ASSETS

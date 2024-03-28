@@ -1,5 +1,4 @@
 import { Account } from "./Account/Account";
-
 import { Ledger } from "./Ledger";
 import { AccountWithRows } from "./BalanceSheet"
 
@@ -74,18 +73,18 @@ export const IncomeStatementUI = ({ ledger }: { ledger: Ledger }) => {
   return (
     <div>
       {accountsWithRows.map(({account}) => {
-        const {id, name} = account.get()
+        const {id, name, account: accountNumber} = account.get()
 
         const balance = balancesObj[id];
         return (
           <div key={id}>
             <p style={{ fontWeight: "bold" }}>
-              {id} - {name}: {balance} €
+              {accountNumber} - {name}: {balance} €
             </p>
           </div>
         );
       })}
-      <p style={{ fontWeight: "bold" }}>Total income: {income}</p>
+      <p style={{ fontWeight: "bold" }}>Total income: {income} €</p>
     </div>
   );
 };

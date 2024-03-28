@@ -123,9 +123,10 @@ class Row implements RowInterface {
   getCreatedAt = (): Date => this.createdAt;
   
   getDebit = (): number => this.debit;
-  
-  getCredit = (): number => this.credit;
+  setDebit = (v: number) => this.debit = v
 
+  getCredit = (): number => this.credit;
+  setCredit = (v: number) => this.credit = v
   
 
   /**
