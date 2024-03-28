@@ -1,5 +1,6 @@
 interface AccountConstructorProps {
   id: number;
+  account: number;
   type: AccountType;
   name: string;
   description?: string;
@@ -21,7 +22,8 @@ export enum AccountType {
 }
 
 class Account implements AccountInterface {
-  private id: number;
+  private id: number;      // system id
+  private account: number; // the account id used to identify it in traditional book keeping, eg. "1000" or "1234"
   private type: AccountType;
   private name: string;
   private description: string;
@@ -30,6 +32,7 @@ class Account implements AccountInterface {
 
   public constructor({
     id,
+    account,
     type,
     name,
     description,
@@ -37,6 +40,7 @@ class Account implements AccountInterface {
     vatAccountId
   }: AccountConstructorProps) {
     this.id = id;
+    this.account = account
     this.type = type;
     this.name = name;
     this.description = description || "";
@@ -45,11 +49,13 @@ class Account implements AccountInterface {
   }
 
   public get = () => {
-    const { id, type, name, description, vatAmount, vatAccountId } = this;
-    return { id, type, name, description, vatAmount, vatAccountId };
+    const { id, account, type, name, description, vatAmount, vatAccountId } = this;
+    return { id, account, type, name, description, vatAmount, vatAccountId };
   };
 
   public getId = (): number => this.id;
+
+  public getAccountNumber = (): number => this.account
 
   public getType = () => this.type;
 
@@ -57,6 +63,7 @@ class Account implements AccountInterface {
 
   public put = ({
     id,
+    account,
     type,
     name,
     description,
@@ -64,6 +71,7 @@ class Account implements AccountInterface {
     vatAccountId
   }: {
     id?: number;
+    account?: number;
     type?: AccountType;
     name?: string;
     description?: string;
@@ -72,6 +80,9 @@ class Account implements AccountInterface {
   }) => {
     if (id) {
       this.id = id;
+    }
+    if (account) {
+      this.account = account;
     }
     if (type) {
       this.type = type;

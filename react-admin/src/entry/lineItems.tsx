@@ -225,8 +225,6 @@ export const LineItems = ({lineItems, entryId}) => {
 
       vars[0].order = lineItemsCount + 1
 
-      debugger;
-
       return {
         ...vars[0], 
         createdBy: {

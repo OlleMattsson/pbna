@@ -28,13 +28,13 @@ export class Ledger implements LedgerInterface {
 
   getRowsForAccount = (a: Account): Row[] => {
     const rows: Row[] = [];
-    const { id: accountId } = a.get();
+    const { account } = a.get();
 
     this.transactionManager
       .getTransactions()
       .forEach((transaction: Transaction) => {
         transaction.getRows().forEach((r: Row) => {
-          if (r.getAccount() === accountId) {
+          if (r.getAccount() === account) {
             rows.push(r);
           }
         });
@@ -54,11 +54,19 @@ export class Ledger implements LedgerInterface {
   };
 
   getBalanceForAccount = (a: Account): number => {
-    return this.getRowsForAccount(a).reduce((acc: number, row: Row) => {
+    const balanceInCents = this.getRowsForAccount(a).reduce((acc: number, row: Row) => {
       const amount = this.getSignedValue(a, row);
 
-      return (acc += amount);
+      const precision = 2 // hardcoded in keystone schema. TODO: the model
+
+      // amount is a string like "123,35"
+      const inCents = Math.round(amount * Math.pow(10, precision))
+
+      return (acc += inCents);
     }, 0);
+
+    // convert
+    return balanceInCents / Math.pow(10, 2)
   };
 
   getBalances = () => {
@@ -66,7 +74,7 @@ export class Ledger implements LedgerInterface {
 
     this.accountManager.getAccounts().forEach((account: Account) => {
       const balance = this.getBalanceForAccount(account);
-      const accountId = account.getId();
+      const accountId = account.getAccountNumber();
       balancesObj[accountId] = balance;
     });
 
@@ -78,20 +86,26 @@ export class Ledger implements LedgerInterface {
     asset accounts =)
   */
   getSignedValue = (a: Account, r: Row): number => {
-    const amount = r.getAmount() || 0;
+    //const amount = r.getAmount() || 0;
+    const debit = r.getDebit()
+    const credit = r.getCredit()
+
+    // sign is "normal" for asset account
     if (a.getType() == AccountType.Asset) {
+
+
       if (r.getType() === RowType.Debit) {
-        return amount;
+        return debit;
       } else {
-        return -amount;
+        return -credit;
       }
 
-      // flip signs for all other account (quirky accounting detail)
+      // signs is "flipped" for all other account (quirky accounting detail)
     } else {
       if (r.getType() == RowType.Debit) {
-        return -amount;
+        return -debit;
       } else {
-        return amount;
+        return credit;
       }
     }
   };
@@ -101,10 +115,13 @@ export const LedgerUI = ({ ledger }: { ledger: Ledger }) => {
   const groupedRows = ledger.getRowsGroupedByAccount();
   const balances = ledger.getBalances();
 
+  console.log(balances)
+
+
   return (
     <div>
       {groupedRows.map(({account, rows}: {account: Account, rows: Row[]}) => {
-        const {id: accountId, name: accountName} = account.get()
+        const {account: accountId, name: accountName} = account.get()
 
         const balance = balances[accountId];
 

@@ -164,6 +164,9 @@ export const lists: Lists = {
       filter: {
         query: ({ session, context, listKey, operation }) => {
           
+          // for debugging, this essentially turns of access control
+          return true
+
           if (isAdmin({session})) {
             return true
           }

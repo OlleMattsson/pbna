@@ -1,4 +1,5 @@
 import { generateRandomInteger } from "../helpers";
+import { Account } from '../Account/Account'
 
 enum RowType {
   Debit = "debit",
@@ -9,11 +10,13 @@ interface RowObject {
   id?: number;
   createdAt?: Date;
   date: Date;
-  account: string;
+  account: Account;
   amount?: number;
   type?: RowType;
   precision?: number; // number decimals
   description?: string;
+  debit?: number;
+  credit?: number;
 }
 
 interface RowInterface {
@@ -37,7 +40,7 @@ interface RowInterface {
   setDate(d: Date): void;
 
   getAccount(): number;
-  setAccount(a: string): void;
+  setAccount(a: number): void;
 
   // return amount including the precision
   // ie. amount: 12350, precision: 2 => 123,50
@@ -64,11 +67,13 @@ class Row implements RowInterface {
   private id;
   private createdAt;
   private date;
-  private account;
-  private amount;
-  private type;
-  private precision;
+  private account; // an Account object
+  private amount; // deprecated
+  private type; // deprecated
+  private precision; // maybe deprecated... what is the precision of k6 decimal?
   private description;
+  private debit
+  private credit
 
   constructor(r: RowObject) {
     if (r.id === undefined) {
@@ -88,6 +93,8 @@ class Row implements RowInterface {
     this.type = r.type;
     this.precision = r.precision;
     this.description = r.description;
+    this.debit = r.debit || 0;
+    this.credit = r.credit || 0;
   }
 
   get = (): RowObject => {
@@ -99,7 +106,9 @@ class Row implements RowInterface {
       type: this.type,
       amount: this.amount,
       precision: this.precision,
-      description: this.description
+      description: this.description,
+      debit: this.debit,
+      credit: this.credit
     };
   };
 
@@ -112,6 +121,12 @@ class Row implements RowInterface {
    * createdAt
    */
   getCreatedAt = (): Date => this.createdAt;
+  
+  getDebit = (): number => this.debit;
+  
+  getCredit = (): number => this.credit;
+
+  
 
   /**
    * date
@@ -123,8 +138,9 @@ class Row implements RowInterface {
 
   /**
    * account
+   * Return the account number of Acount instance
    */
-  getAccount = (): number => parseInt(this.account, 10);
+  getAccount = (): number => parseInt(this.account.account, 10);
   setAccount = (a: string): void => {
     this.account = a;
   };
@@ -157,14 +173,28 @@ class Row implements RowInterface {
   setRawAmount = (a: number) => (this.amount = a);
 
   setPrecision = (p: number) => (this.precision = p);
+  getPrecision = () => this.precision
 
   /**
    * type
    */
   getType = (): RowType | null => {
+
+    console.log("")
+
+    if (this.credit && this.credit > 0) {
+      return RowType.Credit
+    }
+
+    if (this.debit && this.debit > 0) {
+      return RowType.Debit
+    }
+
+    /*
     if (this.type) {
       return this.type;
     }
+    */
 
     return null;
   };
