@@ -82,6 +82,8 @@ export const BalanceSheetUI = ({ ledger }: { ledger: Ledger }) => {
     return acc;
   }, 0);
 
+  assetAccountsWithRows.sort((a,b) => a.account.account - b.account.account)
+
   /**
    * 3. LIABILITIES & Equity
    */
@@ -122,6 +124,8 @@ export const BalanceSheetUI = ({ ledger }: { ledger: Ledger }) => {
     return acc;
   }, 0);
 
+  liabilityAccountsWithRows.sort((a,b) => a.account.account - b.account.account)
+
   return (
     <div>
       <div>
@@ -129,30 +133,34 @@ export const BalanceSheetUI = ({ ledger }: { ledger: Ledger }) => {
         {assetAccountsWithRows.map(({account}) => {
           const accountId = account.getId();
           const accountName = account.getName();
+          const accountNumber = account.getAccountNumber()
           const balance = assetBalancesObj[accountId];
           return (
-            <div key={accountId}>
+            <div key={accountId}>              
+              <span>{accountNumber} - </span>
               <span>{accountName}: </span>
               <span>{balance} €</span>
             </div>
           );
         })}
-        <span style={{ fontWeight: "bold" }}>{assetBalance}</span>
+        <span style={{ fontWeight: "bold" }}>total: {assetBalance}</span>
       </div>
       <div>
         <h3>Liabilities & Equity</h3>
         {liabilityAccountsWithRows.map(({account}) => {
           const accountId = account.getId();
           const accountName = account.getName();
+          const accountNumber = account.getAccountNumber()
           const balance = liabilityBalancesObj[accountId];
           return (
             <div key={accountId}>
+              <span>{accountNumber} - </span>
               <span>{accountName}: </span>
               <span>{balance} €</span>
             </div>
           );
         })}
-        <span style={{ fontWeight: "bold" }}>{liabilityBalance}</span>
+        <span style={{ fontWeight: "bold" }}>total: {liabilityBalance}</span>
       </div>
     </div>
   );
