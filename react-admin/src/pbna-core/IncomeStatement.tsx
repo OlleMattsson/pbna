@@ -63,7 +63,9 @@ export const getIncome = ({ ledger }: { ledger: Ledger }): number => {
 export const IncomeStatementUI = ({ ledger }: { ledger: Ledger }) => {
   const accountsWithRows = getIncomeStatementAccountsAndRows({
     ledger
-  });
+  }).sort((a,b) => a.account.account - b.account.account);
+
+
   const { balancesObj } = getBalancesForAccounts({
     accountsWithRows,
     ledger
