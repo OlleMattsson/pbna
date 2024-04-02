@@ -91,13 +91,31 @@ const Accounts2 = ({source}) => {
 const AccountEdit = ({ id, onCancel }: Props) => {
     const translate = useTranslate();
 
+    // strange behaviour: if name or description of coa is changed, the entire bodies of the linked acounts are 
+    // sent in the subsequent update request, causing it to fail. 
+    // quickfix until behaviour is better understood: strip potential linked account properties here, before request 
+    // is passed on to the data provider
+    const sanitizeLinkedTransactions = (data) => ( data.accounts.map(account => ({id: account.id}) ) )
+        
+    
+
+    // called after submit but before sent to data provider
+    const transform = data =>  ({
+        ...data,
+        accounts: sanitizeLinkedTransactions(data) // {id: "123-234"} 
+    })
+      
+
     return (
-        <EditBase id={id}>
+        <EditBase 
+            id={id}
+            transform={transform}
+        >
             <Box pt={5} width={{ xs: '500vW', sm: 500 }} mt={{ xs: 2, sm: 1 }}>
 
                 <Stack direction="row" p={2}>
                     <Typography variant="h6" flex="1">
-                        {translate('resources.reviews.detail')}
+                            COA Name
                     </Typography>
                     <IconButton onClick={onCancel} size="small">
                         <CloseIcon />
@@ -148,8 +166,6 @@ const AccountEdit = ({ id, onCancel }: Props) => {
                             
                         />
                     </ReferenceArrayInput>
-
-                    <Accounts2 source="accounts" />
 
                 </SimpleForm>
             </Box>
