@@ -40,6 +40,13 @@ export class Ledger implements LedgerInterface {
         });
       });
 
+    rows.sort((a,b) => {
+      const aDate = new Date(a.date)
+      const bDate = new Date(b.date)
+     return aDate - bDate
+
+    })
+
     return rows;
   };
 
@@ -115,6 +122,8 @@ export const LedgerUI = ({ ledger }: { ledger: Ledger }) => {
   const groupedRows = ledger.getRowsGroupedByAccount()
     .sort((a,b) => a.account.account - b.account.account);
 
+  
+
   const balances = ledger.getBalances();
 
   return (
@@ -144,7 +153,7 @@ export const LedgerUI = ({ ledger }: { ledger: Ledger }) => {
               >
                 {accountNumber} - {accountName}
               </p>
-              <table style={{ width: "500px" }}>
+              <table>
                 <tbody>
                   {rows.map((row: Row) => {
                     const description = row.getDescription();
