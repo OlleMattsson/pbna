@@ -260,7 +260,15 @@ const customizeBuildQuery = introspectionResults => (raFetchType, resourceName, 
                         }],
                         take: params.pagination.perPage,
                         skip: (params.pagination.page -1) * params.pagination.perPage
-                    }
+                    },
+                    parseResponse: 
+                        (response) => ({
+                            data: [
+                                ...response.data.items
+                            ], 
+                            total: response.data.entrysCount
+                        })
+                    
                 }
             }
             case "DELETE": {
