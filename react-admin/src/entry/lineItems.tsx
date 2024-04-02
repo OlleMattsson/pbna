@@ -124,7 +124,9 @@ export const LineItems = ({lineItems, entryId}) => {
             }
           }
       }).then( r => {
-          setAccounts(r.data.accountChart.accounts)
+          const unsortedAccounts = [...r.data.accountChart.accounts]
+          const sortedAccounts = unsortedAccounts.sort((a,b) => a.account - b.account)
+          setAccounts(sortedAccounts)
       })
 
     })
