@@ -1,4 +1,5 @@
 import * as React from 'react';
+import {useEffect, useState} from 'react';
 import {
     List,
     Datagrid,
@@ -10,6 +11,7 @@ import {
 } from 'react-admin';
 import {EntryShow} from "./EntryShow"
 import { Box } from '@mui/material';
+import { getAccountingPeriodId } from './queries';
 
 
 const PostBulkActionButtons = () => (
@@ -20,7 +22,24 @@ const PostBulkActionButtons = () => (
 
 export const EntryList = () => {
 
-    const accountingPeriodId = "00c795d7-0a6e-42fb-86b9-1ceabbdc092f"
+
+    // Entry list displays entries only in the active accounting period
+    // The id for the accounting period is fetched here in typical react fashion and 
+    // passed into the filter prop of the <List>
+    const [accountingPeriodId, setAccountingPeriodId] = useState(null)
+
+    // helper function for async data access using the custom graphql api
+    async function fetchAccountingPeriodId() {
+        const id = await getAccountingPeriodId()
+        setAccountingPeriodId(id)
+    }
+
+    useEffect( () => {
+        fetchAccountingPeriodId()
+    }, [])
+
+
+    if (!accountingPeriodId) return null
 
     return (
         <Box>
