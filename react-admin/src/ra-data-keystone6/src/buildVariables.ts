@@ -57,11 +57,24 @@ export default (introspectionResults: IntrospectionResult) => (
             if (Object.keys(builtVars.filter).length) {
                 const searchProp = Object.keys(builtVars.filter)[0];
 
+                /*
+                // contains not supported in keystone6
                 const where = {
                     [searchProp]: {
                         contains: builtVars.filter[searchProp] || '',
                     },
                 };
+                */
+
+                const where = {
+                    [searchProp]: {
+                        id: {
+                            equals: builtVars.filter[searchProp] || ''
+                        }
+                    }
+                }
+
+                console.log("where", where)
 
                 return {
                     page: builtVars.page,
