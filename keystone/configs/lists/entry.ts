@@ -104,11 +104,11 @@ export const Entry = list({
         many: true,
         ui: {
           displayMode: 'cards',
-          cardFields: ["createdAt", "createdBy", "owner", "account", "debit", "credit", "description"],
+          cardFields: ["accountingPeriod", "account", "debit", "credit"],
           linkToItem: true,
           removeMode: 'disconnect',
-          inlineCreate: { fields: ["createdAt", "createdBy", "owner", "account", "debit", "credit", "description"] },
-          inlineEdit: { fields: ["createdAt", "createdBy", "owner", "account", "debit", "credit", "description"] },
+          inlineCreate: { fields: ["accountingPeriod", "account", "debit", "credit"] },
+          inlineEdit: { fields: ["accountingPeriod", "account", "debit", "credit"] },
           inlineConnect: true,        
         }
       }),
@@ -122,7 +122,7 @@ export const Entry = list({
     ui: {
       label: "Journal",
       listView: {
-        initialColumns: ["entryNumber", "date", "description"]
+        initialColumns: ["entryNumber", "date", "description", "accountingPeriod"]
       }
     },
     graphql: {
