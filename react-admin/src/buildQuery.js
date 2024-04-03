@@ -220,44 +220,42 @@ const customizeBuildQuery = introspectionResults => (raFetchType, resourceName, 
         Entries
     */
     if ( resourceName === "Entry") {
-
         switch(raFetchType) {
             case "GET_LIST": {
                 return {
                     ...builtQuery,
                     query: gql`
-                        query entrys($orderBy: [EntryOrderByInput!]!, $take: Int, $skip: Int!) {
-                            items: entrys(orderBy: $orderBy, take: $take, skip: $skip) {
-                            id
-                            createdAt
-                            createdBy {
-                                name
-                            }
-                            date
-                            entryNumber
-                            description
-                            lineItems {
+                        query entrys($orderBy: [EntryOrderByInput!]!, $take: Int, $skip: Int!, $where: EntryWhereInput) {
+                            items: entrys(orderBy: $orderBy, take: $take, skip: $skip, where: $where) {
                                 id
                                 createdAt
+                                createdBy {
+                                    name
+                                }
                                 date
-                                debit
-                                credit
-                                account {
+                                entryNumber
+                                description
+                                lineItems {
+                                    id
+                                    createdAt
+                                    date
+                                    debit
+                                    credit
+                                    account {
+                                        id
+                                    }
+                                    description
+                                    order
+                                }
+                                lineItemsCount                                
+                                accountingPeriod {
                                     id
                                 }
-                                description
-                                order
-                                __typename
                             }
-                            lineItemsCount
-                            __typename
-                            }
-                            entrysCount
+                                entrysCount
                         }`,
-                    variables: {       
-                        orderBy: [{
-                            "entryNumber": "asc"
-                        }],
+                    variables: {     
+                        ...builtQuery.variables,                      
                         take: params.pagination.perPage,
                         skip: (params.pagination.page -1) * params.pagination.perPage
                     },
@@ -268,7 +266,6 @@ const customizeBuildQuery = introspectionResults => (raFetchType, resourceName, 
                             ], 
                             total: response.data.entrysCount
                         })
-                    
                 }
             }
             case "DELETE": {
