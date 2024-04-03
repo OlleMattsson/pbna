@@ -11,7 +11,9 @@ import {
   Cell,
 } from "@table-library/react-table-library/table";
 
-import { ApolloClient, InMemoryCache, gql, useQuery } from '@apollo/client';
+import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
+import { GET_ACCOUNTS, GET_COA, UPDATE_LINEITEM_ACCOUNT, UPDATE_LINEITEM_DEBCRED, UPDATE_ENTRY_CREATE_LINEITEM } from "./gql";
+
 
 const client = new ApolloClient({
     cache: new InMemoryCache(),
@@ -20,60 +22,7 @@ const client = new ApolloClient({
 });
 
 
-const GET_ACCOUNTS = gql`
-    query AccountChart($where: AccountChartWhereUniqueInput!) {
-        accountChart(where: $where) {
-            accounts {
-                id
-                account
-                name
-            }
-        }
-    }       
-`;
 
-const UPDATE_LINEITEM_ACCOUNT = gql`
-    mutation Mutation($where: LineItemWhereUniqueInput!, $data: LineItemUpdateInput!) {
-        updateLineItem(where: $where, data: $data) {
-            id
-            account {
-                id
-            }
-        }
-    }
-`
-
-const UPDATE_LINEITEM_DEBCRED = gql`
-    mutation Mutation($where: LineItemWhereUniqueInput!, $data: LineItemUpdateInput!) {
-        updateLineItem(where: $where, data: $data) {
-            id
-            debit
-            credit
-        }
-    }
-`
-
-const UPDATE_ENTRY_CREATE_LINEITEM = gql`
-mutation Mutation($where: EntryWhereUniqueInput!, $data: EntryUpdateInput!) {
-    updateEntry(where: $where, data: $data) {
-      id
-      lineItems {
-        id
-        order
-      }
-    }
-  }
-`
-
-const GET_COA= gql`
-query Query($where: AccountingPeriodWhereInput!) {
-  accountingPeriods(where: $where) {
-    accountChart {
-      id
-    }
-  }
-}
-`
 
 
 

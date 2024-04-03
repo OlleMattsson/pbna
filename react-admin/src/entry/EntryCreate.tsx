@@ -20,6 +20,7 @@ import {
 } from './EntryShow'
 import Toolbar from '@mui/material/Toolbar';
 import { Fragment } from 'react';
+import { createEntry, getActiveAccountingPeriod } from './gql';
 
 const client = new ApolloClient({
     cache: new InMemoryCache(),
@@ -27,20 +28,12 @@ const client = new ApolloClient({
     credentials: 'include'
 });
 
-const ENTRY_CREATE = gql`
-mutation Mutation($data: EntryCreateInput!) {
-    createEntry(data: $data) {
-      id
-    }
-  }
-`
 
 
 
 const EntryCreate = () => {    
 
     const [newEntryId, setNewEntryId] = useState(null)
-
     const lineItems = []
 
     
@@ -68,10 +61,22 @@ const EntryCreate = () => {
                 <Create mutationOptions={{ onSuccess }}>
                     <SimpleForm 
                         toolbar={<EntryCreateToolbar entryId={newEntryId}/>}
-                        onSubmit={(data) =>{
+                        onSubmit={async (data) =>{
                             const {entryNumber, description, date} = data
+
+                            const accountingPeriodId = await client.query({  
+                                query: getActiveAccountingPeriod,
+                                variables: {
+                                    where: {
+                                        isActive: {
+                                            equals: true
+                                        }
+                                    }
+                                }
+                            }).then(r => r.data.accountingPeriods[0].id)
+
                             client.mutate({
-                                mutation: ENTRY_CREATE,
+                                mutation: createEntry,
                                 variables: {
                                     data: {
                                         createdBy: {
@@ -82,6 +87,11 @@ const EntryCreate = () => {
                                         owner: {
                                             connect: {
                                                 id: organizationId
+                                            }
+                                        },
+                                        accountingPeriod: {
+                                            connect: {
+                                                id: accountingPeriodId
                                             }
                                         },
                                         entryNumber: parseInt(entryNumber),

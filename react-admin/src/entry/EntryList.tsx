@@ -20,12 +20,14 @@ const PostBulkActionButtons = () => (
 
 export const EntryList = () => {
 
+    const accountingPeriodId = "00c795d7-0a6e-42fb-86b9-1ceabbdc092f"
 
     return (
         <Box>
             <List
                 perPage={25}
                 sort={{ field: 'date', order: 'DESC' }}
+                filter={{accountingPeriod: accountingPeriodId}}
             >
                 <Datagrid
                     bulkActionButtons={<PostBulkActionButtons />}
