@@ -74,8 +74,6 @@ export default (introspectionResults: IntrospectionResult) => (
                     }
                 }
 
-                console.log("where", where)
-
                 return {
                     page: builtVars.page,
                     perPage: builtVars.perPage,
