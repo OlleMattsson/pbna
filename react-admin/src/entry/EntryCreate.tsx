@@ -11,7 +11,6 @@ import {
 import { useLocation } from 'react-router';
 import {LineItems} from './lineItems'
 import { Box } from '@mui/material';
-import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
 import {useState } from 'react'
 import {
     EntryNumberInput,
@@ -20,14 +19,9 @@ import {
 } from './EntryShow'
 import Toolbar from '@mui/material/Toolbar';
 import { Fragment } from 'react';
-import { createEntry, getActiveAccountingPeriod } from './gql';
-
-const client = new ApolloClient({
-    cache: new InMemoryCache(),
-    uri: 'http://localhost:3000/api/graphql',
-    credentials: 'include'
-});
-
+import { createEntry } from './gql';
+import { apolloClient as client } from './apolloClient';
+import { getAccountingPeriodId } from './queries';
 
 
 
@@ -64,16 +58,7 @@ const EntryCreate = () => {
                         onSubmit={async (data) =>{
                             const {entryNumber, description, date} = data
 
-                            const accountingPeriodId = await client.query({  
-                                query: getActiveAccountingPeriod,
-                                variables: {
-                                    where: {
-                                        isActive: {
-                                            equals: true
-                                        }
-                                    }
-                                }
-                            }).then(r => r.data.accountingPeriods[0].id)
+                            const accountingPeriodId = await getAccountingPeriodId()
 
                             client.mutate({
                                 mutation: createEntry,
