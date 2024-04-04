@@ -39,7 +39,7 @@ interface Props extends EditProps {
     onCancel: () => void;
 }
 
-const Accounts = ({source}) => {
+const Accounts3 = ({source}) => {
     const record = useRecordContext();
     if (!record) return null;
 
@@ -88,13 +88,56 @@ const Accounts2 = ({source}) => {
     );
 }
 
+const Accounts = () => {
+
+    const record = useRecordContext();
+    if (!record) return null;
+
+    const sortedAccounts = record.accounts.sort((a, b) => a.account - b.account)
+    
+    // solution 1: override record, drawback: this affects the entire record
+    // this has to be taken into account for other components using the record
+    record.accounts = [...sortedAccounts]
+
+            
+    return (
+        <ReferenceArrayInput source="accounts" reference="Account" options={{ fullWidth:true }}>    
+            <AutocompleteArrayInput
+                fullWidth
+                optionText={(record) => `${record.account} - ${record.name}`}
+                optionValue="id"
+                label="Accounts"
+                parse={(value) => {
+                    /*  
+                    Parse is run whenever an new item is added to the list of selected items
+                    https://marmelab.com/react-admin/AutocompleteArrayInput.html#working-with-object-values 
+                    */       
+                    if (value) {
+                        return value.map(v => ({id: v}))
+                    }
+                    return []
+                }}
+                format={(value) => {
+                    console.log(value)
+                    /*  
+                    In order to render selected items, the components needs a list of Ids
+                    https://marmelab.com/react-admin/AutocompleteArrayInput.html#working-with-object-values 
+                    */                                
+                    if (value) {
+                        return value.map(v => v.id) 
+                    }
+                    return                            
+                }}
+                
+            />
+        </ReferenceArrayInput>
+    )
+}
+
 const AccountEdit = ({ id, onCancel }: Props) => {
     const translate = useTranslate();
 
-    // strange behaviour: if name or description of coa is changed, the entire bodies of the linked acounts are 
-    // sent in the subsequent update request, causing it to fail. 
-    // quickfix until behaviour is better understood: strip potential linked account properties here, before request 
-    // is passed on to the data provider
+    // sanitize the linked accounts before sending to data provider
     const sanitizeLinkedTransactions = (data) => ( data.accounts.map(account => ({id: account.id}) ) )
         
     
@@ -104,7 +147,6 @@ const AccountEdit = ({ id, onCancel }: Props) => {
         ...data,
         accounts: sanitizeLinkedTransactions(data) // {id: "123-234"} 
     })
-      
 
     return (
         <EditBase 
@@ -136,36 +178,10 @@ const AccountEdit = ({ id, onCancel }: Props) => {
                         fullWidth
                     />
 
-                    <ReferenceArrayInput source="accounts" reference="Account" options={{ fullWidth:true }}>    
-                        <AutocompleteArrayInput
-                            fullWidth
-                            optionText={(record) => `${record.account} - ${record.name}`}
-                            optionValue="id"
-                            label="Accounts"
-                            parse={(value) => {
-                                /*  
-                                Parse is run whenever an new item is added to the list of selected items
-                                https://marmelab.com/react-admin/AutocompleteArrayInput.html#working-with-object-values 
-                                */       
-                                if (value) {
-                                   return value.map(v => ({id: v}))
-                                }
-                                return []
-                            }}
-                            format={(value) => {
-                                /*  
-                                In order to render selected items, the components needs a list of Ids
-                                https://marmelab.com/react-admin/AutocompleteArrayInput.html#working-with-object-values 
-                                */                                
-                                if (value) {
-                                    return value.map(v => v.id)
-                                    
-                                }
-                                return                            
-                            }}
-                            
-                        />
-                    </ReferenceArrayInput>
+                    <Accounts />
+
+
+                    {/* <Accounts2 source="accounts" /> */}
 
                 </SimpleForm>
             </Box>
