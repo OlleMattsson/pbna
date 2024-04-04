@@ -16,8 +16,6 @@ export const AccountingPeriod = list({
       operation: allowAll,
       filter: {
         query: ({ session, context, listKey, operation }) => {
-
-            return true
           
           if (isAdmin({session})) {
             return true

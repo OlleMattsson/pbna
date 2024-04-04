@@ -41,7 +41,7 @@ export const Entry = list({
         query: ({ session, context, listKey, operation }) => {
           
           // for debugging, this essentially turns of access control
-          return true
+          // return true
 
           if (isAdmin({session})) {
             return true

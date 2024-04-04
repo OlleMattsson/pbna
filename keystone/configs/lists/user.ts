@@ -33,10 +33,7 @@ export const User = list({
           // NOTE: graphql playgound doesn't have any session data, so 
           // if we don't return true at the very end here, we wont
           // be able to access any data through it.....
-
-          // TODO: remove before publishing. playground access needs to happen
-          // with a valid token.
-          return true 
+          return false 
         }
       }
     },
