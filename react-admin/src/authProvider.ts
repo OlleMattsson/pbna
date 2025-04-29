@@ -51,6 +51,9 @@ export const authProvider: AuthProvider = {
 
         // TODO: Super odd behavaiour when logging in from a fresh session for the very first time (eg chrome cognito window)
         // user.organization will be null. On second login, organziation is included in response. No idea why.
+
+        console.log(user)
+
         if (user.organization === null) {
           authProvider.login({username, password})
         }

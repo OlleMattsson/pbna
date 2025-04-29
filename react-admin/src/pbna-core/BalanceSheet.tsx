@@ -9,6 +9,11 @@ export type AccountWithRows = {account: Account, rows:Row[]}
 
 export const BalanceSheetUI = ({ ledger }: { ledger: Ledger }) => {
 
+  if (!ledger) {
+    return null
+  }
+
+
   // Used for containing the account information for the UI
   // They serve a double purpose in also containing the row for each account
   // so that the saldo for each account can be calculated and displayed

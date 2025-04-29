@@ -119,10 +119,13 @@ export class Ledger implements LedgerInterface {
 }
 
 export const LedgerUI = ({ ledger }: { ledger: Ledger }) => {
+
+  if (!ledger) {
+    return null
+  }
+
   const groupedRows = ledger.getRowsGroupedByAccount()
     .sort((a,b) => a.account.account - b.account.account);
-
-  
 
   const balances = ledger.getBalances();
 

@@ -1,28 +1,33 @@
 import { gql } from '@apollo/client';
 
 export const ACCOUNTS_LIST = gql`
-query Query {
-    accounts {
-      account
-      description
-      id
-      type
-      name
-      vatAccount {
+query Query($where: AccountingPeriodWhereInput!) {
+  accountingPeriods(where: $where) {
+    id
+    accountChart {
+      accounts {
         account
         description
         id
-        name
         type
+        name
+        vatAccount {
+          account
+          description
+          id
+          name
+          type
+        }
+        vatAmount      
       }
-      vatAmount
     }
   }
+}
 `
 
 export const ENTRIES = gql`
-query Query {
-  entrys {
+query Entrys($where: EntryWhereInput!) {
+  entrys(where: $where) {
     id
     createdAt
     entryNumber
@@ -50,4 +55,13 @@ query Query {
     }
   }
 }
+`
+
+export const ACCOUNTING_PERIOD = gql`
+  query AccountingPeriods($where: AccountingPeriodWhereInput!) {
+    accountingPeriods(where: $where) {
+      id
+      label
+    }
+  }
 `

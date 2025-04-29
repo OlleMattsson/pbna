@@ -17,7 +17,7 @@ withAuth(
     db: {
       provider: 'postgresql',
       url: "postgres://pbna_pguser:pbna_pgpw@postgres/pbna_pgdb", 
-      enableLogging: true,
+      enableLogging: ['warn', 'error'],
       idField: { kind: 'uuid' }
     },
     lists,

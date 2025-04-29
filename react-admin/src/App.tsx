@@ -1,5 +1,5 @@
 // in App.js
-import React from 'react';
+import { useEffect, useState } from 'react';
 import { Route } from "react-router-dom";
 import { Admin, Resource, CustomRoutes, Menu, Layout, useLogin, useNotify } from 'react-admin';
 import authProvider from './authProvider'
@@ -12,7 +12,7 @@ import organization from "./organization"
 import OrganizationEdit from './organization/OrganizationEdit';
 import accountingPeriod from "./accountingPeriod"
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
-import {Ledger} from "./ledger/Ledger"
+import {Ledger, initData} from "./ledger/Ledger"
 import BusinessIcon from '@mui/icons-material/Business';
 import Button from '@mui/material/Button'
 import Login from './core/Login'
@@ -23,13 +23,34 @@ import { IncomeStatement} from './incomeStatement/IncomeStatement'
 import PaidIcon from '@mui/icons-material/Paid';
 import BalanceIcon from '@mui/icons-material/Balance';
 
-
+// PBNA CORE MODULES
+import { Ledger as LedgerModel } from "./pbna-core/Ledger"
+import { AccountManager } from './pbna-core/Account/AccountManager'
+import { TransactionManager } from './pbna-core/Transaction/TransactionManager'
 
 export const App = () => {
 
-    const [dataProvider, setDataProvider] = React.useState(null);
+    // init the pbna model
+    const [ledger, setLedger] = useState()
+    useEffect(() => {
+        const accountManager = new AccountManager();
+        const transactionManager = new TransactionManager();
+        const ledgerModel = new LedgerModel({
+            accountManager,
+            transactionManager
+        })
+    
+        const init = async () => {
+            setLedger(await initData(ledgerModel))
+        }
+    
+        init()
+    }, [])
 
-    React.useEffect(() => {
+    // init keystone dataprovider
+    const [dataProvider, setDataProvider] = useState(null);
+
+    useEffect(() => {
         buildGraphQLProvider.then(graphQlDataProvider => setDataProvider(() => graphQlDataProvider));
     }, []);
 
@@ -43,8 +64,6 @@ export const App = () => {
             dataProvider={dataProvider} 
             layout={MyLayout}
             loginPage={Login}
-
-
         >
             <Resource name="Entry" {...EntryList}/>
             <Resource name="Attachment" {...attachment}/>
@@ -66,9 +85,11 @@ export const App = () => {
             />
            
             <CustomRoutes>
-                <Route path="/ledger" element={<Ledger />} />
-                <Route path="/balance" element={<BalanceSheet />} />
-                <Route path="/income" element={<IncomeStatement />} />
+                <Route path="/ledger" element={<Ledger ledger={ledger}/>} />
+                <Route path="/balance" element={<BalanceSheet ledger={ledger}/>} />
+                <Route path="/income" element={<IncomeStatement ledger={ledger}/>} />
+                {/*
+            */}
             </CustomRoutes>
 
             <CustomRoutes noLayout>

@@ -5,4 +5,4 @@ export type Session = {
       role: string;
       email: string;
     }
-  }
+  }   

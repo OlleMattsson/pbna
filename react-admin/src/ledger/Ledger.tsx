@@ -1,48 +1,79 @@
-import { Ledger as LedgerModel, LedgerUI } from "../pbna-core/Ledger"
+import { LedgerUI } from "../pbna-core/Ledger"
 import { Account } from '../pbna-core/Account/Account'
-import { AccountManager } from '../pbna-core/Account/AccountManager'
-import { TransactionManager } from '../pbna-core/Transaction/TransactionManager'
 import { Row } from "../pbna-core/Row/Row";
 import { Transaction } from "../pbna-core/Transaction/Transaction";
 import { ApolloClient, InMemoryCache } from '@apollo/client';
 import { ENTRIES, ACCOUNTS_LIST} from './queries'
 
+
+
 // Sidestepping the RA dataprovider fir this view
 const client = new ApolloClient({
     cache: new InMemoryCache(),
-    uri: 'http://localhost:3000/api/graphql'
+    uri: 'http://localhost:3000/api/graphql',
+    credentials: 'include'  // add Cookie header to requests
 });
 
-// init the pbna model
-const accountManager = new AccountManager();
-const transactionManager = new TransactionManager();
-const ledger = new LedgerModel({
-    accountManager,
-    transactionManager
-})
-
-// fetch accounts
-const accounts = await client.query({
-    query: ACCOUNTS_LIST
-}).then(r => r.data.accounts)
-
-// fetch entries
-const entries = await client.query({
-  query: ENTRIES
-}).then(response => response.data.entrys)
-
-
 // restore accounts
-const restoreAccounts = (accounts: []) => {
+export const initData = async (ledger) => {
+
+  // mattssoft
+  const organisationId = "19156e94-d681-4d38-9e77-7b9942db1c5d"
+
+  let accountingPeriodId, accounts;
+
+  accounts = await client.query({
+    query: ACCOUNTS_LIST,
+    variables: {
+      where: {
+        "owner": {
+          "id": {
+            "equals": organisationId
+          }
+        },
+        "AND" : [
+          {
+            "isActive": {
+              "equals": true
+            }
+          }
+        ]
+    
+      }
+    }
+  }).then(r => {
+    accountingPeriodId = r.data.accountingPeriods[0].id
+    accounts = r.data.accountingPeriods[0].accountChart.accounts
+    return 
+  }).then(() => {
     accounts.forEach((a) => {
-      accountManager.put(new Account(a));
+      ledger.accountManager.put(new Account(a));
     });
-};
+  })
 
 
-// restore transactions (entries)
-const restoreTransactions = (transactions: []) => {
-  transactionManager.clear();
+  const transactions = await client.query({
+    query: ENTRIES,
+    variables: {
+      where: {
+        "owner": {
+          "id": {
+            "equals" : organisationId
+          }
+        },
+        "AND": [
+          {
+            "accountingPeriod": {
+              "id": {
+                "equals": accountingPeriodId
+              }
+            }
+          }
+        ]
+      }
+    
+    }
+  }).then(response => response.data.entrys)
 
   const newTransactions = transactions.map((t: { lineItems: [], attachments: [] }) => {
     
@@ -50,22 +81,18 @@ const restoreTransactions = (transactions: []) => {
       return new Row({...r, date: t.date, description: t.description, precision: 0});
     });
 
-
     return new Transaction(rows, t.attachments);
   });
 
   newTransactions.forEach((t) => {
-    transactionManager.addTransaction(t);
+    ledger.transactionManager.addTransaction(t);
   });
+
+  return ledger
 
 };
 
-
-// "main" 
-restoreAccounts(accounts)
-restoreTransactions(entries);
-
-export const Ledger = () => {
+export const Ledger = ({ledger}) => {
     return (
         <div>
             <LedgerUI ledger={ledger}/>

@@ -27,7 +27,7 @@ note: client facing ui (react-admin) has to be started manually `cd react-admin 
 ### project folder structure
 
 - Common: files shared between the services, currently only stuff related to redis. This could potentially be converted to a package for easier installation
-- Frontend: old frontend `localhost:8000` that contains some interesting account, entry and lineItem test data, also contains business logic for building an income statement and balancing the books
+- Frontend: old frontend `localhost:8000` that contains some interesting account, entry and lineItem test data, also contains business logic for  building an income statement and balancing the books
 - keystone: cms, data storage, schema and graphql api accessible on `localhost:3000`
 - models: for storing llm models
 - node-llama: a microservice running llama

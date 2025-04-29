@@ -40,14 +40,19 @@ export const Entry = list({
       filter: {
         query: ({ session, context, listKey, operation }) => {
           
+          //console.log(session)
+
+
           // for debugging, this essentially turns of access control
-          // return true
+          //return true
 
           if (isAdmin({session})) {
             return true
           }
 
           if (isOwner({session}))  {
+
+            console.log("isOwner", session)
             return {
               owner: {
                 id: {
