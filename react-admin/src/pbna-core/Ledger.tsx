@@ -81,8 +81,8 @@ export class Ledger implements LedgerInterface {
 
     this.accountManager.getAccounts().forEach((account: Account) => {
       const balance = this.getBalanceForAccount(account);
-      const accountId = account.getAccountNumber();
-      balancesObj[accountId] = balance;
+      //const accountId = account.getAccountNumber();
+      balancesObj[account.account] = balance;
     });
 
     return balancesObj;
@@ -98,7 +98,7 @@ export class Ledger implements LedgerInterface {
     const credit = r.getCredit()
 
     // sign is "normal" for asset account
-    if (a.getType() == AccountType.Asset) {
+    if (a.type == AccountType.Asset) {
 
 
       if (r.getType() === RowType.Debit) {
@@ -132,16 +132,16 @@ export const LedgerUI = ({ ledger }: { ledger: Ledger }) => {
   return (
     <div>
       {groupedRows.map(({account, rows}: {account: Account, rows: Row[]}) => {
-        const {id: accountId, account: accountNumber, name: accountName} = account.get()
+        const {id: accountId, account: accountNumber, name} = account.get()
 
         const balance = balances[accountNumber];
 
 
 
-        if (account.getType() == AccountType.Noop) {
+        if (account.type === AccountType.Noop) {
           return (
             <div key={accountId}>
-              <p style={{ fontSize: "20pt" }}>{account.getName()}</p>
+              <p style={{ fontSize: "20pt" }}>{name}</p>
             </div>
           );
         } else {
@@ -154,7 +154,7 @@ export const LedgerUI = ({ ledger }: { ledger: Ledger }) => {
                   marginBottom: "0px"
                 }}
               >
-                {accountNumber} - {accountName}
+                {accountNumber} - {name}
               </p>
               <table>
                 <tbody>

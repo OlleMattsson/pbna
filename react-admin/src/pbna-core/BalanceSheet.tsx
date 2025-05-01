@@ -105,7 +105,7 @@ export const BalanceSheetUI = ({ ledger }: { ledger: Ledger }) => {
   // add the temporaruy result row
   liabilityAccountsWithRows.forEach((obj: AccountWithRows) => {
     const {account} = obj
-    if (account.getId() == INCOME_ACCOUNT_ID) {
+    if (account.account == INCOME_ACCOUNT_ID) {
       obj.rows.push(resultRow);
     }
   });
@@ -135,15 +135,13 @@ export const BalanceSheetUI = ({ ledger }: { ledger: Ledger }) => {
     <div>
       <div>
         <h3>A$$ets</h3>
-        {assetAccountsWithRows.map(({account}) => {
-          const accountId = account.getId();
-          const accountName = account.getName();
-          const accountNumber = account.getAccountNumber()
-          const balance = assetBalancesObj[accountId];
+        {assetAccountsWithRows.map(({account: a}) => {
+          const {id, account, name} = a
+          const balance = assetBalancesObj[id];
           return (
-            <div key={accountId}>              
-              <span>{accountNumber} - </span>
-              <span>{accountName}: </span>
+            <div key={id}>              
+              <span>{account} - </span>
+              <span>{name}: </span>
               <span>{balance} €</span>
             </div>
           );
@@ -152,15 +150,14 @@ export const BalanceSheetUI = ({ ledger }: { ledger: Ledger }) => {
       </div>
       <div>
         <h3>Liabilities & Equity</h3>
-        {liabilityAccountsWithRows.map(({account}) => {
-          const accountId = account.getId();
-          const accountName = account.getName();
-          const accountNumber = account.getAccountNumber()
-          const balance = liabilityBalancesObj[accountId];
+        {liabilityAccountsWithRows.map(({account: a}) => {
+          const {id, name, account} = a
+          const balance = liabilityBalancesObj[id];
+          
           return (
-            <div key={accountId}>
-              <span>{accountNumber} - </span>
-              <span>{accountName}: </span>
+            <div key={id}>
+              <span>{account} - </span>
+              <span>{name}: </span>
               <span>{balance} €</span>
             </div>
           );

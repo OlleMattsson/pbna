@@ -1,4 +1,4 @@
-import { Account } from "./Account/Account";
+import { Account, AccountType } from "./Account/Account";
 import { Ledger } from "./Ledger";
 import { AccountWithRows } from "./BalanceSheet"
 
@@ -11,6 +11,12 @@ const getIncomeStatementAccountsAndRows = ({ ledger }: { ledger: Ledger }) => {
     accountsWithRows.push({ account, rows: accountRows });
   });
 
+  // retrieve NoOp Accounts as these are used for grouping and labelling
+  ledger.accountManager.getNoopAccounts().forEach((a: Account) => {
+    accountsWithRows.push({ account: a, rows: [] });
+  });
+
+
   return accountsWithRows;
 };
 
@@ -20,7 +26,7 @@ export const getBalancesForAccounts = ({ accountsWithRows, ledger }: {accountsWi
 
   // calculate balance (saldo) for each account
   accountsWithRows.forEach(({account}) => {
-    const id = account.getId();
+    const id = account.id;
     const balance = ledger.getBalanceForAccount(account);
     balancesObj[id] = balance;
     balancesArr.push(balance);
@@ -60,7 +66,11 @@ export const getIncome = ({ ledger }: { ledger: Ledger }): number => {
  * UI COMPONENT
  *
  */
-export const IncomeStatementUI = ({ ledger }: { ledger: Ledger }) => {
+export const IncomeStatementUI = ({ 
+  ledger,
+}: { 
+  ledger: Ledger 
+}) => {
   
   if (!ledger) {
     return null
@@ -70,11 +80,14 @@ export const IncomeStatementUI = ({ ledger }: { ledger: Ledger }) => {
     ledger
   }).sort((a,b) => a.account.account - b.account.account);
 
+  //console.log(accountsWithRows)
+
 
   const { balancesObj } = getBalancesForAccounts({
     accountsWithRows,
     ledger
   });
+
   const income = getIncome({ ledger }).toFixed(2);
 
   return (
@@ -82,10 +95,20 @@ export const IncomeStatementUI = ({ ledger }: { ledger: Ledger }) => {
       {accountsWithRows.map(({account}) => {
         const {id, name, account: accountNumber} = account.get()
 
+        if (account.type === AccountType.Noop) {
+          return (
+            <div key={id}>
+            <p style={{ fontWeight: "bold" }}>
+              {name} ({accountNumber})
+            </p>
+          </div>            
+          )
+        }
+
         const balance = balancesObj[id];
         return (
           <div key={id}>
-            <p style={{ fontWeight: "bold" }}>
+            <p style={{marginLeft: "20px" }}>
               {accountNumber} - {name}: {balance} €
             </p>
           </div>

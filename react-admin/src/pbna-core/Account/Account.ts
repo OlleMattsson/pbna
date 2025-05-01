@@ -10,7 +10,7 @@ interface AccountConstructorProps {
 
 interface AccountInterface {
   get(): {};
-  getId(): number;
+  getId(): string; // deprecated
 }
 
 export enum AccountType {
@@ -22,13 +22,14 @@ export enum AccountType {
 }
 
 class Account implements AccountInterface {
-  private id: string;      // system id
-  private account: number; // the account id used to identify it in traditional book keeping, eg. "1000" or "1234"
-  private type: AccountType;
-  private name: string;
+  public id: string;      // system id
+  public account: number; // the account id used to identify it in traditional book keeping, eg. "1000" or "1234"
+  public name: string;
   private description: string;
   private vatAmount: number; // if > 0 this account is regarded to be a VAT account
   private vatAccountId: number; // reference to account that has positive vatAmount
+  
+  private _type!: AccountType;
 
   public constructor({
     id,
@@ -53,14 +54,36 @@ class Account implements AccountInterface {
     return { id, account, type, name, description, vatAmount, vatAccountId };
   };
 
-  public getId = (): number => this.id;
+  /**
+  * @deprecated Use the property accessor `account.type` instead.
+  */
+  public getId = (): string =>  {
+    console.warn("getId() is deprecated, use account.id instead")
+    return this.id;
+  }
 
-  public getAccountNumber = (): number => this.account
+  public getAccountNumber = (): number => {
+    console.warn("getAccount() is deprecated, use account.account instead")
+    return this.account
+  }
 
-  public getType = () => this.type;
+   /**
+   * @deprecated Use the property accessor `account.type` instead.
+   */
+  public getType = () => {
+    console.warn("getType() is deprecated, use account.type instead")
+    return this.type;
+  }
+  
 
-  public getName = () => this.name;
+  public getName = () => {
+    console.warn("getName() is deprecated, use account.name instead")
+    return this.name;
+  }
 
+  /*
+  
+  */
   public put = ({
     id,
     account,
@@ -78,6 +101,10 @@ class Account implements AccountInterface {
     vatAmount?: number;
     vatAccountId?: number;
   }) => {
+
+    console.warn("Account.put() is deprecated, use account.name instead")
+
+
     if (id) {
       this.id = id;
     }
@@ -100,6 +127,29 @@ class Account implements AccountInterface {
       this.vatAccountId = vatAccountId;
     }
   };
+
+  /*
+    type
+  */
+   public set type(raw: string | number) {
+
+    // Normalize string -> number
+    const parsed = typeof raw === 'number'
+      ? raw
+      : parseInt(raw, 10);
+
+    // extra layer of protection against out of range or NaN values
+    if (!(parsed in AccountType)) {
+      throw new Error(`Invalid AccountType: ${raw}`);
+    }
+
+    this._type = parsed as AccountType;
+  } 
+
+  public get type(): AccountType {
+    return this._type;
+  }
+
 }
 
 export { Account };

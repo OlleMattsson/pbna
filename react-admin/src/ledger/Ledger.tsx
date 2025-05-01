@@ -5,7 +5,7 @@ import { Transaction } from "../pbna-core/Transaction/Transaction";
 import { ApolloClient, InMemoryCache } from '@apollo/client';
 import { ENTRIES, ACCOUNTS_LIST} from './queries'
 
-
+// TODO: move this pbna initialisation code to its own file
 
 // Sidestepping the RA dataprovider fir this view
 const client = new ApolloClient({
@@ -18,6 +18,7 @@ const client = new ApolloClient({
 export const initData = async (ledger) => {
 
   // mattssoft
+  // TODO: this should be loaded dynamically instead
   const organisationId = "19156e94-d681-4d38-9e77-7b9942db1c5d"
 
   let accountingPeriodId, accounts;

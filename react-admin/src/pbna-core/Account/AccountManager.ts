@@ -91,9 +91,17 @@ export class AccountManager implements AMInterface {
   getAssetAccounts = () => {
     return this.accounts.filter((account) => {
       const { type } = account.get();
-
+  
       if (type == AccountType.Asset) {
         return account;
+      }
+    });
+  };
+
+  getNoopAccounts = () => {
+    return this.accounts.filter((a) => { 
+      if (a.type == AccountType.Noop) {
+        return a;
       }
     });
   };
