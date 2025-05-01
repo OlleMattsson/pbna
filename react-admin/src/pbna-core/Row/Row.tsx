@@ -1,4 +1,4 @@
-import { generateRandomInteger } from "../helpers";
+import { generateRandomInteger } from "../helpers/generateRandomInt";
 import { Account } from '../Account/Account'
 
 enum RowType {
