@@ -93,7 +93,7 @@ export const IncomeStatementUI = ({
   return (
     <div>
       {accountsWithRows.map(({account}) => {
-        const {id, name, account: accountNumber} = account.get()
+        const {id, name, account: accountNumber} = account
 
         if (account.type === AccountType.Noop) {
           return (

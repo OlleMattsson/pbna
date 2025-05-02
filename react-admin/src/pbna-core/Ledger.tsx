@@ -28,7 +28,7 @@ export class Ledger implements LedgerInterface {
 
   getRowsForAccount = (a: Account): Row[] => {
     const rows: Row[] = [];
-    const { account } = a.get();
+    const { account } = a;
 
     this.transactionManager
       .getTransactions()
@@ -132,11 +132,9 @@ export const LedgerUI = ({ ledger }: { ledger: Ledger }) => {
   return (
     <div>
       {groupedRows.map(({account, rows}: {account: Account, rows: Row[]}) => {
-        const {id: accountId, account: accountNumber, name} = account.get()
+        const {id: accountId, account: accountNumber, name} = account
 
         const balance = balances[accountNumber];
-
-
 
         if (account.type === AccountType.Noop) {
           return (
