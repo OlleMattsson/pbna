@@ -22,6 +22,9 @@ import { BalanceSheet } from './balance/Balance';
 import { IncomeStatement} from './incomeStatement/IncomeStatement'
 import PaidIcon from '@mui/icons-material/Paid';
 import BalanceIcon from '@mui/icons-material/Balance';
+import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
+
+import { Journal } from './journal/Journal';
 
 // PBNA CORE MODULES
 import { Ledger as LedgerModel } from "./pbna-core/Ledger"
@@ -88,6 +91,8 @@ export const App = () => {
                 <Route path="/ledger" element={<Ledger ledger={ledger}/>} />
                 <Route path="/balance" element={<BalanceSheet ledger={ledger}/>} />
                 <Route path="/income" element={<IncomeStatement ledger={ledger}/>} />
+                <Route path="/Journal" element={<Journal/>} />
+
                 {/*
             */}
             </CustomRoutes>
@@ -110,6 +115,7 @@ export const MyMenu = () => (
         <Menu.Item to="/ledger" primaryText="Ledger" leftIcon={<AccountBalanceIcon />}/>
         <Menu.Item to="/balance" primaryText="Balance Sheet" leftIcon={<BalanceIcon />}/>
         <Menu.Item to="/income" primaryText="Income Statement" leftIcon={<PaidIcon />}/>
+        <Menu.Item to="/journal" primaryText="Journal BETA" leftIcon={<FormatListBulletedIcon />}/>
     </Menu>
 );
 

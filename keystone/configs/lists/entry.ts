@@ -52,7 +52,6 @@ export const Entry = list({
 
           if (isOwner({session}))  {
 
-            console.log("isOwner", session)
             return {
               owner: {
                 id: {

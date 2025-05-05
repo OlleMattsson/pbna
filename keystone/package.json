@@ -10,12 +10,17 @@
     "__postinstall": "keystone build --no-ui --frozen"
   },
   "dependencies": {
+    "@apollo/server-plugin-landing-page-graphql-playground": "^4.0.1",
     "@keystone-6/auth": "^7.0.0",
     "@keystone-6/core": "^5.0.0",
     "@keystone-6/fields-document": "^7.0.0",
+    "graphql-subscriptions": "^3.0.0",
+    "graphql-ws": "^5.16.2",
+    "redis-smq": "^7.0.7",
+    "subscriptions-transport-ws": "^0.11.0",
     "tesseract.js": "^5.0.3",
     "typescript": "^4.9.5",
-    "redis-smq": "^7.0.7"
+    "ws": "^8.18.2"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
