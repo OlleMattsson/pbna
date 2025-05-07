@@ -1,11 +1,8 @@
 import { mergeSchemas } from '@graphql-tools/schema';
 import { config as dotenv } from 'dotenv';
-import { PubSub } from 'graphql-subscriptions';
-
-export const pubsub = new PubSub();
-
 
 dotenv({ path: './common/.env' });
+
 
 export const schemaExtensions = schema => mergeSchemas({
     schemas: [schema],
@@ -17,9 +14,16 @@ export const schemaExtensions = schema => mergeSchemas({
     resolvers:{
         Subscription: {
             entryChanged: {
-              subscribe: () => pubsub.asyncIterator('ENTRY_CHANGED'),
+                subscribe: (_root, _args, context) => {
+                    try {
+                        return context.pubsub.asyncIterableIterator('ENTRY_CHANGED')
+                      } catch (err) {
+                        console.error('Failed in subscribe resolver', err);
+                        throw err; // or return EMPTY async iterator
+                      }
+                } 
             },
-          },
+        },
     }
 })
 

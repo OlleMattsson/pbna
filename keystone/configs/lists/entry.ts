@@ -34,6 +34,8 @@ import {
 
 import { isAdmin, isOwner, isUser } from '../roles';
 
+import {pubsub} from '../../common/pubsub'
+
 export const Entry = list({
     access: {
       operation: allowAll,
@@ -131,5 +133,13 @@ export const Entry = list({
     },
     graphql: {
       plural: "entrys" // we need to rename this from entries -> entrys for react-admins gql introsepction package
-    }
+    },
+    hooks: {
+      afterOperation: async ({ operation, item }) => {
+        if (operation === 'update') {
+          console.log(item)
+          await pubsub.publish('ENTRY_CHANGED', { entryChanged: item });
+        }
+      },
+    },
   })
