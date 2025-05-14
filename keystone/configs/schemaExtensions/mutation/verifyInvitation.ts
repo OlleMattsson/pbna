@@ -28,7 +28,7 @@ export const verifyInvitation = async (root, {data}, context) => {
             },
         });
 
-        return foundUser.email
+        return "ok"
 
     } catch (e) {
         console.error(e)

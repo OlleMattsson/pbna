@@ -3,7 +3,7 @@ import { ApolloClient, InMemoryCache, HttpLink, gql } from '@apollo/client';
 // use a modified adapter based on ra-data-graphql-simple
 import buildGraphQLProvider, { buildQuery } from './ra-data-keystone6/src';
 
-const client = new ApolloClient({
+export const client = new ApolloClient({
     cache: new InMemoryCache(),
     link: new HttpLink({
         uri: 'http://localhost:3000/api/graphql',        

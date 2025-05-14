@@ -1,8 +1,5 @@
-import * as React from 'react';
 import { useState } from 'react';
-import PropTypes from 'prop-types';
 import { useLocation } from 'react-router-dom';
-
 import {
     Avatar,
     Button,
@@ -11,27 +8,25 @@ import {
     CircularProgress,
     Link
 } from '@mui/material';
-import LockIcon from '@mui/icons-material/Lock';
 import {
     Form,
     required,
-    TextInput,
     useTranslate,
-    useLogin,
     useNotify,
     PasswordInput,
     useRedirect
 } from 'react-admin';
-
 import Box from '@mui/material/Box';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import {getBackground} from './Login'
-
+import { client } from '../buildQuery';
+import { VERIFY_INVITATION } from './graphql/mutations';
 
 const CreateProfile = () =>  {
     const [loading, setLoading] = useState(false);
     const translate = useTranslate();
     const redirect = useRedirect();
+    const notify = useNotify();
 
 
 
@@ -40,30 +35,25 @@ const CreateProfile = () =>  {
     const invitationToken = queryParams.get("invitationToken")
 
 
-    const handleSubmit = (form: FormValues) => {
+    const handleSubmit = async(form: FormValues) => {
 
         const {password} = form
-        
-        fetch('http://localhost:8181/createprofile', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                email,
-                password,
-                invitationToken
-            }),
-        })
-        .then(response => response.json()) // Parsing the JSON response
-        .then(data => {
-            console.log(data)
-            if (data.message === "password set") {
-                redirect(`/signin`);
-            }
 
-        })   // Handling the data from the response
-        .catch(error => console.error('Error:', error)); // Handling errors
+        const {data} = await client.mutate({
+            mutation: VERIFY_INVITATION,
+            variables: {     
+                data: {
+                    password,
+                    invitationToken
+                }
+            }
+        })
+
+        if (data.verifyInvitation === "ok") {
+            redirect(`/signin`);
+        } else {
+            notify("The invitation was not succesful. Please request a new invitation link to continue.")
+        }
     };
 
     const equalToPassword = (value, allValues) => {
@@ -72,7 +62,7 @@ const CreateProfile = () =>  {
         }
     }
 
-    if (!invitationToken || !email) {
+    if (!invitationToken) {
         return (
             <Box
                 sx={{
@@ -155,7 +145,7 @@ const CreateProfile = () =>  {
                             padding: '0 1em 1em 1em' 
                         }}
                     >
-                       Welcome! Please choose a password to get started.<br />
+                       Please choose a password to get started.<br />
                        <br />
                        Passwords must follow these rules <br />
                        - At least 8 characters long<br />
@@ -209,7 +199,7 @@ const CreateProfile = () =>  {
                         </Button>
                     </CardActions>   
                     <Box sx={{ padding: '0 1em 1em 1em' }}>
-                    <Link href="#/login">Sign in</Link>
+                    <Link href="#/signup">Request new invitation link</Link>
                     </Box>                                   
                 </Card>
             </Box>

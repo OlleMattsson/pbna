@@ -25,29 +25,7 @@ services:
       - 6379
     # used when backend is running locally
     ports:
-      - "6379:6379"      
-
-
-  http-api:
-    container_name: http-api
-    build: 
-      context: ./http-api
-      dockerfile: http-api.Dockerfile
-    links:
-      - redis
-    volumes:
-      - type: bind
-        source: ./common
-        target: /code/common
-      - type: bind
-        source: ./http-api/src
-        target: /code/src
-
-    command: npm run dev
-    ports:
-      - "8181:8181"
-    expose:
-      - 8181      
+      - "6379:6379" 
 
   keystone:
     container_name: keystone
