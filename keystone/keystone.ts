@@ -1,19 +1,8 @@
 import { config } from '@keystone-6/core';
 import { lists } from './configs/schema';
 import { withAuth, session } from './configs/auth';
-import { WebSocketServer } from 'ws';
-import { useServer as wsUseServer } from 'graphql-ws/lib/use/ws';
-import { PubSub } from 'graphql-subscriptions';
 import { schemaExtensions } from './configs/schemaExtensions';
-import { SubscriptionServer } from 'subscriptions-transport-ws';
-import { execute, subscribe } from 'graphql';
-import { ApolloServerPluginLandingPageGraphQLPlayground } from '@apollo/server-plugin-landing-page-graphql-playground';
-
-import { pubsub } from './common/pubsub';
-
-import { Socket } from 'net';
-import type { IncomingMessage, Server as HttpServer } from 'http';
-
+import { getRedisPubSub } from './pubsub';
 
 export default 
 withAuth(
@@ -25,11 +14,7 @@ withAuth(
           'http://localhost:5173'
         ], 
         credentials: true 
-      },
-      extendHttpServer: (httpServer: HttpServer, context) => {
-          
-
-      }
+      }, 
     },
     db: {
       provider: 'postgresql',
@@ -50,6 +35,17 @@ withAuth(
         storagePath: 'public/files'
       }
     },
-    extendGraphqlSchema: schemaExtensions
+    extendGraphqlSchema: schemaExtensions,
+    graphql: {
+      // inject redis based pubsub into apollo
+      // allows event passing between keystone instances
+      apolloConfig: {
+        context: async ({ req, res, context }) => ({
+          ...context,    
+          pubsub: getRedisPubSub()        
+        }),
+        introspection: true    
+      },
+    },
   }
 ));
