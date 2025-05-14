@@ -1,5 +1,5 @@
-export const subscriptionTypeDefs =
-` type Subscription {
-            entryChanged: Entry
-        }
-    `
+export const subscriptionTypeDefs =` 
+    type Subscription {
+        entryChanged: Entry
+    }
+`

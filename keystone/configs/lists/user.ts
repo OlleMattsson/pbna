@@ -59,6 +59,16 @@ export const User = list({
         }
       }),
 
+      verifiedAt: timestamp({
+        defaultValue: { kind: 'now' },
+        ui: { 
+          createView: {
+            fieldMode: "hidden" 
+          } 
+        }
+      }),
+      
+
       role: select({
         type: "string",
         options: [
@@ -79,6 +89,7 @@ export const User = list({
       }),
 
       invitationToken: text(),
+
 
     },
     ui: {

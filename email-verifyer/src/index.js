@@ -72,7 +72,7 @@ async function sendMail({emailAddress}) {
   const invitationToken = uuidv4()
   const verificationUrl = `http://localhost:5173/createprofile?email=${emailAddress}&invitationToken=${invitationToken}`
 
-  gqlApi.mutate({
+    .mutate({
     mutation: gql`
       mutation Mutation($data: UserCreateInput!) {
         createUser(data: $data) {
