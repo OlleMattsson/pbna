@@ -2,7 +2,7 @@ import { config } from '@keystone-6/core';
 import { lists } from './configs/schema';
 import { withAuth, session } from './configs/auth';
 import { schemaExtensions } from './configs/schemaExtensions';
-import { getRedisPubSub } from './pubsub';
+import { getRedisPubSub } from './helpers/pubsub';
 
 export default 
 withAuth(
