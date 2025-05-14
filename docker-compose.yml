@@ -67,6 +67,7 @@ services:
       # NODE_ENV: development
       # values should come from postgres env...
       DATABASE_URL: postgres://pbna_pguser:pbna_pgpw@postgres/pbna_pgdb
+      SESSION_SECRET: my-super-secure-secret-123456789012345
     volumes:
       - type: bind
         source: ./common
