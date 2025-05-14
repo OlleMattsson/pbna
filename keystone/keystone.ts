@@ -27,57 +27,7 @@ withAuth(
         credentials: true 
       },
       extendHttpServer: (httpServer: HttpServer, context) => {
-        
-        // Remove any previously-registered upgrade listeners
-        httpServer.removeAllListeners('upgrade');
-
-        httpServer.on('upgrade', (req, socket, head) => {
-          console.log('[upgrade] incoming upgrade for', req.url);
-          if (req.url === '/api/graphql/subscriptions') {
-            
-            console.log('[upgrade] grabbing socket for GraphQL-WS');
-            socket.setTimeout(0);
-
-            wss.handleUpgrade(req, socket, head, ws => {
-              console.log('[upgrade] upgraded to WebSocket');
-              wss.emit('connection', ws, req);
-            });
-          }
-        });
-
-        console.log("sanity check 123")
-
-        httpServer.keepAliveTimeout = 120_000;  // 2 min idle before Node kills it
-        httpServer.headersTimeout   = 125_000;  // must be > keepAliveTimeout
-
-        const wss = new WebSocketServer({
-          noServer: true
-        });
-
-        const cleanup = wsUseServer({
-          schema:        context.graphql.schema,
-          execute,
-          subscribe,
-          context:      () => ({ ...context, pubsub }),
-          onConnect:    () => console.log('[graphql-ws] client CONNECT'),
-          onSubscribe:  (ctx, msg) => console.log('[graphql-ws] subscribe', msg),
-          onNext:       (ctx, msg, args) => console.log('[graphql-ws] next', msg),
-          onError:      (ctx, err) => console.error('[graphql-ws] error', err),
-          onComplete:   (ctx, msg) => console.log('[graphql-ws] complete', msg),
-          onDisconnect: (ctx, code, reason) => console.log('[graphql-ws] disconnect', { code, reason }),
-          keepAlive:    15_000 as any,
-        } as any, wss);
-
-
-
-        // 5) Clean up on server shutdown (if you support it)
-        httpServer.on('close', () => {
-          console.log("httpserver onClose")
-          return cleanup.dispose()
-        });
-        
-
-
+          
 
       }
     },

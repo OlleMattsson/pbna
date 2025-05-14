@@ -1,20 +1,15 @@
 import http from "http"
 import express from "express"
-import {Server as ioServer} from "socket.io"
-import { Message } from 'redis-smq';
-import {config as smqConfig, queueNames} from "../common/redis-smq-config.js"
-import { sendMessage } from '../common/smqSendMessage.js';
 import cors from 'cors'
-import { ApolloClient, InMemoryCache, gql } from '@apollo/client/core/core.cjs';
-import { HttpLink } from "@apollo/client/link/http/http.cjs";
-import { ApolloLink } from "@apollo/client/link/core/ApolloLink.js"
-import util from 'util'
-import { keystoneAuth, authenticatedClient } from "./keystoneAuth.js";
+import { Server as ioServer } from "socket.io"
+import { Message } from 'redis-smq';
 import { config } from 'dotenv';
+import { gql } from '@apollo/client/core/core.cjs';
+import { config as smqConfig, queueNames} from "../common/redis-smq-config.js"
+import { sendMessage } from '../common/smqSendMessage.js';
+import { keystoneAuth, authenticatedClient } from "./keystoneAuth.js";
 
 config({ path: './common/.env' });
-
-
 
 /**
  * Start server
@@ -38,10 +33,6 @@ server.listen(port, () => {
 /**
  * Define http endpoints
  */
-
- httpApi.get('/', (req, res) => {
-    res.send("ok")
-});
 
 httpApi.post('/verifyemail', (req, res) => {
 
@@ -114,33 +105,5 @@ httpApi.post('/createprofile', async (req, res) => {
   } catch(e) {
     res.status(404).send({message: "user does not exist"})
   }
-
-
-
-
-  // 2. set the password in keystone
-  // 3. send a welcome email to the new user
-
-
-  //
-
-
-
 })
-
-
-/**
- * Define socket events
- */
-
-socket.on('connection', (socket) => {
-  console.log('a user connected');
-
-  socket.on('disconnect', () => {
-    console.log('user disconnected');
-  });
-
-});
-
-
 
