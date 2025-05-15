@@ -13,14 +13,15 @@ import {
 
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
 import { GET_ACCOUNTS, GET_COA, UPDATE_LINEITEM_ACCOUNT, UPDATE_LINEITEM_DEBCRED, UPDATE_ENTRY_CREATE_LINEITEM } from "./gql";
+import { client } from "../dataProviders/apolloClient";
 
-
+/*
 const client = new ApolloClient({
     cache: new InMemoryCache(),
     uri: 'http://localhost:3000/api/graphql',
     credentials: 'include'
 });
-
+*/
 
 
 

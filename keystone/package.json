@@ -7,7 +7,10 @@
     "startpg": "docker compose up postgres",
     "start": "keystone start",
     "build": "keystone build",
-    "__postinstall": "keystone build --no-ui --frozen"
+    "__postinstall": "keystone build --no-ui --frozen",
+    "dev:subs": "npx ts-node --transpile-only ./subscriptionService/subscriptionService.ts",
+    "noop": "tail -f /dev/null"
+
   },
   "dependencies": {
     "@apollo/server-plugin-landing-page-graphql-playground": "^4.0.1",

@@ -1,7 +1,17 @@
 version: '3'
+
 networks:
   default:
     name: pbna_network
+
+volumes:
+  pg-data:
+  frontend-dist:
+
+x-postgres-vars: &postgres-vars 
+  POSTGRES_USER: pbna_pguser
+  POSTGRES_PASSWORD: pbna_pgpw
+  POSTGRES_DB: pbna_pgdb
 
 services:
 
@@ -9,9 +19,7 @@ services:
     image: postgres:latest
     container_name: postgres
     environment:
-      POSTGRES_USER: pbna_pguser
-      POSTGRES_PASSWORD: pbna_pgpw
-      POSTGRES_DB: pbna_pgdb
+      <<: *postgres-vars
     ports:
       - "5432:5432"
     volumes:
@@ -27,37 +35,64 @@ services:
     ports:
       - "6379:6379" 
 
+  nginx:
+    container_name: nginx
+    image: nginx:latest
+    volumes:
+      - ./certs:/etc/nginx/certs
+      - frontend-dist:/usr/share/nginx/html
+    ports:
+      - "443:443"
+    depends_on:
+      - keystone
+      - subs
+
   keystone:
     container_name: keystone
     build: 
       context: ./keystone
       dockerfile: keystone.Dockerfile
-    #command: "npm run start"
-    command: tail -f /dev/null
-    #command: "npm run dev"
-    #command: npx keystone dev
+    command: npm run noop
     ports:
       - "3000:3000"
     expose:
       - 3000
     environment:
+      <<: *postgres-vars
       PORT: 3000   
-      # NODE_ENV: development
-      # values should come from postgres env...
+      NODE_ENV: development
       DATABASE_URL: postgres://pbna_pguser:pbna_pgpw@postgres/pbna_pgdb
       SESSION_SECRET: my-super-secure-secret-123456789012345
     volumes:
-      - type: bind
-        source: ./common
-        target: /code/common
-      - type: bind
-        source: ./keystone/hooks
-        target: /code/hooks        
-      - type: bind
-        source: ./keystone/configs
-        target: /code/configs        
+      - ./common:/code/common
+      - ./keystone/hooks:/code/hooks        
+      - ./keystone/configs:/code/configs     
+      - ./keystone/helpers:/code/helpers     
     links:
       - redis      
+
+  subs:
+    container_name: subs
+    build: 
+      context: ./keystone
+      dockerfile: keystone.Dockerfile
+    ports:
+      - "4000:4000"
+    expose:
+      - 4000
+    environment:
+      <<: *postgres-vars   
+      PORT: 4000
+      SESSION_SECRET: my-super-secure-secret-123456789012345
+    volumes:
+      - ./keystone/subscriptionService:/code/subscriptionService
+      - ./keystone/configs:/code/configs
+      - ./common:/code/common
+      - ./keystone/hooks:/code/hooks        
+    links:
+      - redis
+      - postgres    
+    command: npm run noop
 
 
   llama:
@@ -110,18 +145,25 @@ services:
       - redis
       - keystone
     volumes:
-      - type: bind
-        source: ./common
-        target: /code/common
-      - type: bind
-        source: ./email-verifyer/src
-        target: /code/src
-      - type: bind
-        source: ~/.aws
-        target: /root/.aws
+      - ./common:/code/common
+      - ./email-verifyer/src:/code/src
+      - ~/.aws:/root/.aws
     environment:
       - AWS_PROFILE=pbna
-    command: npm run dev
+    command: sh -c "npm run build && tail -f /dev/null"  # keep container alive
 
-volumes:
-  pg-data:
+
+  react-admin:
+    container_name: react-admin
+    build: 
+      context: ./react-admin
+      dockerfile: react-admin.Dockerfile
+    volumes:
+      - ./react-admin/src:/code/src
+      - frontend-dist:/code/dist  # assuming your app builds into /app/dist
+    command: npm run noop
+    ports:
+      - "5173:5173"
+    expose:
+      - 5173    
+

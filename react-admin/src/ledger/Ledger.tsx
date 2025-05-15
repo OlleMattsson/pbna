@@ -4,15 +4,19 @@ import { Row } from "../pbna-core/Row/Row";
 import { Transaction } from "../pbna-core/Transaction/Transaction";
 import { ApolloClient, InMemoryCache } from '@apollo/client';
 import { ENTRIES, ACCOUNTS_LIST} from './queries'
+import { client } from "../dataProviders/apolloClient";
 
 // TODO: move this pbna initialisation code to its own file
 
 // Sidestepping the RA dataprovider fir this view
+/*
 const client = new ApolloClient({
     cache: new InMemoryCache(),
     uri: 'http://localhost:3000/api/graphql',
     credentials: 'include'  // add Cookie header to requests
 });
+
+*/
 
 // restore accounts
 export const initData = async (ledger) => {

@@ -15,13 +15,14 @@ import {
 } from 'react-admin';
 import {LineItems} from './lineItems'
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
+import { client } from '../dataProviders/apolloClient';
 
-
+/*
 const client = new ApolloClient({
     cache: new InMemoryCache(),
     uri: 'http://localhost:3000/api/graphql'
 });
-
+*/
 
 const UPDATE_ENTRY_NUMBER = gql`
 mutation Mutation($where: EntryWhereUniqueInput!, $data: EntryUpdateInput!) {

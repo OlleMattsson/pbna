@@ -1,7 +1,9 @@
 import { AuthProvider, HttpError } from "react-admin";
 import data from "./users.json";
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
+import { client } from "./dataProviders/apolloClient";
 
+/*
 const client = new ApolloClient({
   cache: new InMemoryCache(),
   uri: 'http://localhost:3000/api/graphql',
@@ -9,6 +11,7 @@ const client = new ApolloClient({
   // store cookie in Set-Cookie header
   credentials: 'include'
 });
+*/
 
 const AUTHENTICATE = gql`
 mutation AuthenticateUserWithPassword($email: String!, $password: String!) {

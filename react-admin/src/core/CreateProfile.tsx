@@ -19,7 +19,7 @@ import {
 import Box from '@mui/material/Box';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import {getBackground} from './Login'
-import { client } from '../buildQuery';
+import { client } from '../dataProviders/apolloClient'
 import { VERIFY_INVITATION } from './graphql/mutations';
 
 const CreateProfile = () =>  {

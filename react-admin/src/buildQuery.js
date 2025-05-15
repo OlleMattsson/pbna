@@ -1,8 +1,12 @@
 import { ApolloClient, InMemoryCache, HttpLink, gql } from '@apollo/client';
+import { client as wsClient } from './dataProviders/apolloClient';
 
 // use a modified adapter based on ra-data-graphql-simple
 import buildGraphQLProvider, { buildQuery } from './ra-data-keystone6/src';
 
+
+// DEPRECATED CLIENT (no WS)
+/*
 export const client = new ApolloClient({
     cache: new InMemoryCache(),
     link: new HttpLink({
@@ -21,6 +25,7 @@ export const client = new ApolloClient({
     },
 
 });
+*/
 
 const customizeBuildQuery = introspectionResults => (raFetchType, resourceName, params) => {
     const builtQuery = buildQuery(introspectionResults)(raFetchType, resourceName, params);
@@ -299,7 +304,7 @@ const customizeBuildQuery = introspectionResults => (raFetchType, resourceName, 
 }
 
 export default buildGraphQLProvider({ 
-    client: client, 
+    client: wsClient, 
     buildQuery: customizeBuildQuery,
     introspection: {
         operationNames: {

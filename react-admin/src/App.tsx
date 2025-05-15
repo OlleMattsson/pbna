@@ -31,6 +31,9 @@ import { Ledger as LedgerModel } from "./pbna-core/Ledger"
 import { AccountManager } from './pbna-core/Account/AccountManager'
 import { TransactionManager } from './pbna-core/Transaction/TransactionManager'
 
+import keystoneRealtimeDataProvider from './dataProviders/keystoneRealtime'
+
+
 export const App = () => {
 
     // init the pbna model
@@ -61,10 +64,19 @@ export const App = () => {
         return <div>Loading </ div>;
     }
 
+    const crudAndRealtimedataProvider = {
+        ...dataProvider,
+      
+        // React-Admin / ra-realtime will call these:
+        subscribe: keystoneRealtimeDataProvider.subscribe,
+        unsubscribe: keystoneRealtimeDataProvider.unsubscribe,
+        publish: keystoneRealtimeDataProvider.publish,
+    };
+
     return (
         <Admin 
             authProvider={authProvider} 
-            dataProvider={dataProvider} 
+            dataProvider={crudAndRealtimedataProvider} 
             layout={MyLayout}
             loginPage={Login}
         >

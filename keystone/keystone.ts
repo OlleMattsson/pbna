@@ -4,21 +4,24 @@ import { withAuth, session } from './configs/auth';
 import { schemaExtensions } from './configs/schemaExtensions';
 import { getRedisPubSub } from './helpers/pubsub';
 
+const {POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB, PORT } = process.env
+
+
 export default 
 withAuth(
   config({
     server: {
       cors: { 
         origin: [
-          'http://localhost:8080',
-          'http://localhost:5173'
+          'http://localhost:5174', // vite running locally
+          'https://localhost'      // ideally - if we can get vites stupid hmr thing to work
         ], 
         credentials: true 
       }, 
     },
     db: {
       provider: 'postgresql',
-      url: "postgres://pbna_pguser:pbna_pgpw@postgres/pbna_pgdb", 
+      url: `postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres/${POSTGRES_DB}`, 
       enableLogging: ['warn', 'error'],
       idField: { kind: 'uuid' }
     },

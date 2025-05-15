@@ -1,7 +1,7 @@
 import {ocrService} from '../tesseract'
 import util from 'util'
 import { QueueManager, Message, Producer } from 'redis-smq';
-import {config, queueNames} from "../common/redis-smq-config.js"
+import {config, queueNames} from "../common/redis-smq-config"
 
 /**
  * REDIS SETUP

@@ -2,6 +2,7 @@ import {
     InfiniteList,
 } from "react-admin"
 import { DatagridAG } from '@mattssoft/ra-datagrid-ag';
+import { ListLiveUpdate } from "@mattssoft/ra-realtime";
 
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-balham.css';
@@ -32,6 +33,9 @@ export const Journal = () => {
         {field: "description", editable: true }
     ]
     
+    const handleEventReceived = (event, { setDeleted }) => {
+        console.log(event)
+    };
 
     return (
         <InfiniteList resource="Entry" pagination={false}>
@@ -42,6 +46,9 @@ export const Journal = () => {
                 domLayout="autoHeight"
                 rowModelType="clientSide" 
             />
+                            <ListLiveUpdate 
+                    onEventReceived={handleEventReceived}
+                />
         </InfiniteList>
     );
 }
