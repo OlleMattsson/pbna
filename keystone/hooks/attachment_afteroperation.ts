@@ -11,8 +11,8 @@ import {config, queueNames} from "../common/redis-smq-config"
 QueueManager.createInstance(config, (err, queueManager) => {
   if (err) console.log(err);
   else {
-    queueManager.queue.create(queueNames.tesseract, false, (err) => console.log(err));
-    queueManager.queue.create(queueNames.llamaDataExtraction, false, (err) => console.log(err));
+    queueManager.queue.create(queueNames.tesseract, false, (err) => null); // swallow the error
+    queueManager.queue.create(queueNames.llamaDataExtraction, false, (err) => null); // swallow the error
   }
 })
 

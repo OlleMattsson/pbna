@@ -1,5 +1,5 @@
 import { config } from '@keystone-6/core';
-import { lists } from './configs/schema';
+import lists from './configs/lists';
 import { withAuth, session } from './configs/auth';
 import { schemaExtensions } from './configs/schemaExtensions';
 import { getRedisPubSub } from './helpers/pubsub';
