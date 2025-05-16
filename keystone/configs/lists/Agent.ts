@@ -20,10 +20,17 @@ export const Agent = list({
             ],
             validation: { isRequired: true },
         }),
-        functionName: text({
+        functionName: select({
+            options: [
+              { label: 'OCR Tesseract', value: 'ocrTesseract' },
+              // Add more as needed
+            ],
             validation: { isRequired: true },
-            ui: { description: 'The backend function to call for this agent' },
-        }),
+            ui: {
+              description: 'Which backend function this agent calls',
+              displayMode: 'select',
+            },
+          }),
         inputSchema: json({
             ui: { description: 'Expected input format (JSON Schema or custom format)' },
         }),

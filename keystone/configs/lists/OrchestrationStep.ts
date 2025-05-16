@@ -24,5 +24,15 @@ access: allowAll,
     storeOutputAs: text({
       ui: { description: 'Save result under this name in the orchestrator’s context' },
     }),
+    outputs: relationship({
+      ref: 'AgentOutput.step',
+      many: true,
+      ui: {
+        displayMode: 'cards',
+        cardFields: ['status', 'createdAt'],
+        inlineCreate: { fields: ['status'] },
+        inlineEdit: { fields: ['status'] },
+      },
+    }),    
   },
 });

@@ -17,3 +17,5 @@ export const config = {
     tesseract: "tesseract",
     emailverifyer: "emailverifyer"
  }
+
+ export default { config, queueNames };

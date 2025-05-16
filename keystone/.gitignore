@@ -3,3 +3,4 @@ node_modules
 keystone.db
 *.log
 public/files
+data/attachments

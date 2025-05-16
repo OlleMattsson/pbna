@@ -9,10 +9,7 @@ export const Orchestrator = list({
         name: text({ validation: { isRequired: true } }),
         triggerEvent: select({
             options: [
-                { label: 'Invoice Uploaded', value: 'invoice_uploaded' },
-                { label: 'Receipt Uploaded', value: 'receipt_uploaded' },
-                { label: 'Bank Statement Uploaded', value: 'bank_uploaded' },
-                { label: 'Manual Trigger', value: 'manual' },
+                { label: 'Attachment OCR', value: 'attachment.ocrAction:run' },
             ],
             validation: { isRequired: true },
         }),

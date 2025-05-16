@@ -8,35 +8,14 @@ import {config, queueNames} from "../common/redis-smq-config"
  */
 
 
-QueueManager.createInstance(config, (err, queueManager) => {
-  if (err) console.log(err);
-  else {
-    queueManager.queue.create(queueNames.tesseract, false, (err) => null); // swallow the error
-    queueManager.queue.create(queueNames.llamaDataExtraction, false, (err) => null); // swallow the error
-  }
-})
-
-function smqRun(message, config) {
-  const producer = new Producer(config);
-  producer.run((err) => {
-      if (err) throw err;
-      message.getId() // null
-      producer.produce(message, (err) => {
-          if (err) console.log(err);
-          else {
-              const msgId = message.getId(); // string
-              console.log('Successfully produced. Message ID is ', msgId);
-          }
-      });
-  })
-}
 
 export async function attachmentAfterOperation ({ operation, item, context }) {
 
     // add validation to check that file exists :D
     
-    console.log(item)
+    console.log("attachmentAfterOperation DEPRECATED for now")
 
+    /*
     if (operation === 'create') {
 
       const { file_filename, id  } = item;
@@ -75,4 +54,5 @@ export async function attachmentAfterOperation ({ operation, item, context }) {
         console.log(err)
       }
     }     
+    */
   }      

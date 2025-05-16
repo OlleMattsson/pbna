@@ -4,9 +4,11 @@ import {
   text,
   timestamp,
   file,
+  select
 } from '@keystone-6/core/fields';
 import { document } from '@keystone-6/fields-document';
 import { attachmentAfterOperation } from '../../hooks/attachment_afteroperation';
+import { runOrchestrator } from '../../helpers/orchestrator'
 
 export const Attachment = list({
     access: allowAll,
@@ -26,11 +28,81 @@ export const Attachment = list({
       ocrData: document(),
       ocrStatus: text(), // queued / inprogress / success / failed
       extractedData: text(),
-      dataExtractionStatus: text() // queued / inprogress/ success / failed
+      dataExtractionStatus: text(), // queued / inprogress/ success / failed
+      ocrAction: select({
+        options: [
+          { label: 'None', value: 'none' },
+          { label: 'Run OCR now', value: 'run' },
+          { label: 'Retry OCR', value: 'retry' }, // not implemented
+        ],
+        defaultValue: 'none',
+        ui: {
+          displayMode: 'segmented-control', // or 'select'
+        },
+        hooks: {
+          afterOperation: async ({ operation, item, context }) => {
+            if (operation === "delete") return
+            if (item.ocrAction === 'none') return;
+
+
+            if (item.ocrAction === 'run') {
+                // reset the action field to avoid re- triggering
+                await context.db.Attachment.updateOne({
+                  where: { id: item.id },
+                  data: { ocrAction: 'none' },
+                });
+
+              // find orchestrators for this action
+              const orchestrators = await context.query.Orchestrator.findMany({
+                where: {
+                  triggerEvent: { equals: `attachment.ocrAction:${item.ocrAction}` },
+                },
+                query: `
+                  id
+                  name
+                  steps {
+                    id
+                    order
+                    agent {
+                      id
+                      functionName
+                      type
+                      promptTemplate
+                    }
+                  }
+                `,
+              });
+
+
+              const file_extension = item.file_filename?.split('.')[1]
+        
+              if (file_extension === "pdf") {
+                console.log("PDF not supported")
+                return
+              }
+        
+
+              // run orchestrators
+              for (const orchestrator of orchestrators) {
+                await runOrchestrator(orchestrator, {
+                  context,
+                  input: { 
+                    attachmentId: item.id,
+                    fileName: item.file_filename
+                  },
+                });
+              }
+
+
+            
+            }
+      
+
+          },
+        },
+      }), 
     },
-    hooks: {
-      afterOperation: attachmentAfterOperation
-    },
+
     ui: {
       isHidden: false,
       listView: {

@@ -126,14 +126,10 @@ services:
       - redis
       - keystone
     volumes:
-      - type: bind
-        source: ./common
-        target: /code/common
-      - type: bind
-        source: ./tesseract/src
-        target: /code/src
+      - ./common:/code/common
+      - ./tesseract/src:/code/src
     # command: tail -f /dev/null
-    command: npm run dev
+    command: npm run noop
 
 
   email-verifyer:

@@ -10,6 +10,7 @@ import { Organization } from "./organization";
 import { Agent } from "./Agent";
 import { Orchestrator } from "./Orchestrator";
 import { OrchestrationStep } from "./OrchestrationStep";
+import { AgentOutput} from './AgentOutput'
 
 
 const lists: Lists = {
@@ -23,7 +24,8 @@ const lists: Lists = {
     Organization,
     Agent,
     Orchestrator,
-    OrchestrationStep
+    OrchestrationStep,
+    AgentOutput
 }
 
 export default lists

@@ -2,18 +2,19 @@
   "name": "tesseract",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
-  "type": "module",
+  "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "npx nodemon --exitcrash",
-    "prod": "node src/index.js"
-
+    "prod": "node src/index.js",
+    "noop": "tail -f /dev/null",
+    "devts": "npx ts-node --transpile-only ./src/index.ts"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@apollo/client": "^3.8.7",
+    "node-fetch": "^3.3.2",
     "redis-smq": "^7.0.7",
     "tesseract.js": "^5.0.3"
   },
