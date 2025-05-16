@@ -7,31 +7,53 @@ const pubsub = getRedisPubSub()
 const subscriber = pubsub.redisSubscriber
 
 
-export async function runAgent(agent, input) {
+export async function runAgent(agent, input, context, agentOutputId) {
     switch (agent.type) {
 
       case 'tool':
-        return runToolAgent(agent, input);
+        return runToolAgent(agent, input, context, agentOutputId);
 
       default:
         throw new Error(`Unsupported agent type: ${agent.type}`);
     }
   }
 
-async function runToolAgent(agent, input) {
-
-    console.log("agent", agent)
-    console.log("input", input)
-
+async function runToolAgent(agent, input, context, agentOutputId) {
     switch(agent.functionName) {
         case "ocrTesseract": 
-            return runOcrTesseract(agent, input)
+            return runOcrTesseract(agent, input, context, agentOutputId)
+        case "testAgent":
+            return testAgent(agent, input, context, agentOutputId)    
         default:
             throw new Error(`Unknown tool agent function: ${agent.function}`);
     }
-  }
+}
 
-  async function runOcrTesseract(agent, attachment) {
+
+async function testAgent(agent, input, context, agentOutputId) {
+    console.log("[testAgent] COOL! we got here :D ", agent, input)
+
+    await context.db.AgentOutput.updateOne({
+        where: {id: agentOutputId},
+        data: {
+            output: "yayyyy!",
+            status: 'completed',
+        }
+      });
+    return
+}
+
+
+// ok note how there's no contextMap here anymore, 
+// only the interpolated inputs
+async function runOcrTesseract(agent, input, context, agentOutputId) {
+
+    const {language, imagePath} = input
+
+    console.log(">>>>>TESSERACT RUNNER<<<<<")
+    console.log("agent", agent)
+    console.log("input", input)
+
     try {
         // set up listener
         const resultPromise = waitForAgentResult(agent.id)
@@ -40,9 +62,8 @@ async function runToolAgent(agent, input) {
         const ocrmsg = new Message();
         ocrmsg
             .setBody({
-                attachmentId: attachment.id,
-                imagePath: attachment.fileName,
-                language: "fin",
+                imagePath: imagePath,
+                language,
                 agentId: agent.id
             })
             .setTTL(1000 * 60) // in millis
@@ -52,13 +73,21 @@ async function runToolAgent(agent, input) {
         smqRun(ocrmsg, config)
 
         await resultPromise
-        console.log(resultPromise)
-        return resultPromise
-    
-      } catch (err) {
+
+        await context.db.AgentOutput.updateOne({
+            where: {id: agentOutputId},
+            data: {
+                output: resultPromise,
+                status: 'completed',
+            }
+          });
+
+        return
+
+    } catch (err) {
         console.log(err)
-      }
-  }
+    }
+}
 
   export async function waitForAgentResult(agentOutputId: string): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -67,6 +96,8 @@ async function runToolAgent(agent, input) {
       const handler = (msgChannel: string, message: string) => {
         if (msgChannel !== channel) return;
   
+        console.log(`[waitForAgentResut] received message on channel ${channel}`)
+
         // Clean up the listener
         subscriber.unsubscribe(channel);
         subscriber.removeListener('message', handler);
@@ -87,7 +118,7 @@ async function runToolAgent(agent, input) {
         subscriber.unsubscribe(channel);
         subscriber.removeListener('message', handler);
         reject(new Error('Timeout waiting for OCR result'));
-      }, 10000); // 10s timeout
+      }, 60_000); // 60s timeout
     });
   }
 

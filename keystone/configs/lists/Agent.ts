@@ -23,6 +23,7 @@ export const Agent = list({
         functionName: select({
             options: [
               { label: 'OCR Tesseract', value: 'ocrTesseract' },
+              { label: 'testAgent', value: 'testAgent' },
               // Add more as needed
             ],
             validation: { isRequired: true },

@@ -18,10 +18,10 @@ export const Orchestrator = list({
             many: true,
             ui: {
                 displayMode: 'cards',
-                cardFields: ['order', 'agent', 'inputMapping', 'storeOutputAs'],
-                inlineEdit: { fields: ['order', 'inputMapping', 'storeOutputAs'] },
+                cardFields: ['order', 'agent'],
+                inlineEdit: { fields: ['order' ] },
                 linkToItem: true,
-                inlineCreate: { fields: ['order', 'agent', 'inputMapping', 'storeOutputAs'] },
+                inlineCreate: { fields: ['order', 'agent'] },
             },
         }),
     },

@@ -7,6 +7,7 @@ networks:
 volumes:
   pg-data:
   frontend-dist:
+  keystone-attachments:
 
 x-postgres-vars: &postgres-vars 
   POSTGRES_USER: pbna_pguser
@@ -68,6 +69,7 @@ services:
       - ./keystone/hooks:/code/hooks        
       - ./keystone/configs:/code/configs     
       - ./keystone/helpers:/code/helpers     
+      - ./keystone/public/files:/code/public/files
     links:
       - redis      
 
