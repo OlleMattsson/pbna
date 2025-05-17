@@ -6,6 +6,7 @@ import { allowAll } from '@keystone-6/core/access';
 export const OrchestrationStep = list({
 access: allowAll,
   fields: {
+    slug: text(),
     orchestrator: relationship({
       ref: 'Orchestrator.steps',
       ui: { hideCreate: true },

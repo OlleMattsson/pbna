@@ -53,27 +53,11 @@ export const Attachment = list({
                 });
 
               // find orchestrators for this action
-
               const orchestrators = await context.query.Orchestrator.findMany({
                 where: {
                   triggerEvent: { equals: `attachment.ocrAction:${item.ocrAction}` },
                 },
-                query: `
-                  id
-                  name
-                  steps {
-                    id
-                    order
-                    inputMapping
-                    storeOutputAs
-                    agent {
-                      id
-                      functionName
-                      type
-                      promptTemplate
-                    }
-                  }
-                `,
+                query: `id`,
               });
 
 
@@ -89,7 +73,7 @@ export const Attachment = list({
               for (const orchestrator of orchestrators) {
 
                 await runOrchestrator({
-                  orchestrator, 
+                  orchestratorId: orchestrator.id,
                   contextMap: { 
                     fileName: item.file_filename,
                     language: "fin"

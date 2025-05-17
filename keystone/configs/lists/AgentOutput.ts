@@ -13,8 +13,13 @@ import { runOrchestrationStep } from '../../helpers/orchestrator'
     access: allowAll,
     fields: {
       agent: relationship({ ref: 'Agent', many: false }),
-      step: relationship({ ref: 'OrchestrationStep.outputs', many: false }),
-  
+      step: relationship({ 
+        ref: 'OrchestrationStep.outputs', 
+        many: false, 
+        ui: {
+          labelField: 'slug',
+        }
+      }),
       input: json({ defaultValue: {} }),
       output: json({ defaultValue: {} }),
       error: json({ defaultValue: null }),
@@ -39,7 +44,7 @@ import { runOrchestrationStep } from '../../helpers/orchestrator'
     },
     ui: {
       listView: {
-        initialColumns: ['agent', 'status', 'createdAt'],
+        initialColumns: ['agent', 'status', 'step', 'createdAt'],
         initialSort: { field: 'createdAt', direction: 'DESC' },
       },
     },
@@ -52,11 +57,17 @@ import { runOrchestrationStep } from '../../helpers/orchestrator'
         if (item.status !== 'completed') return;
       
         // Load full step with orchestrator & order info
+
+        // TODO i think the runorchestrationstep should take an ID
+        // and look up everything it needs itself for easier calling
+        // on the hook level - 
         const step = await context.query.OrchestrationStep.findOne({
           where: { id: item.stepId },
           query: `
             id 
             order 
+            storeOutputAs
+            inputMapping            
             orchestrator { 
               id 
               steps { 
@@ -98,8 +109,8 @@ import { runOrchestrationStep } from '../../helpers/orchestrator'
           ...{ [key]: currentOutput }
         };
 
-        console.log("OUTPUTT", currentOutput)
-        console.log("UPDATED CONTEXT", updatedContext)
+        //console.log("OUTPUTT", currentOutput)
+        //console.log("UPDATED CONTEXT", updatedContext)
 
         await runOrchestrationStep(nextStep, updatedContext, context);
       }

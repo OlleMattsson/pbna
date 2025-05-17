@@ -1,11 +1,36 @@
 import {runAgent} from './agent'
 import { KeystoneContext } from '@keystone-6/core/types';
 
-export async function runOrchestrator({ orchestrator, contextMap, context }:{
-    orchestrator: object,
+export async function runOrchestrator({  contextMap, context, orchestratorId }:{
+    orchestratorId: string,
     contextMap: object,
     context: KeystoneContext
 }) {   
+
+
+    const orchestrator = await context.query.Orchestrator.findOne({
+        where: { id: orchestratorId },
+        query: `
+          id
+          name
+          steps {
+            id
+            order
+            inputMapping
+            storeOutputAs
+            agent {
+              id
+              functionName
+              type
+              promptTemplate
+            }
+          }
+        `,
+      });
+
+      console.log(">>>>>>>>>>", orchestrator)
+
+
     if (!orchestrator || orchestrator.steps.length === 0) {
       throw new Error('Orchestrator not found or has no steps.');
     }

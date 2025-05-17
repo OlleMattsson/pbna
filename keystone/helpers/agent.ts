@@ -30,13 +30,13 @@ async function runToolAgent(agent, input, context, agentOutputId) {
 }
 
 
-async function testAgent(agent, input, context, agentOutputId) {
-    console.log("[testAgent] COOL! we got here :D ", agent, input)
+async function testAgent(agent, input, context, agentOutputId) {ö
+    console.log("[testAgent] <<<<< BROOO! >>>>>", agent, input)
 
     await context.db.AgentOutput.updateOne({
         where: {id: agentOutputId},
         data: {
-            output: "yayyyy!",
+            output: {testAgentId: agent.id},
             status: 'completed',
         }
       });
@@ -49,10 +49,6 @@ async function testAgent(agent, input, context, agentOutputId) {
 async function runOcrTesseract(agent, input, context, agentOutputId) {
 
     const {language, imagePath} = input
-
-    console.log(">>>>>TESSERACT RUNNER<<<<<")
-    console.log("agent", agent)
-    console.log("input", input)
 
     try {
         // set up listener
