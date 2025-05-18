@@ -64,33 +64,19 @@ import { runOrchestrationStep } from '../../helpers/orchestrator'
         const step = await context.query.OrchestrationStep.findOne({
           where: { id: item.stepId },
           query: `
-            id 
             order 
-            storeOutputAs
-            inputMapping            
+            storeOutputAs            
             orchestrator { 
               id 
               steps { 
                 id 
                 order
-                storeOutputAs
-                inputMapping
-                agent{ 
-                  id 
-                  type
-                  functionName
-                  inputSchema
-                  outputSchema                  
-                } 
               } 
             }`
         });
 
-      
         const orchestrator = step.orchestrator;
-        const nextStep = getNextStep(orchestrator.steps, step.order);
-
-        
+        const nextStep = getNextStep(orchestrator.steps, step.order);     
 
         if (!nextStep) {
           console.log(`✅ Orchestrator complete: ${orchestrator.id}`);
@@ -105,7 +91,7 @@ import { runOrchestrationStep } from '../../helpers/orchestrator'
           ...{ [key]: currentOutput }
         };
 
-        await runOrchestrationStep(nextStep, updatedContext, context);
+        await runOrchestrationStep(nextStep.id, updatedContext, context);
       }
     }
   });

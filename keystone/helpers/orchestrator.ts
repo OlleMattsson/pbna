@@ -1,6 +1,9 @@
 import {runAgent} from './agent'
 import { KeystoneContext } from '@keystone-6/core/types';
 
+/*
+    Start an orchestrator by running the first step
+*/
 export async function runOrchestrator({  contextMap, context, orchestratorId }:{
     orchestratorId: string,
     contextMap: object,
@@ -15,15 +18,6 @@ export async function runOrchestrator({  contextMap, context, orchestratorId }:{
             order
             inputMapping
             storeOutputAs
-            agent {
-              name
-              id
-              functionName
-              type
-              promptTemplate
-              inputSchema
-              outputSchema
-            }
           }
         `,
       });
@@ -35,15 +29,35 @@ export async function runOrchestrator({  contextMap, context, orchestratorId }:{
     const sortedSteps = orchestrator.steps.sort((a, b) => a.order - b.order)
     const firstStep = sortedSteps[0];
   
-    console.log(`🔥 Starting orchestrator ${orchestrator.id} at step #${firstStep.order}`);
+    console.log(`🔥 Starting orchestrator ${orchestrator.id}`);
   
-    await runOrchestrationStep(firstStep, contextMap, context, 0);
+    await runOrchestrationStep(firstStep.id, contextMap, context);
 }  
 
 
 
+/*
+    Run a step
+*/
+export async function runOrchestrationStep(stepId, contextMap, context: KeystoneContext) {
 
-export async function runOrchestrationStep(step, contextMap, context: KeystoneContext, stepId) {
+    const step = await context.query.OrchestrationStep.findOne({
+        where: { id: stepId },
+        query: `
+            id 
+            order 
+            storeOutputAs
+            inputMapping            
+            agent { 
+                id 
+                type
+                functionName
+                inputSchema
+                outputSchema                  
+            }
+        `
+    });
+
     const agent = step.agent
     const input = interpolate(step.inputMapping, contextMap); // ← inject context vars
 
@@ -58,12 +72,7 @@ export async function runOrchestrationStep(step, contextMap, context: KeystoneCo
       }
     });
   
-    // Kick off the agent (dispatch async task)
-
     runAgent(agent, input, context, agentOutput.id); // ← fire and forget
-
-    return //agentOutput.id;
-    
 }
 
 
