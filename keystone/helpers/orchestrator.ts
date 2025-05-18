@@ -6,30 +6,27 @@ export async function runOrchestrator({  contextMap, context, orchestratorId }:{
     contextMap: object,
     context: KeystoneContext
 }) {   
-
-
     const orchestrator = await context.query.Orchestrator.findOne({
         where: { id: orchestratorId },
         query: `
           id
-          name
           steps {
             id
             order
             inputMapping
             storeOutputAs
             agent {
+              name
               id
               functionName
               type
               promptTemplate
+              inputSchema
+              outputSchema
             }
           }
         `,
       });
-
-      console.log(">>>>>>>>>>", orchestrator)
-
 
     if (!orchestrator || orchestrator.steps.length === 0) {
       throw new Error('Orchestrator not found or has no steps.');
@@ -40,22 +37,17 @@ export async function runOrchestrator({  contextMap, context, orchestratorId }:{
   
     console.log(`🔥 Starting orchestrator ${orchestrator.id} at step #${firstStep.order}`);
   
-    await runOrchestrationStep(firstStep, contextMap, context);
+    await runOrchestrationStep(firstStep, contextMap, context, 0);
 }  
 
 
 
 
-export async function runOrchestrationStep(step, contextMap, context: KeystoneContext) {
+export async function runOrchestrationStep(step, contextMap, context: KeystoneContext, stepId) {
     const agent = step.agent
     const input = interpolate(step.inputMapping, contextMap); // ← inject context vars
-  
-    /*
-    console.log("[runOrchestrationStep]", step.id )
-    console.log("[runOrchestrationStep]", contextMap )
-    console.log("[runOrchestrationStep] interpolated", input )
-*/
-        // Create AgentOutput to track the execution
+
+    // Create AgentOutput to track the execution
     const agentOutput = await context.db.AgentOutput.createOne({
       data: {
         step: { connect: { id: step.id } },
@@ -75,7 +67,7 @@ export async function runOrchestrationStep(step, contextMap, context: KeystoneCo
 }
 
 
-
+// AI generated dark magig
   export function interpolate(input: any, context: Record<string, any>): any {
     if (typeof input === 'string') {
       return input.replace(/\{\{(.*?)\}\}/g, (_, key) => {
@@ -93,55 +85,5 @@ export async function runOrchestrationStep(step, contextMap, context: KeystoneCo
       return result;
     } else {
       return input;
-    }
-  }
-
-
-
-
-
-
-  export async function __runOrchestrator(orchestrator, { context, input }) {
-    let currentInput = input;
-
-  
-    for (const step of orchestrator.steps) {
-
-      const agent = await context.db.Agent.findOne({ where: { id: step.agent.id } });
-        
-      const outputEntry = await context.db.AgentOutput.createOne({
-        data: {
-          agent: { connect: { id: agent.id } },
-          step: { connect: { id: step.id } },
-          input: currentInput,
-          status: 'pending',
-        },
-      });
-  
-      try {
-        const result = await runAgent(agent, currentInput);
-  
-        await context.db.AgentOutput.updateOne({
-          where: { id: outputEntry.id },
-          data: {
-            output: result,
-            status: 'completed',
-          },
-        });
-  
-        currentInput = result;
-      } catch (err) {
-
-        console.log("[runOrchestrator]", e)
-
-        await context.db.AgentOutput.updateOne({
-          where: { id: outputEntry.id },
-          data: {
-            error: { message: err.message },
-            status: 'failed',
-          },
-        });
-        break; // Stop the flow if a step fails
-      }
     }
   }

@@ -8,10 +8,6 @@ export const Agent = list({
         name: text({ 
             validation: { isRequired: true } 
         }),
-        slug: text({ 
-            isIndexed: 'unique', 
-            validation: { isRequired: true } 
-        }),
         type: select({
             options: [
                 { label: 'LLM', value: 'llm' },
@@ -20,16 +16,10 @@ export const Agent = list({
             ],
             validation: { isRequired: true },
         }),
-        functionName: select({
-            options: [
-              { label: 'OCR Tesseract', value: 'ocrTesseract' },
-              { label: 'testAgent', value: 'testAgent' },
-              // Add more as needed
-            ],
+        functionName: text({
             validation: { isRequired: true },
             ui: {
-              description: 'Which backend function this agent calls',
-              displayMode: 'select',
+              description: 'Which backend function this agent calls (function must exist!)',
             },
           }),
         inputSchema: json({

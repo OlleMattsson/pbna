@@ -10,13 +10,13 @@
     "__postinstall": "keystone build --no-ui --frozen",
     "dev:subs": "npx ts-node --transpile-only ./subscriptionService/subscriptionService.ts",
     "noop": "tail -f /dev/null"
-
   },
   "dependencies": {
     "@apollo/server-plugin-landing-page-graphql-playground": "^4.0.1",
     "@keystone-6/auth": "^7.0.0",
     "@keystone-6/core": "^5.0.0",
     "@keystone-6/fields-document": "^7.0.0",
+    "ajv": "^8.17.1",
     "graphql-redis-subscriptions": "^2.7.0",
     "graphql-subscriptions": "^3.0.0",
     "graphql-ws": "^5.16.2",

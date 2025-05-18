@@ -1,7 +1,6 @@
 import { list } from '@keystone-6/core';
 import { allowAll } from '@keystone-6/core/access';
 import {
-    text,
     json,
     timestamp,
     relationship,
@@ -21,9 +20,12 @@ import { runOrchestrationStep } from '../../helpers/orchestrator'
         }
       }),
       input: json({ defaultValue: {} }),
-      output: json({ defaultValue: {} }),
-      error: json({ defaultValue: null }),
+      output: json({ defaultValue: null }),
       contextSnapshot: json({ defaultValue: {} }),
+      
+      error: json({ defaultValue: null }),
+      failedOutput: json({ defaultValue: null }),
+      failedInput: json({ defaultValue: null }),
   
       createdBy: relationship({ ref: 'User', many: false }),
   
@@ -51,8 +53,6 @@ import { runOrchestrationStep } from '../../helpers/orchestrator'
     hooks: {
       afterOperation: async ({ operation, item, context }) => {
 
-        console.log("[AgentOutput]", operation, item)
-
         if (operation !== 'update') return;
         if (item.status !== 'completed') return;
       
@@ -79,6 +79,8 @@ import { runOrchestrationStep } from '../../helpers/orchestrator'
                   id 
                   type
                   functionName
+                  inputSchema
+                  outputSchema                  
                 } 
               } 
             }`
@@ -94,23 +96,14 @@ import { runOrchestrationStep } from '../../helpers/orchestrator'
           console.log(`✅ Orchestrator complete: ${orchestrator.id}`);
           return;
         }
-      
-        //console.log("[AgentOutput] next step", nextStep)
-        
+              
         const previousSnapshot = item.contextSnapshot || {}
         const currentOutput = item.output;
         const key = step.storeOutputAs; 
-        
-        console.log("[AgentOutput] step", step)
-
-
         const updatedContext = {
           ...previousSnapshot,
           ...{ [key]: currentOutput }
         };
-
-        //console.log("OUTPUTT", currentOutput)
-        //console.log("UPDATED CONTEXT", updatedContext)
 
         await runOrchestrationStep(nextStep, updatedContext, context);
       }
