@@ -51,6 +51,7 @@ export async function runOrchestrationStep(stepId, contextMap, context: Keystone
             agent { 
                 id 
                 type
+                name
                 functionName
                 inputSchema
                 outputSchema                  
@@ -76,23 +77,32 @@ export async function runOrchestrationStep(stepId, contextMap, context: Keystone
 }
 
 
-// AI generated dark magig
-  export function interpolate(input: any, context: Record<string, any>): any {
-    if (typeof input === 'string') {
-      return input.replace(/\{\{(.*?)\}\}/g, (_, key) => {
-        const trimmedKey = key.trim();
-        const value = context[trimmedKey];
-        return value !== undefined ? String(value) : '';
-      });
-    } else if (Array.isArray(input)) {
-      return input.map(i => interpolate(i, context));
-    } else if (typeof input === 'object' && input !== null) {
-      const result: Record<string, any> = {};
-      for (const key in input) {
-        result[key] = interpolate(input[key], context);
-      }
-      return result;
-    } else {
-      return input;
+// AI generated dark magic
+export function interpolate(input: any, context: Record<string, any>): any {
+  if (typeof input === 'string') {
+    // If the input matches ONLY a single {{key}}, replace it with the raw object
+    const wholeKeyMatch = input.match(/^\s*\{\{(.*?)\}\}\s*$/);
+    if (wholeKeyMatch) {
+      const trimmedKey = wholeKeyMatch[1].trim();
+      const value = context[trimmedKey];
+      return value !== undefined ? value : '';
     }
+    // Otherwise, do string interpolation as before
+    return input.replace(/\{\{(.*?)\}\}/g, (_, key) => {
+      const trimmedKey = key.trim();
+      const value = context[trimmedKey];
+      // For inline replacements, toString is safest
+      return value !== undefined ? (typeof value === 'object' ? JSON.stringify(value) : String(value)) : '';
+    });
+  } else if (Array.isArray(input)) {
+    return input.map(i => interpolate(i, context));
+  } else if (typeof input === 'object' && input !== null) {
+    const result: Record<string, any> = {};
+    for (const key in input) {
+      result[key] = interpolate(input[key], context);
+    }
+    return result;
+  } else {
+    return input;
   }
+}
