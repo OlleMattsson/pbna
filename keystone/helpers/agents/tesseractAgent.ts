@@ -40,21 +40,19 @@
 */
 
 import { Message } from 'redis-smq';
-import {config, queueNames} from "../../common/redis-smq-config"
+import { config, queueNames } from "../../common/redis-smq-config"
 import { smqRun } from '../smq'
-import {waitForAgentResult} from '../waitForAgentResult'
-import {validateAndStoreErrors} from '../validateAndStoreErrors'
+import { waitForAgentResult } from '../waitForAgentResult'
+import { validateAndStoreErrors } from '../validateAndStoreErrors'
 
 
 export async function runOcrTesseract(agent, input, context, agentOutputId) {
     try {
         await validateAndStoreErrors({
             type: "input", 
-            agent, 
             value: input, 
-            context, 
-            agentOutputId, 
-            errorPrefix: "[ocrTesseract] input schema validation failed"
+            errorPrefix: "[ocrTesseract] input schema validation failed",
+            agent, context, agentOutputId
         })
         
         const result = await tesseractResult(agent, input)
@@ -63,11 +61,9 @@ export async function runOcrTesseract(agent, input, context, agentOutputId) {
 
         await validateAndStoreErrors({
             type: "output", 
-            agent, 
             value: output, 
-            context, 
-            agentOutputId, 
-            errorPrefix: "[ocrTesseract] output schema validation failed"
+            errorPrefix: "[ocrTesseract] output schema validation failed",
+            agent, context, agentOutputId
         })
 
         await onSuccess(context, agentOutputId, output)
@@ -90,9 +86,10 @@ const onSuccess = async (context, agentOutputId, output) =>
 
     const {language, imagePath} = input
 
+    // set up listener first
     const resultPromise = waitForAgentResult(agent.id)
         
-    // tesseract ocr
+    // construct a message for tesseract
     const ocrmsg = new Message();
     ocrmsg
         .setBody({
@@ -103,8 +100,9 @@ const onSuccess = async (context, agentOutputId, output) =>
         .setTTL(1000 * 60) // in millis
         .setQueue(queueNames.tesseract); 
     
-    // send message
+    // send work to tesseract queue
     smqRun(ocrmsg, config)
 
+    // listener resolves the result
     return await resultPromise
  }   
