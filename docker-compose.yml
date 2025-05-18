@@ -131,7 +131,7 @@ services:
       - ./common:/code/common
       - ./tesseract/src:/code/src
     # command: tail -f /dev/null
-    command: npm run noop
+    command: npm run nodemon
 
 
   email-verifyer:
