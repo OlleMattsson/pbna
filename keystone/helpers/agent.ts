@@ -1,11 +1,15 @@
 import {testAgent} from './agents/testAgent'
 import {runOcrTesseract} from './agents/tesseractAgent'
+import {llamaAgent} from './agents/llamaAgent'
 
 export async function runAgent(agent, input, context, agentOutputId) {
     switch (agent.type) {
 
       case 'tool':
         return runToolAgent(agent, input, context, agentOutputId);
+
+      case "llm":
+        return runLlmAgent(agent, input, context, agentOutputId)
 
       default:
         throw new Error(`Unsupported agent type: ${agent.type}`);
@@ -24,6 +28,17 @@ async function runToolAgent(agent, input, context, agentOutputId) {
             throw new Error(`Unknown tool agent function: ${agent.function}`);
     }
 }
+
+async function runLlmAgent(agent, input, context, agentOutputId) {
+    switch(agent.functionName) {
+        case "llamaAgent": 
+            return llamaAgent(agent, input, context, agentOutputId)
+        default:
+            throw new Error(`Unknown tool agent function: ${agent.function}`);
+    }
+}
+
+
 
 
 

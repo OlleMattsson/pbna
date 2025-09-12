@@ -10,8 +10,8 @@ import {fileURLToPath} from "url";
 import path from "path";
 import {LlamaModel, LlamaContext, LlamaChatSession, EmptyChatPromptWrapper, LlamaChatPromptWrapper, LlamaGrammar} from "node-llama-cpp";
 import { Consumer, QueueManager} from 'redis-smq';
-import { queueNames, config } from "../common/redis-smq-config.js"
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client/core/core.cjs';
+import { queueNames, config } from "../common/redis-smq-config"
 
 
 /**
