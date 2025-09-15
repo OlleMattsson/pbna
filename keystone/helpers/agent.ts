@@ -1,6 +1,6 @@
 import {testAgent} from './agents/testAgent'
 import {runOcrTesseract} from './agents/tesseractAgent'
-import {llamaAgent} from './agents/llamaAgent'
+import {runLllamaAgent} from './agents/llamaAgent'
 
 export async function runAgent(agent, input, context, agentOutputId) {
     switch (agent.type) {
@@ -32,7 +32,7 @@ async function runToolAgent(agent, input, context, agentOutputId) {
 async function runLlmAgent(agent, input, context, agentOutputId) {
     switch(agent.functionName) {
         case "llamaAgent": 
-            return llamaAgent(agent, input, context, agentOutputId)
+            return runLllamaAgent(agent, input, context, agentOutputId)
         default:
             throw new Error(`Unknown tool agent function: ${agent.function}`);
     }
