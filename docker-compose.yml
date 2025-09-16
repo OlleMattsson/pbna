@@ -43,6 +43,7 @@ services:
       - ./certs:/etc/nginx/certs
       - frontend-dist:/usr/share/nginx/html
     ports:
+      - "8083:80"
       - "443:443"
     depends_on:
       - keystone
@@ -97,27 +98,25 @@ services:
     command: npm run noop
 
 
-  llama:
-    container_name: llama
-    build: 
-      context: ./node-llama
-      dockerfile: node-llama.Dockerfile
-    links:
-      - redis
-      - keystone
-    volumes:
-      - type: bind
-        source: ./common
-        target: /code/common
-      - type: bind
-        source: ./models
-        target: /code/models           
-      - type: bind
-        source: ./node-llama/src
-        target: /code/src        
-    command: npm run dev    
-
-
+#  llama:
+#    container_name: llama
+#    build: 
+#      context: ./node-llama
+#      dockerfile: node-llama.Dockerfile
+#    links:
+#      - redis
+#      - keystone
+#    volumes:
+#      - type: bind
+#        source: ./common
+#        target: /code/common
+#      - type: bind
+#        source: ./models
+#        target: /code/models           
+#      - type: bind
+#        source: ./node-llama/src
+#        target: /code/src        
+#    command: npm run dev    
 
   tesseract:
     container_name: tesseract
