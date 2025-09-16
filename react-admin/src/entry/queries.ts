@@ -10,4 +10,10 @@ export const getAccountingPeriodId = () => apolloClient.query({
             }
         }
     }
-}).then(r => r.data.accountingPeriods[0].id)
+}).then(r => {
+    return r.data?.accountingPeriods[0]?.id || null
+}).catch(e => {
+    console.log("error", e)
+    return null
+});
+    
