@@ -19,7 +19,15 @@ docker 24.0.7 or later
 2. place gguf file in `./models`` directory  
 
 ## run
-in the root folder, run `docker compose up`
+1) in the root folder, run `docker compose -f docker-compose.yml -f docker-compose.override.yml up`.
+2) start keystone (backend)`docker compose exec keystone npx keystone dev`
+3) start react-admin (frontend) `docker compose exec react-admin  npm run dev`
+
+- client at `https://localhost` 
+- keystone at `https://api.localhost`
+- graphql `https://api.localhost/graphql/api` 
+
+
 note: client facing ui (react-admin) has to be started manually `cd react-admin && npm run dev`
 
 ## developing keystone
@@ -56,6 +64,8 @@ These files are mounted to the container. Changes made are immediately available
   are automatically reflected in the running container.
 - Ie, no need to restart containers in between iterations.
 - if package.json or other folders outside the service's src folder, the container has to be stopped rebuilt with `docker compose build <container> `. Alternatively the container can be rebuilt with the up command like so `docker compose up <container> --build`
+
+
 
 
 ## trouble shooting
