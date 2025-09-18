@@ -1,5 +1,5 @@
 import { list } from '@keystone-6/core';
-import { text, select, relationship } from '@keystone-6/core/fields';
+import { text, select, relationship, checkbox } from '@keystone-6/core/fields';
 import { allowAll } from '@keystone-6/core/access';
 
 
@@ -24,5 +24,6 @@ export const Orchestrator = list({
                 inlineCreate: { fields: ['order', 'agent'] },
             },
         }),
+        isEnabled: checkbox({ defaultValue: true })
     },
 });

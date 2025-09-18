@@ -56,6 +56,7 @@ export const Attachment = list({
               const orchestrators = await context.query.Orchestrator.findMany({
                 where: {
                   triggerEvent: { equals: `attachment.ocrAction:${item.ocrAction}` },
+                  AND: { isEnabled: { equals: true } }
                 },
                 query: `id`,
               });
@@ -74,6 +75,9 @@ export const Attachment = list({
 
                 await runOrchestrator({
                   orchestratorId: orchestrator.id,
+
+                  // here we assume that the first step is running a tesseract agent
+                  // and that it needs these inputs
                   contextMap: { 
                     fileName: item.file_filename,
                     language: "fin"
