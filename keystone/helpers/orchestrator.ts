@@ -54,7 +54,8 @@ export async function runOrchestrationStep(stepId, contextMap, context: Keystone
                 name
                 functionName
                 inputSchema
-                outputSchema                  
+                outputSchema       
+                promptTemplate           
             }
         `
     });
