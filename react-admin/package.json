@@ -10,15 +10,16 @@
     "lint": "eslint --fix --ext .js,.jsx,.ts,.tsx ./src",
     "format": "prettier --write ./src",
     "noop": "tail -f /dev/null"
-
   },
   "dependencies": {
     "@apollo/client": "^3.8.7",
     "@emotion/react": "^11.11.1",
     "@mattssoft/ra-datagrid-ag": "^4.1.0",
     "@mattssoft/ra-realtime": "^4.5.3",
+    "@mattssoft/ra-form-layout": "^4.11.0",
     "@table-library/react-table-library": "^4.1.7",
     "ag-grid-community": "^33.2.4",
+    "apollo-upload-client": "^18.0.1",
     "graphql": "^15.8.0",
     "graphql-ws": "^5.16.2",
     "ra-data-graphql-simple-keystone6": "^4.16.3",
