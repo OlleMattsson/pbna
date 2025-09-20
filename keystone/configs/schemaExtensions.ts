@@ -1,6 +1,12 @@
 import { mergeSchemas } from '@graphql-tools/schema';
 import { config as dotenv } from 'dotenv';
-import { entryChanged, subscriptionTypeDefs, verifyInvitation, mutationTypeDefs } from './schemaExtensions/index'
+import { 
+    entryChanged, 
+    subscriptionTypeDefs, 
+    verifyInvitation, 
+    mutationTypeDefs ,
+    onInvoice
+} from './schemaExtensions/index'
 
 dotenv({ path: './common/.env' });
 
@@ -12,7 +18,8 @@ export const schemaExtensions = schema => mergeSchemas({
         `,
     resolvers:{
         Subscription: {
-            entryChanged
+            entryChanged,
+            onInvoice
         },
         Mutation: {
             verifyInvitation

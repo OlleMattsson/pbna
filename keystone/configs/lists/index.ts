@@ -11,6 +11,7 @@ import { Agent } from "./Agent";
 import { Orchestrator } from "./Orchestrator";
 import { OrchestrationStep } from "./OrchestrationStep";
 import { AgentOutput} from './AgentOutput'
+import { Invoice } from './Invoice';
 
 
 const lists: Lists = {
@@ -25,7 +26,8 @@ const lists: Lists = {
     Agent,
     Orchestrator,
     OrchestrationStep,
-    AgentOutput
+    AgentOutput,
+    Invoice
 }
 
 export default lists
