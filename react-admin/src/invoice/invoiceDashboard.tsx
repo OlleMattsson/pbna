@@ -27,6 +27,13 @@ export function InvoiceDashboard() {
     { field: 'totalAmount', headerName: 'Total', type: 'number' },
   ];
 
+  const unverifiedColDefs = [
+    { field: 'createdAt', headerName: 'Created At' },
+    { field: 'status', headerName: 'Status', flex: 1 },
+    { field: 'description', headerName: 'Descriptuion', type: 'text' },
+    { field: 'totalAmount', headerName: 'Total', type: 'number' },
+  ];
+
   const [openAssistantDialog, setOpenAssistantDialog] = React.useState(false);
   const handleClose = () => {
     setOpenAssistantDialog(false);
@@ -35,13 +42,35 @@ export function InvoiceDashboard() {
   return (
     <Paper elevation={0}>
       <Stack spacing={3}>
-        {/* Incoming */}
         <Card elevation={0} sx={{ backgroundColor: 'transparent' }}>
           <CardContent>
             <AddInvoiceButton setOpenAssistantDialog={setOpenAssistantDialog} />
           </CardContent>
         </Card>
 
+        {/* Unverified */}
+        <Card>
+          <CardContent>
+            <Typography variant="h6">Unverified</Typography>
+            <ListBase
+              resource="Invoice"
+              filter={{ type: 'unverified' }}
+              perPage={25}
+              storeKey="invoices.unverified"
+              disableSyncWithLocation
+            >
+              <DatagridAG
+                className={`ag-theme-balham ${agTheme}`.trim()}
+                columnDefs={unverifiedColDefs}
+                preferenceKey="ag.invoices.unverified"
+                sx={{ height: 200 }}
+              />
+              <ListLiveUpdate onEventReceived={onInvoicesEvent} />
+            </ListBase>
+          </CardContent>
+        </Card>
+
+        {/* Incoming */}
         <Card>
           <CardContent>
             <Typography variant="h6">Incoming</Typography>
@@ -49,13 +78,13 @@ export function InvoiceDashboard() {
               resource="Invoice"
               filter={{ type: 'incoming' }}
               perPage={25}
-              storeKey="invoices.live"
+              storeKey="invoices.incoming"
               disableSyncWithLocation
             >
               <DatagridAG
                 className={`ag-theme-balham ${agTheme}`.trim()}
                 columnDefs={cols}
-                preferenceKey="ag.invoices.live"
+                preferenceKey="ag.invoices.incoming"
                 sx={{ height: 200 }}
               />
               <ListLiveUpdate onEventReceived={onInvoicesEvent} />
@@ -71,13 +100,13 @@ export function InvoiceDashboard() {
               resource="Invoice"
               filter={{ type: 'outgoing' }}
               perPage={25}
-              storeKey="invoices.overdue.live"
+              storeKey="invoices.outgoing"
               disableSyncWithLocation
             >
               <DatagridAG
                 className={`ag-theme-balham ${agTheme}`.trim()}
                 columnDefs={cols}
-                preferenceKey="ag.invoices.overdue.live"
+                preferenceKey="ag.invoices.outgoing"
                 sx={{ height: 200 }}
               />
               <ListLiveUpdate />

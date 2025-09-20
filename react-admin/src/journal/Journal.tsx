@@ -46,7 +46,7 @@ export const Journal = () => {
                 domLayout="autoHeight"
                 rowModelType="clientSide" 
             />
-                            <ListLiveUpdate 
+                <ListLiveUpdate 
                     onEventReceived={handleEventReceived}
                 />
         </InfiniteList>

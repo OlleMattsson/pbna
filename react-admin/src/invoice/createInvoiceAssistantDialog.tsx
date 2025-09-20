@@ -12,6 +12,7 @@ import {
 import { useFormContext, useWatch } from 'react-hook-form';
 import { CreateDialog } from '@mattssoft/ra-form-layout';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import attachment from '../attachment';
 
 type FileInputItem = {
   rawFile?: File;
@@ -133,8 +134,55 @@ export const CreateInvoiceAssistantDialog: React.FC<CreateInvoiceAssistantDialog
           throw new Error('No valid files to upload');
         }
 
-        await dataProvider.create('Attachment', payload);
+        const attachmentResponse = await dataProvider.create('Attachment', payload);
         notify('Invoice sent to the assistant.', { type: 'info' });
+
+        console.log(attachmentResponse);
+
+        const attachmentId = attachmentResponse?.data?.attachments[0]?.id || null;
+
+        console.log('Attachment created with id', attachmentId);
+
+        // TODO: hardcoded assistant for now
+        // we also assume that the user has permission to use this assistant
+
+        const ASSISTANT_NAME = 'assistant1';
+
+        if (attachmentId) {
+          const orchestratorResponse = await dataProvider.getList('Orchestrator', {
+            filter: {
+              name: ASSISTANT_NAME,
+            },
+            pagination: { page: 1, perPage: 1 },
+            sort: { field: 'name', order: 'ASC' },
+          });
+
+          console.log('Orchestrator response', orchestratorResponse);
+
+          const orchestratorId = orchestratorResponse?.data[0]?.id || null;
+
+          console.log('orchestratorId', orchestratorId);
+
+          if (!orchestratorId) {
+            throw new Error(`No orchestrator found for assistant ${ASSISTANT_NAME}`);
+          }
+
+          // create the invoice, connected to the attachment and the orchestrator
+
+          const invoiceResponse = await dataProvider.create('Invoice', {
+            data: {
+              attachments: { connect: { id: attachmentId } },
+              orchestrator: { connect: { id: orchestratorId } }, // transaltes to an orchestrator id in the backend
+              status: 'pending',
+              type: 'unverified',
+            },
+          });
+
+          console.log('Invoice created', invoiceResponse);
+
+          notify('Invoice created successfully.', { type: 'success' });
+        }
+
         handleDialogClose();
       } catch (error) {
         console.error('Invoice upload failed', error);
