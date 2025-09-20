@@ -52,8 +52,8 @@ services:
   keystone:
     container_name: keystone
     build: 
-      context: ./keystone
-      dockerfile: keystone.Dockerfile
+      context: .
+      dockerfile: keystone/keystone.Dockerfile
     command: npm run noop
     ports:
       - "3000:3000"
@@ -77,8 +77,8 @@ services:
   subs:
     container_name: subs
     build: 
-      context: ./keystone
-      dockerfile: keystone.Dockerfile
+      context: .
+      dockerfile: keystone/keystone.Dockerfile
     ports:
       - "4000:4000"
     expose:
@@ -95,7 +95,7 @@ services:
     links:
       - redis
       - postgres    
-    command: npm run noop
+    command: npm run dev:subs
 
 
 #  llama:
@@ -163,4 +163,3 @@ services:
       - "5173:5173"
     expose:
       - 5173    
-

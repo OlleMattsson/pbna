@@ -17,7 +17,19 @@ import { config as dotenv } from 'dotenv';
 // Load your .env (so process.env.REDIS_HOST/REDIS_PORT are populated)
 dotenv({ path: './common/.env' });
 
-let pubsubInstance: PubSub | RedisPubSub;
+type RedisLikePubSub = (PubSub | RedisPubSub) & {
+  redisPublisher?: {
+    publish: (...args: any[]) => unknown;
+  };
+  redisSubscriber?: {
+    subscribe: (...args: any[]) => unknown;
+    unsubscribe: (...args: any[]) => unknown;
+    on: (...args: any[]) => unknown;
+    removeListener: (...args: any[]) => unknown;
+  };
+};
+
+let pubsubInstance: RedisLikePubSub;
 
 /**
  * Returns a singleton PubSub:
@@ -26,8 +38,9 @@ let pubsubInstance: PubSub | RedisPubSub;
  */
 export function getRedisPubSub() {
   if (!pubsubInstance) {
-    const { REDIS_HOST, REDIS_PORT } = process.env;
-    if (REDIS_HOST && REDIS_PORT) {
+    const { REDIS_HOST, REDIS_PORT, DISABLE_REDIS } = process.env;
+    const redisDisabled = DISABLE_REDIS === 'true';
+    if (!redisDisabled && REDIS_HOST && REDIS_PORT) {
       const port = parseInt(REDIS_PORT, 10);
       const opts = {
         host: REDIS_HOST,
@@ -50,7 +63,16 @@ export function getRedisPubSub() {
       pubsubInstance.redisSubscriber = subscriber;   // used when needing the "real" redis subsriber
     } else {
       // No Redis config available: use in-memory PubSub for build/CLI
-      pubsubInstance = new PubSub();
+      const fallback = new PubSub() as RedisLikePubSub;
+      const noop = () => undefined;
+      fallback.redisPublisher = { publish: noop };
+      fallback.redisSubscriber = {
+        subscribe: noop,
+        unsubscribe: noop,
+        on: noop,
+        removeListener: noop,
+      };
+      pubsubInstance = fallback;
     }
   }
   return pubsubInstance;

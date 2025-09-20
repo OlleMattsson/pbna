@@ -21,7 +21,8 @@ import { getContext } from '@keystone-6/core/context';
 async function main() {
     const schema  = await initKeystoneSchema();
     const server = createServer();
-    const wss = new WebSocketServer({ noServer: true }); // ← important
+    //const wss = new WebSocketServer({ noServer: true }); // ← important
+    const wss = new WebSocketServer({ server }); // auto config from vecp prod
 
     useServer(
         {
@@ -36,6 +37,10 @@ async function main() {
         },
         wss
     );
+
+    /*
+
+    // VECP prod does not have this section
 
     server.on('upgrade', (request, socket, head) => {
         console.log('[WS upgrade]', request.url, request.headers.origin);
@@ -61,6 +66,8 @@ async function main() {
             //wss.emit('connection', ws, request);
         });
     });
+    
+    */
 
 
 
@@ -95,18 +102,33 @@ async function getWSContext(ctx) {
     baseCtx.req = incoming as any; //  Attach that request onto baseCtx so session.get() can find it
     baseCtx.res = {} as any; // (We don't have a real HTTP response here)
 
+    // decode the session 
     const sess = await session.get({ context: baseCtx });
 
-    const user = sess
-    ? await baseCtx.query.User.findOne({
-        where: { id: sess.itemId },
-        query: 'id role organization { id }',
-        })
-    : null;
+    // use decoded session to verify that user exists
+    // a sudo context is used to bypass acl to find the user
+    let user = null;
+    if (sess?.itemId) {
+        user = await baseCtx.sudo().query.User.findOne({
+            where: { id: sess.itemId },
+            query: 'id role organization { id }',
+        });
+    }
 
-    const ksCtx = getContext(keystoneConfig, PrismaModule);
-    ksCtx.session = { data: user };
-    ksCtx.pubsub = pubsub;
+    if (sess && !user) {
+        console.warn('[getWSContext] Session user not found, closing connection', sess.itemId);
+        throw new Error('Invalid session');
+    }
+
+    // create a new session object including user data
+    const sessionWithData = sess ? { ...sess, data: user } : null;
+
+    const ksCtx = sessionWithData && typeof (baseCtx as any).withSession === 'function'
+        ? baseCtx.withSession(sessionWithData as any)
+        : baseCtx;
+
+    (ksCtx as any).session = sessionWithData;
+    (ksCtx as any).pubsub = pubsub;
 
     return ksCtx;
 }
