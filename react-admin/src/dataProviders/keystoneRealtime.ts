@@ -25,6 +25,22 @@ const ON_ORDER_SUBSCRIPTION = gql`
     }
 `;
 
+const INVOICE_UPDATE_SUBSCRIPTION = gql`
+    subscription InvoiceUpdate($id: ID!) {
+        invoiceUpdate(id: $id) {
+            id
+        }
+    }
+`;
+
+const ON_INVOICE = gql`
+    subscription OnInvoice {
+        onInvoice {
+            id
+        }
+    }
+`;
+
 
 type SubscriptionInfo = {
   doc: any;                          // your gql`subscription …` document
@@ -36,7 +52,7 @@ type SubscriptionInfo = {
 
 const registry: Record<string, SubscriptionInfo> = {
 
-
+/*
   Vehicle: {
     doc: VEHICLE_UPDATED_SUBSCRIPTION,
     makeVariables: (id) => ({ id }),
@@ -60,7 +76,17 @@ const registry: Record<string, SubscriptionInfo> = {
       return {ids: [data?.onOrder?.id]}
     }
   }  
+*/
 
+  InvoiceList : {
+    doc: ON_INVOICE,
+    makeVariables: async () => null,
+    makeTopic: () => `/resource/Order`,
+    makePayload: (data) => { 
+      console.log(data)
+      return {ids: [data?.onInvoice?.id]}
+    }
+  } 
 
 };
 

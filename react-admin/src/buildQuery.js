@@ -39,8 +39,6 @@ const customizeBuildQuery = introspectionResults => (raFetchType, resourceName, 
         }     
     }
 
-    console.log("Using default builder for", resourceName, raFetchType, builtQuery)
-    // use the builder's queries by default
     return builtQuery
 }
 
