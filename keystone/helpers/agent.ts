@@ -2,11 +2,11 @@ import { testAgent } from "./agents/testAgent";
 import { runOcrTesseract } from "./agents/tesseractAgent";
 import { runLllamaAgent } from "./agents/llamaAgent";
 import { runOpenAIAgent } from "./agents/openAIAgent";
-import { invoiceAgent } from "./agents/invoiceAgent";
 import { getAttachmentFromId } from "./agents/getAttachmentFromId";
-import type { KeystoneContext } from "@keystone-6/core/types";
 import { runInvoiceTypeClassifier } from "./agents/invoiceTypeClassifier";
 import { setInvoiceStatus } from "./agents/setInvoiceStatus";
+import { runInvoiceDataExtractor } from "./agents/invoiceDataExtractor";
+import { createInvoice } from "./agents/createInvoice";
 
 export async function runAgent({ ...args }) {
   const { agent } = args;
@@ -37,6 +37,8 @@ async function runToolAgent({ ...args }) {
       return getAttachmentFromId(agent, input, context, agentOutputId);
     case "setInvoiceStatus":
       return setInvoiceStatus(args);
+    case "createInvoice":
+      return createInvoice(args);
 
     default:
       throw new Error(`Unknown tool agent function: ${agent.function}`);
@@ -53,7 +55,11 @@ async function runLlmAgent({ ...args }) {
       return runOpenAIAgent(agent, input, context, agentOutputId);
     case "openAIClassifyInvoice":
       return runInvoiceTypeClassifier(args);
+    case "openAIExtractInvoiceFields":
+      return runInvoiceDataExtractor(args);
     default:
       throw new Error(`Unknown llm agent function: ${agent.function}`);
   }
 }
+
+// write a trigger

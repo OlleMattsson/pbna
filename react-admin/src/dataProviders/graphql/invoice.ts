@@ -16,9 +16,43 @@ export function invoice({ raFetchType, builtQuery, params }) {
       };
     }
 
+    case 'GET_ONE': {
+      return {
+        ...builtQuery,
+        query: gql`
+          query Invoice($where: InvoiceWhereUniqueInput!) {
+            invoice(where: $where) {
+              id
+              createdAt
+              isGenerated
+              isPaid
+              issue_date
+              label
+              due_date
+              description
+              recipient_address
+              recipient_name
+              sender_address
+              sender_name
+              status
+              subtotal_ex_vat_amount
+              total_amount
+              type
+              vat_amount
+              vat_rate
+            }
+          }
+        `,
+        parseResponse: (response) => {
+          return { data: { ...response.data.invoice } };
+        },
+      };
+    }
+
     case 'GET_LIST': {
       return {
         ...builtQuery,
+
         query: gql`
           query Invoices(
             $orderBy: [InvoiceOrderByInput!]!
@@ -29,11 +63,12 @@ export function invoice({ raFetchType, builtQuery, params }) {
             items: invoices(orderBy: $orderBy, take: $take, skip: $skip, where: $where) {
               id
               createdAt
-              date
-              invoiceNumber
+              due_date
               description
-              totalAmount
+              total_amount
               status
+              sender_name
+              recipient_name
             }
             invoicesCount
           }

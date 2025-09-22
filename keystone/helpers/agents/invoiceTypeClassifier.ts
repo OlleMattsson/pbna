@@ -110,6 +110,8 @@ export async function runInvoiceTypeClassifier({
         },
       });
 
+      response.parsed_output_text = JSON.parse(response.output_text);
+
       return response;
     };
 

@@ -1,0 +1,142 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "document_meta",
+    "dates",
+    "parties",
+    "payment_terms",
+    "amounts",
+    "line_items"
+  ],
+  "properties": {
+    "document_meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_filename",
+        "language_hint",
+        "currency",
+        "invoice_number",
+        "reference_number",
+        "ocr_confidence"
+      ],
+      "properties": {
+        "source_filename": { "type": "string" },
+        "language_hint": { "type": "string" },
+        "currency": { "type": "string" },
+        "invoice_number": { "type": "string" },
+        "reference_number": { "type": "string" },
+        "ocr_confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "dates": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["issue_date", "due_date", "delivery_date"],
+      "properties": {
+        "issue_date": { "type": "string", "format": "date" },
+        "due_date": { "type": "string", "format": "date" },
+        "delivery_date": { "type": "string", "format": "date" }
+      }
+    },
+    "parties": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "business_id",
+          "vat_id",
+          "address",
+          "emails",
+          "phones",
+          "bank_accounts",
+          "raw_block"
+        ],
+        "properties": {
+          "name": { "type": "string" },
+          "business_id": { "type": "string" },
+          "vat_id": { "type": "string" },
+          "address": { "type": "string" },
+          "emails": { "type": "array", "items": { "type": "string" } },
+          "phones": { "type": "array", "items": { "type": "string" } },
+          "bank_accounts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["iban", "bic", "label"],
+              "properties": {
+                "iban": { "type": "string" },
+                "bic": { "type": "string" },
+                "label": { "type": "string" }
+              }
+            }
+          },
+          "raw_block": { "type": "string" }
+        }
+      }
+    },
+    "payment_terms": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["days", "discount_percent", "discount_deadline"],
+      "properties": {
+        "days": { "type": "integer" },
+        "discount_percent": { "type": "number" },
+        "discount_deadline": { "type": "string", "format": "date" }
+      }
+    },
+    "amounts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "subtotal_ex_vat",
+        "vat_amount_total",
+        "vat_breakdown",
+        "total_gross"
+      ],
+      "properties": {
+        "subtotal_ex_vat": { "type": "number" },
+        "vat_amount_total": { "type": "number" },
+        "vat_breakdown": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["rate_percent", "base", "vat"],
+            "properties": {
+              "rate_percent": { "type": "number" },
+              "base": { "type": "number" },
+              "vat": { "type": "number" }
+            }
+          }
+        },
+        "total_gross": { "type": "number" }
+      }
+    },
+    "line_items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "description",
+          "quantity",
+          "unit_price",
+          "line_total",
+          "vat_rate_percent"
+        ],
+        "properties": {
+          "description": { "type": "string" },
+          "quantity": { "type": "number" },
+          "unit_price": { "type": "number" },
+          "line_total": { "type": "number" },
+          "vat_rate_percent": { "type": "number" }
+        }
+      }
+    }
+  }
+}

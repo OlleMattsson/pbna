@@ -93,19 +93,37 @@ export async function runOrchestrationStep(
 }
 
 // AI generated dark magic
+function resolveContextPath(context: Record<string, any>, path: string) {
+  const segments = path
+    .replace(/\[(\d+)\]/g, ".$1")
+    .split(".")
+    .map((segment) => segment.trim())
+    .filter(Boolean);
+
+  let current: any = context;
+  for (const segment of segments) {
+    if (current == null || typeof current !== "object") {
+      return undefined;
+    }
+    current = current[segment];
+  }
+
+  return current;
+}
+
 export function interpolate(input: any, context: Record<string, any>): any {
   if (typeof input === "string") {
     // If the input matches ONLY a single {{key}}, replace it with the raw object
     const wholeKeyMatch = input.match(/^\s*\{\{(.*?)\}\}\s*$/);
     if (wholeKeyMatch) {
       const trimmedKey = wholeKeyMatch[1].trim();
-      const value = context[trimmedKey];
+      const value = resolveContextPath(context, trimmedKey);
       return value !== undefined ? value : "";
     }
     // Otherwise, do string interpolation as before
     return input.replace(/\{\{(.*?)\}\}/g, (_, key) => {
       const trimmedKey = key.trim();
-      const value = context[trimmedKey];
+      const value = resolveContextPath(context, trimmedKey);
       // For inline replacements, toString is safest
       return value !== undefined
         ? typeof value === "object"
