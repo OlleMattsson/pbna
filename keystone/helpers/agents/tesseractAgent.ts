@@ -46,44 +46,43 @@ schema specified by the agent.
 
 */
 
-import { Message } from 'redis-smq';
-import { config, queueNames } from "../../common/redis-smq-config"
-import { smqRun } from '../smq'
-import { waitForAgentResult } from '../waitForAgentResult'
-import {agentRunner} from '../agentRunner'
+import { Message } from "redis-smq";
+import { config, queueNames } from "../../common/redis-smq-config";
+import { smqRun } from "../smq";
+import { waitForAgentResult } from "../waitForAgentResult";
+import { agentRunner } from "../agentRunner";
 
 export async function runOcrTesseract(agent, input, context, agentOutputId) {
   try {
+    const executor = async ({ agent, input }): Promise<any> => {
+      console.log("runOcrTesseract", input);
 
-    const executor = async (agent, input): Promise<any> => {
-
-      const {language, imagePath} = input
+      const { language, imagePath } = input;
 
       // set up listener first, needed for async agents
-      const resultPromise = waitForAgentResult(agent.id)
-          
+      const resultPromise = waitForAgentResult(agent.id);
+
       // construct a message for tesseract
       const ocrmsg = new Message();
       ocrmsg
-          .setBody({
-              imagePath: imagePath,
-              language,
-              agentId: agent.id
-          })
-          .setTTL(1000 * 60) // in millis
-          .setQueue(queueNames.tesseract); 
-      
+        .setBody({
+          imagePath: imagePath,
+          language,
+          agentId: agent.id,
+        })
+        .setTTL(1000 * 60) // in millis
+        .setQueue(queueNames.tesseract);
+
       // send work to tesseract queue
-      smqRun(ocrmsg, config)
+      smqRun(ocrmsg, config);
 
       // listener resolves the result
       const result = await resultPromise;
 
-      return {tesseract: result}
-    } 
-    await agentRunner({agent, input, context, agentOutputId, executor})
-
+      return { tesseract: result };
+    };
+    await agentRunner({ agent, input, context, agentOutputId, executor });
   } catch (e) {
-    console.log(e)
+    console.log(e);
   }
 }

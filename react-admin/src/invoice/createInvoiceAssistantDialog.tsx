@@ -143,36 +143,12 @@ export const CreateInvoiceAssistantDialog: React.FC<CreateInvoiceAssistantDialog
 
         console.log('Attachment created with id', attachmentId);
 
-        // TODO: hardcoded assistant for now
-        // we also assume that the user has permission to use this assistant
-
-        const ASSISTANT_NAME = 'assistant1';
-
         if (attachmentId) {
-          const orchestratorResponse = await dataProvider.getList('Orchestrator', {
-            filter: {
-              name: ASSISTANT_NAME,
-            },
-            pagination: { page: 1, perPage: 1 },
-            sort: { field: 'name', order: 'ASC' },
-          });
-
-          console.log('Orchestrator response', orchestratorResponse);
-
-          const orchestratorId = orchestratorResponse?.data[0]?.id || null;
-
-          console.log('orchestratorId', orchestratorId);
-
-          if (!orchestratorId) {
-            throw new Error(`No orchestrator found for assistant ${ASSISTANT_NAME}`);
-          }
-
           // create the invoice, connected to the attachment and the orchestrator
 
           const invoiceResponse = await dataProvider.create('Invoice', {
             data: {
-              attachments: { connect: { id: attachmentId } },
-              orchestrator: { connect: { id: orchestratorId } }, // transaltes to an orchestrator id in the backend
+              attachment: { connect: { id: attachmentId } },
               status: 'pending',
               type: 'unverified',
             },

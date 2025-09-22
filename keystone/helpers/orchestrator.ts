@@ -27,13 +27,13 @@ export async function runOrchestrator({
   });
 
   if (!orchestrator) {
-    console.error(`Orchestrator ${orchestratorId} not found`);
-    throw new Error(`Orchestrator ${orchestratorId} not found`);
+    console.error(`WARNING: Orchestrator ${orchestratorId} not found`);
+    return;
   }
 
   if (orchestrator.steps.length === 0) {
-    console.error(`Orchestrator ${orchestratorId} has no steps`);
-    throw new Error(`Orchestrator ${orchestratorId} has no steps`);
+    console.error(`WARNING: Orchestrator ${orchestratorId} has no steps`);
+    return;
   }
 
   const sortedSteps = orchestrator.steps.sort((a, b) => a.order - b.order);
@@ -85,7 +85,11 @@ export async function runOrchestrationStep(
     },
   });
 
-  runAgent(agent, input, context, agentOutput.id); // ← fire and forget
+  try {
+    await runAgent({ agent, input, context, agentOutputId: agentOutput.id }); // ← fire and forget
+  } catch (e) {
+    console.log(e);
+  }
 }
 
 // AI generated dark magic

@@ -100,11 +100,6 @@ export const Invoice = list({
       validation: { isRequired: true },
     }),
 
-    // The assistant to run on this invoice, if any (an assistant is a predefined orchestrator)
-    orchestrator: relationship({
-      ref: "Orchestrator",
-    }),
-
     status: select({
       options: [
         { label: "Draft", value: "draft" }, // initial status for manual invoices
@@ -134,9 +129,9 @@ export const Invoice = list({
       //defaultValue: "0",
     }),
 
-    attachments: relationship({
+    attachment: relationship({
       ref: "Attachment",
-      many: true,
+      many: false,
     }),
 
     entry: relationship({
@@ -177,9 +172,11 @@ export const Invoice = list({
     },
     afterOperation: {
       create: async ({ item, context, operation, inputData }) => {
+        console.log("item", item);
+        console.log("inputData", inputData);
         try {
           // for new invoices, check if we need to run an assistant
-          if (item.orchestratorId && item.status === "pending") {
+          if (item.status === "pending") {
             // find orchestrators for this assistant
             const orchestrators = await context.query.Orchestrator.findMany({
               where: {
@@ -213,7 +210,7 @@ export const Invoice = list({
               await runOrchestrator({
                 context,
                 orchestratorId: orchestrator.id,
-                payload: { invoiceId: item.id },
+                contextMap: item, // initial state, place everything the first agent needs here...
               });
             }
           }

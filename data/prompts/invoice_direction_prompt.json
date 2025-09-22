@@ -1,0 +1,45 @@
+{
+  "instructions": [
+    "You are classifying invoice direction as 'incoming' (we are the buyer) or 'outgoing' (we are the seller).",
+    "Rely on deterministic cues first: IBAN ownership, VAT IDs near role labels, header issuer/bill-to blocks, company domains/emails.",
+    "If company_profile matches the issuer/seller block → 'outgoing'. If company_profile matches the recipient/bill-to block → 'incoming'.",
+    "If you cannot decide with high confidence, return 'unknown' and ask for exactly one concise clarifying question.",
+    "Cite 3 evidence by text_blocks idx and explain why it supports the decision."
+  ],
+  "company_profile": {
+    "legal_names": ["Mattssoft Ab"],
+    "aliases": ["Mattssoft Oy", "Mattssoft Ltd"],
+    "vat_ids": ["FI33315578"],
+    "euid": "FIPRO.3331557-8",
+    "registration_ids": ["3331557-8", "<OrgNo>"],
+    "addresses": [
+      {
+        "label": "registered",
+        "lines_swe": ["Humleuddsvägen 13 K", "00840", "Helsingfors"],
+        "lines_fin": ["Humalniementie 13 K", "00840", "Helsinki"]
+      }
+    ],
+    "ibans_normalized": ["FI8757880020078140"],
+    "domains": ["mattssoft.com", "www.mattssoft.com"],
+    "emails": ["olle@mattssoft.com", "olle.mattsson@gmail.com"],
+    "phones": ["+358407672564", "0407672564"]
+  },
+  "hints": {
+    "type_hint": "invoice",
+    "credit_note_possible": false,
+    "currency_policy": ["EUR"],
+    "direction_prior": null
+  },
+  "known_counterparties": [
+    {
+      "id": "cp_001",
+      "name": "Suomen Talokeskus Oy",
+      "type_hint": "supplier",
+      "aliases": ["Talokeskus", "Talokeskus Oy"]
+    }
+  ],
+  "decision_policy": {
+    "min_confidence": 0.7,
+    "max_evidence": 4
+  }
+}
