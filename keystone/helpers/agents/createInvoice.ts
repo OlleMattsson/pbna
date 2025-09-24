@@ -19,10 +19,6 @@ export async function createInvoice({ agent, input, context, agentOutputId }) {
       where: { id: invoiceId },
       data: {
         isGenerated: true,
-        type:
-          invoiceDirection.parsed_output_text.direction === "outgoing"
-            ? "outgoing"
-            : "incoming",
         issue_date: i.dates.issue_date,
         due_date: i.dates.due_date,
         subtotal_ex_vat_amount: i.amounts.subtotal_ex_vat.toString() || "",
