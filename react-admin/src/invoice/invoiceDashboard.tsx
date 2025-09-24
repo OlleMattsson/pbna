@@ -7,18 +7,20 @@ import {
   SimpleForm,
   TextInput,
   SimpleShowLayout,
+  DateInput,
 } from 'react-admin';
 
 import { ListLiveUpdate } from '@mattssoft/ra-realtime';
 import { DatagridAG } from '@mattssoft/ra-datagrid-ag';
 import { Card, CardContent, Stack, Typography, Paper } from '@mui/material';
 import { Dialog, DialogTitle, DialogContent } from '@mui/material';
-import { ShowDialog } from '@mattssoft/ra-form-layout';
+import { ShowDialog, EditDialog } from '@mattssoft/ra-form-layout';
 
 import { useTheme } from '@mui/material/styles';
 
 import { CreateInvoiceAssistantDialog } from './createInvoiceAssistantDialog';
 import { AddInvoiceButton } from './AddInvoiceButton';
+import { ApproveInvoiceDialog } from './approveInvoiceDialog';
 
 export function InvoiceDashboard() {
   const theme = useTheme();
@@ -52,21 +54,21 @@ export function InvoiceDashboard() {
     { field: 'sender_name', headerName: 'Sender', editable: false },
     { field: 'recipient_name', headerName: 'Recipient', editable: false },
     { field: 'description', headerName: 'Descriptuion', type: 'text', editable: false, flex: 4 },
-    { field: 'totalAmount', headerName: 'Total', type: 'number', editable: false },
+    { field: 'total_amount', headerName: 'Total', type: 'number', editable: false },
   ];
 
   const incomingCols = [
     { field: 'due_date', headerName: 'Due Date' },
     { field: 'sender_name', headerName: 'Sender' },
     { field: 'description', headerName: 'Description', type: 'text' },
-    { field: 'totalAmount', headerName: 'Total', type: 'number' },
+    { field: 'total_amount', headerName: 'Total', type: 'number' },
   ];
 
   const outgoingCols = [
     { field: 'due_date', headerName: 'Due Date' },
     { field: 'recipient_name', headerName: 'Sender' },
     { field: 'description', headerName: 'Description', type: 'text' },
-    { field: 'totalAmount', headerName: 'Total', type: 'number' },
+    { field: 'total_amount', headerName: 'Total', type: 'number' },
   ];
 
   const [openAssistantDialog, setOpenAssistantDialog] = React.useState(false);
@@ -74,16 +76,6 @@ export function InvoiceDashboard() {
     setOpenAssistantDialog(false);
   };
 
-  const invoiceShowFields = [
-    'id',
-    'createdAt',
-    'status',
-    'description',
-    'due_date',
-    'sender_name',
-    'recipient_name',
-    'total_amount',
-  ];
   return (
     <Paper elevation={0}>
       <Stack spacing={3}>
@@ -165,28 +157,13 @@ export function InvoiceDashboard() {
         handleClose={handleClose}
         openAssistantDialog={openAssistantDialog}
       />
-
-      <ShowDialog
-        resource="Invoice"
-        record={record}
-        id={selectedInvoiceId}
+      <ApproveInvoiceDialog
         isOpen={open}
-        title="Invoice Details"
-        fullWidth
-        maxWidth="md"
-        close={() => {
-          setOpen(false);
-          setSelectedInvoiceId(null);
-          setRecord(null);
-        }}
-        queryOptions={{ meta: { fields: invoiceShowFields } }}
-      >
-        <SimpleShowLayout>
-          <TextField source="id" />
-          <DateField source="createdAt" />
-          <TextField source="status" />
-        </SimpleShowLayout>
-      </ShowDialog>
+        selectedInvoiceId={selectedInvoiceId}
+        setOpen={setOpen}
+        setSelectedInvoiceId={setSelectedInvoiceId}
+        setRecord={setRecord}
+      />
     </Paper>
   );
 }
