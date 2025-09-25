@@ -3,6 +3,7 @@ import lists from "./configs/lists";
 import { withAuth, session } from "./configs/auth";
 import { schemaExtensions } from "./configs/schemaExtensions";
 import { getRedisPubSub } from "./helpers/pubsub";
+import "./events";
 
 const { POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB, PORT } = process.env;
 
