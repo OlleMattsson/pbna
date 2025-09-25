@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 networks:
   default:
@@ -9,13 +9,12 @@ volumes:
   frontend-dist:
   keystone-attachments:
 
-x-postgres-vars: &postgres-vars 
+x-postgres-vars: &postgres-vars
   POSTGRES_USER: pbna_pguser
   POSTGRES_PASSWORD: pbna_pgpw
   POSTGRES_DB: pbna_pgdb
 
 services:
-
   postgres:
     image: postgres:latest
     container_name: postgres
@@ -34,7 +33,7 @@ services:
       - 6379
     # used when backend is running locally
     ports:
-      - "6379:6379" 
+      - "6379:6379"
 
   nginx:
     container_name: nginx
@@ -51,7 +50,7 @@ services:
 
   keystone:
     container_name: keystone
-    build: 
+    build:
       context: .
       dockerfile: keystone/keystone.Dockerfile
     command: npm run noop
@@ -61,22 +60,23 @@ services:
       - 3000
     environment:
       <<: *postgres-vars
-      PORT: 3000   
+      PORT: 3000
       NODE_ENV: development
       DATABASE_URL: postgres://pbna_pguser:pbna_pgpw@postgres/pbna_pgdb
       SESSION_SECRET: my-super-secure-secret-123456789012345
     volumes:
       - ./common:/code/common
-      - ./keystone/hooks:/code/hooks        
-      - ./keystone/configs:/code/configs     
-      - ./keystone/helpers:/code/helpers     
+      - ./keystone/hooks:/code/hooks
+      - ./keystone/configs:/code/configs
+      - ./keystone/helpers:/code/helpers
+      - ./keystone/events:/code/events
       - ./keystone/public/files:/code/public/files
     links:
-      - redis      
+      - redis
 
   subs:
     container_name: subs
-    build: 
+    build:
       context: .
       dockerfile: keystone/keystone.Dockerfile
     ports:
@@ -84,43 +84,42 @@ services:
     expose:
       - 4000
     environment:
-      <<: *postgres-vars   
+      <<: *postgres-vars
       PORT: 4000
       SESSION_SECRET: my-super-secure-secret-123456789012345
     volumes:
       - ./keystone/subscriptionService:/code/subscriptionService
       - ./keystone/configs:/code/configs
       - ./common:/code/common
-      - ./keystone/hooks:/code/hooks        
+      - ./keystone/hooks:/code/hooks
     links:
       - redis
-      - postgres    
+      - postgres
     command: npm run dev:subs
 
-
-#  llama:
-#    container_name: llama
-#    build: 
-#      context: ./node-llama
-#      dockerfile: node-llama.Dockerfile
-#    links:
-#      - redis
-#      - keystone
-#    volumes:
-#      - type: bind
-#        source: ./common
-#        target: /code/common
-#      - type: bind
-#        source: ./models
-#        target: /code/models           
-#      - type: bind
-#        source: ./node-llama/src
-#        target: /code/src        
-#    command: npm run dev    
+  #  llama:
+  #    container_name: llama
+  #    build:
+  #      context: ./node-llama
+  #      dockerfile: node-llama.Dockerfile
+  #    links:
+  #      - redis
+  #      - keystone
+  #    volumes:
+  #      - type: bind
+  #        source: ./common
+  #        target: /code/common
+  #      - type: bind
+  #        source: ./models
+  #        target: /code/models
+  #      - type: bind
+  #        source: ./node-llama/src
+  #        target: /code/src
+  #    command: npm run dev
 
   tesseract:
     container_name: tesseract
-    build: 
+    build:
       context: ./tesseract
       dockerfile: tesseract.Dockerfile
     links:
@@ -132,10 +131,9 @@ services:
     # command: tail -f /dev/null
     command: npm run nodemon
 
-
   email-verifyer:
     container_name: email-verifyer
-    build: 
+    build:
       context: ./email-verifyer
       dockerfile: email-verifyer.Dockerfile
     links:
@@ -147,19 +145,18 @@ services:
       - ~/.aws:/root/.aws
     environment:
       - AWS_PROFILE=pbna
-    command: sh -c "npm run build && tail -f /dev/null"  # keep container alive
-
+    command: sh -c "npm run build && tail -f /dev/null" # keep container alive
 
   react-admin:
     container_name: react-admin
-    build: 
+    build:
       context: ./react-admin
       dockerfile: react-admin.Dockerfile
     volumes:
       - ./react-admin/src:/code/src
-      - frontend-dist:/code/dist  # assuming your app builds into /app/dist
+      - frontend-dist:/code/dist # assuming your app builds into /app/dist
     command: npm run noop
     ports:
       - "5173:5173"
     expose:
-      - 5173    
+      - 5173
