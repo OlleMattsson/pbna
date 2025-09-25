@@ -35,7 +35,7 @@ import { config as loadEnv } from "dotenv";
 import { agentRunner } from "../agentRunner";
 import schema from "./invoiceDataExtractor-responseSchema.json";
 
-loadEnv({ path: "./common/.env" });
+loadEnv({ path: "./common/.env", quiet: true });
 
 export async function runInvoiceDataExtractor({
   agent,

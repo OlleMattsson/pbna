@@ -34,7 +34,7 @@ import OpenAI from "openai";
 import { config as loadEnv } from "dotenv";
 import { agentRunner } from "../agentRunner";
 
-loadEnv({ path: "./common/.env" });
+loadEnv({ path: "./common/.env", quiet: true });
 
 export async function runOpenAIAgent(agent, input, context, agentOutputId) {
   try {

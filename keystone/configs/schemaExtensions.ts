@@ -8,7 +8,7 @@ import {
     onInvoice
 } from './schemaExtensions/index'
 
-dotenv({ path: './common/.env' });
+dotenv({ path: './common/.env', quiet: true });
 
 export const schemaExtensions = schema => mergeSchemas({
     schemas: [schema],
