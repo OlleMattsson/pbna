@@ -6,7 +6,10 @@ import { getAttachmentFromId } from "./agents/getAttachmentFromId";
 import { runInvoiceTypeClassifier } from "./agents/invoiceTypeClassifier";
 import { setInvoiceStatus } from "./agents/setInvoiceStatus";
 import { runInvoiceDataExtractor } from "./agents/invoiceDataExtractor";
+import { openAiInvoiceToEntries } from "./agents/openAiInvoiceToEntries";
 import { createInvoice } from "./agents/createInvoice";
+import { createInvoiceVerification } from "./agents/createInvoiceVerification";
+import { retrieveAgentOutput } from "./agents/retrieveAgentOutput";
 
 export async function runAgent({ ...args }) {
   const { agent } = args;
@@ -39,6 +42,10 @@ async function runToolAgent({ ...args }) {
       return setInvoiceStatus(args);
     case "createInvoice":
       return createInvoice(args);
+    case "createInvoiceVerification":
+      return createInvoiceVerification(args);
+    case "retrieveAgentOutput":
+      return retrieveAgentOutput(args);
 
     default:
       throw new Error(`Unknown tool agent function: ${agent.function}`);
@@ -57,6 +64,8 @@ async function runLlmAgent({ ...args }) {
       return runInvoiceTypeClassifier(args);
     case "openAIExtractInvoiceFields":
       return runInvoiceDataExtractor(args);
+    case "openAiInvoice2Entries":
+      return openAiInvoiceToEntries(args);
     default:
       throw new Error(`Unknown llm agent function: ${agent.function}`);
   }

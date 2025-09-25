@@ -40,6 +40,9 @@ export function invoice({ raFetchType, builtQuery, params }) {
               type
               vat_amount
               vat_rate
+              verification {
+                id
+              }
             }
           }
         `,

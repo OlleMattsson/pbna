@@ -40,13 +40,13 @@ output schema
 
 import { agentRunner } from "../agentRunner";
 
-export async function testAgent(agent, input, context, agentOutputId) {
+export async function testAgent({ agent, input, context, agentOutputId }) {
   /*  in this example the executor is synchronous!
         asynchronous agents can use
         const resultPromise = waitForAgentResult(agent.id)
         to capture the result
     */
-  const executor = (agent, input) => {
+  const executor = async ({ agent, input }) => {
     // input is validated and guaranteed
     const { agentInput } = input;
 

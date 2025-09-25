@@ -1,6 +1,6 @@
-import type { Lists } from '.keystone/types';
+import type { Lists } from ".keystone/types";
 import { Entry } from "./entry";
-import { LineItem} from "./lineitem";
+import { LineItem } from "./lineitem";
 import { User } from "./user";
 import { Attachment } from "./attachment";
 import { AccountChart } from "./accountChart";
@@ -10,24 +10,25 @@ import { Organization } from "./organization";
 import { Agent } from "./Agent";
 import { Orchestrator } from "./Orchestrator";
 import { OrchestrationStep } from "./OrchestrationStep";
-import { AgentOutput} from './AgentOutput'
-import { Invoice } from './Invoice';
-
+import { AgentOutput } from "./AgentOutput";
+import { Invoice } from "./Invoice";
+import { InvoiceVerification } from "./InvoiceVerification";
 
 const lists: Lists = {
-    Entry, 
-    LineItem, 
-    User, 
-    Attachment, 
-    AccountChart, 
-    Account, 
-    AccountingPeriod, 
-    Organization,
-    Agent,
-    Orchestrator,
-    OrchestrationStep,
-    AgentOutput,
-    Invoice
-}
+  Entry,
+  LineItem,
+  User,
+  Attachment,
+  AccountChart,
+  Account,
+  AccountingPeriod,
+  Organization,
+  Agent,
+  Orchestrator,
+  OrchestrationStep,
+  AgentOutput,
+  Invoice,
+  InvoiceVerification,
+};
 
-export default lists
+export default lists;

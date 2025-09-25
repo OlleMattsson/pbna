@@ -1,4 +1,4 @@
-import { SimpleForm, TextInput, DateInput } from 'react-admin';
+import { SimpleForm, TextInput, DateInput, useDataProvider } from 'react-admin';
 import {
   Toolbar,
   Button,
@@ -25,9 +25,22 @@ export const ApproveInvoiceDialog = ({
   setRecord,
   isOpen,
 }) => {
-  const approvalHandler = () => {
+  const dataProvider = useDataProvider();
+
+  const approvalHandler = (dataProvider) => async () => {
     console.log('approved');
+
+    const invoice = await dataProvider.getOne('Invoice', { id: selectedInvoiceId });
+
+    console.log(invoice.data.verification.id);
+
+    await dataProvider.update('InvoiceVerification', {
+      id: invoice.data.verification.id,
+      data: { status: 'verified' },
+    });
   };
+
+  const approvalHandlerWithDataProvider = approvalHandler(dataProvider);
 
   return (
     <EditDialog
@@ -43,7 +56,9 @@ export const ApproveInvoiceDialog = ({
         setRecord(null);
       }}
     >
-      <SimpleForm toolbar={<ApproveInvoiceDialogToolbar onClick={approvalHandler} />}>
+      <SimpleForm
+        toolbar={<ApproveInvoiceDialogToolbar onClick={approvalHandlerWithDataProvider} />}
+      >
         <Grid container rowSpacing={0} columnSpacing={0}>
           <Grid item xs={8}></Grid>
           <Grid item xs={4}>

@@ -19,7 +19,7 @@ export const OrchestrationStep = list({
       ui: { displayMode: "select" },
     }),
     inputMapping: json({
-      ui: { description: "How to derive input from previous step outputs" },
+      ui: { description: "Map context to agent input requirements" },
     }),
     storeOutputAs: text({
       ui: {

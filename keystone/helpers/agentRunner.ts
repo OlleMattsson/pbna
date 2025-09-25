@@ -37,17 +37,26 @@ export async function agentRunner({
       agentOutputId,
     });
 
-    await onSuccess(context, agentOutputId, output);
+    await onSuccess(context, agentOutputId, output, agent);
   } catch (err) {
     console.log(err);
   }
 }
 
-const defaultOnSuccess = async (context, agentOutputId, output) =>
-  context.db.AgentOutput.updateOne({
+const defaultOnSuccess = async (context, agentOutputId, output, agent) => {
+  //console.log(agent);
+
+  return await context.db.AgentOutput.updateOne({
     where: { id: agentOutputId },
     data: {
       output,
       status: "completed",
+      /*
+      contextSnapshot: {
+        ...agent.contextMap,
+        [agent.storeOutputAs]: output,
+      },
+      */
     },
   });
+};

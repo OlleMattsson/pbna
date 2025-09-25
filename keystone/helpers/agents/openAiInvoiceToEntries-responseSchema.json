@@ -1,0 +1,55 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "date": { "type": "string", "format": "date" },
+    "description": { "type": "string" },
+    "currency": { "type": "string", "minLength": 3, "maxLength": 3 },
+    "lines": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "account_no": { "type": "string" },
+          "debit": { "type": "number" },
+          "credit": { "type": "number" },
+          "vat_rate": { "type": ["number", "null"] },
+          "vat_amount": { "type": ["number", "null"] },
+          "evidence": { "type": "string" }
+        },
+        "required": [
+          "account_no",
+          "debit",
+          "credit",
+          "vat_rate",
+          "vat_amount",
+          "evidence"
+        ]
+      }
+    },
+    "totals": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "debit": { "type": "number" },
+        "credit": { "type": "number" }
+      },
+      "required": ["debit", "credit"]
+    },
+    "explanations": { "type": "array", "items": { "type": "string" } },
+    "warnings": { "type": "array", "items": { "type": "string" } },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+  },
+  "required": [
+    "date",
+    "description",
+    "currency",
+    "lines",
+    "totals",
+    "explanations",
+    "warnings",
+    "confidence"
+  ]
+}

@@ -46,7 +46,7 @@ export async function setInvoiceStatus({
   context,
   agentOutputId,
 }) {
-  const executor = async ({ input }) => {
+  const executor = async ({ input, context }) => {
     const { invoiceId, newStatus } = input;
 
     console.log(`[setInvoiceStatus] set invoice ${invoiceId} to ${newStatus}`);

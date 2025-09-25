@@ -9,6 +9,7 @@ import { organization } from './dataProviders/graphql/organization';
 import { entry } from './dataProviders/graphql/entry';
 import { invoice } from './dataProviders/graphql/invoice';
 import { orchestrator } from './dataProviders/graphql/orchestrator';
+import { invoiceVerification } from './dataProviders/graphql/invoiceVerification';
 
 // use a modified adapter based on ra-data-graphql-simple
 // for most practical use cases, however, the custom queries should are used
@@ -40,6 +41,9 @@ const customizeBuildQuery = (introspectionResults) => (raFetchType, resourceName
     }
     case 'Orchestrator': {
       return orchestrator(args);
+    }
+    case 'InvoiceVerification': {
+      return invoiceVerification(args);
     }
   }
 
