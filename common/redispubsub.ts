@@ -15,7 +15,7 @@ import Redis from 'ioredis';
 import { config as dotenv } from 'dotenv';
 
 // Load your .env (so process.env.REDIS_HOST/REDIS_PORT are populated)
-dotenv({ path: './common/.env' });
+dotenv({ path: './common/.env', quiet: true });
 
 type RedisLikePubSub = (PubSub | RedisPubSub) & {
   redisPublisher?: {
