@@ -2,3 +2,5 @@ models
 certs
 common/.env
 data/attachments
+keystone/.keystone/config.js
+keystone/.keystone/config.js.map
