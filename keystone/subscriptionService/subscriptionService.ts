@@ -15,7 +15,6 @@ import * as PrismaModule from "@prisma/client";
 import { session } from "../configs/auth";
 import { getRedisPubSub } from "../helpers/pubsub";
 import keystoneConfig from "../keystone";
-import { initConfig, createSystem } from "@keystone-6/core/system"; // ← the key import!
 import { getContext } from "@keystone-6/core/context";
 
 async function main() {
@@ -50,9 +49,8 @@ main().catch((err) => {
 
 // Fully initialize Keystone
 async function initKeystoneSchema() {
-  const config = initConfig(keystoneConfig);
-  const system = createSystem(config);
-  return system.graphQLSchema;
+  const ctx = await getContext(keystoneConfig, PrismaModule);
+  return ctx.graphql.schema;
 }
 
 /*
