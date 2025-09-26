@@ -39,13 +39,15 @@ export const createEntry = async ({ agent, input, context, agentOutputId }) => {
       query: "id",
     });
 
-    console.log("accountingPeriod: ", accountingPeriod);
+    const accountingPeriodId = accountingPeriod[0].id;
+
+    console.log("accountingPeriod id: ", accountingPeriodId);
 
     // retrieve account ids
     const accounts = await context.query.Account.findMany({
       query: "id account",
       where: {
-        OR: invoiceData.lines.map((item) => {
+        OR: entryData.lines.map((item) => {
           return {
             account: {
               equals: Number.parseInt(item.account_no, 10),
@@ -67,29 +69,34 @@ export const createEntry = async ({ agent, input, context, agentOutputId }) => {
     const commonProps = {
       createdBy: { connect: { id: context.session.data.id } },
       owner: { connect: { id: user.organization.id } },
-      accountingPeriod: { connect: { id: accountingPeriod.id } },
-      date: invoiceData.date,
+      accountingPeriod: { connect: { id: accountingPeriodId } },
+      date: entryData.date,
     };
 
-    const newEntry = await context.db.Entry.createOne({
-      ...commonProps,
-      entryNumber: "",
-      description: invoiceData.description,
+    const lines = entryData.lines.map((item) => {
+      const matchedAccount = accounts.find(
+        (a) => item.account_no === String(a.account)
+      );
 
-      attachments: { connect: [{ id: invoice.attachment.id }] },
-      lineItems: {
-        create: [
-          invoiceData.lines.map((item) => {
-            return {
-              ...commonProps,
-              account: accounts.find((a) => {
-                if (item.account === a.account) return a.id;
-              }),
-              debit: item.debit,
-              credit: item.credit,
-            };
-          }),
-        ],
+      return {
+        ...commonProps,
+        account: { connect: { id: matchedAccount.id } },
+        debit: item.debit.toString() || "",
+        credit: item.credit.toString() || "",
+      };
+    });
+
+    console.log("lines", lines);
+
+    const newEntry = await context.db.Entry.createOne({
+      data: {
+        ...commonProps,
+        description: entryData.description,
+
+        attachments: { connect: [{ id: invoice.attachment.id }] },
+        lineItems: {
+          create: lines,
+        },
       },
     });
 
