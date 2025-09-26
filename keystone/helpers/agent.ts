@@ -10,6 +10,7 @@ import { openAiInvoiceToEntries } from "./agents/openAiInvoiceToEntries";
 import { createInvoice } from "./agents/createInvoice";
 import { createInvoiceVerification } from "./agents/createInvoiceVerification";
 import { retrieveAgentOutput } from "./agents/retrieveAgentOutput";
+import { createEntry } from "./agents/createEntry";
 
 export async function runAgent({ ...args }) {
   const { agent } = args;
@@ -46,9 +47,11 @@ async function runToolAgent({ ...args }) {
       return createInvoiceVerification(args);
     case "retrieveAgentOutput":
       return retrieveAgentOutput(args);
+    case "createEntry":
+      createEntry(args);
 
     default:
-      throw new Error(`Unknown tool agent function: ${agent.function}`);
+      throw new Error(`Unknown tool agent function: ${agent}`);
   }
 }
 
