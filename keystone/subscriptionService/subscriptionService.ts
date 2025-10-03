@@ -10,12 +10,28 @@
 import { createServer } from "http";
 import { WebSocketServer } from "ws";
 import { useServer } from "graphql-ws/lib/use/ws";
-import { execute, subscribe } from "graphql";
+import { execute, subscribe, GraphQLSchema } from "graphql";
 import * as PrismaModule from "@prisma/client";
 import { session } from "../configs/auth";
 import { getRedisPubSub } from "../helpers/pubsub";
 import keystoneConfig from "../keystone";
+import { createSystem } from "@keystone-6/core/___internal-do-not-use-will-break-in-patch/artifacts";
 import { getContext } from "@keystone-6/core/context";
+import { schemaExtensions } from "../configs/schemaExtensions";
+
+let cachedSchema: GraphQLSchema | null = null;
+
+async function initKeystoneSchema() {
+  if (!cachedSchema) {
+    const system = createSystem(keystoneConfig);
+    const baseSchema = system.graphQLSchema;
+    cachedSchema = baseSchema.getSubscriptionType()
+      ? baseSchema
+      : schemaExtensions(baseSchema);
+  }
+
+  return cachedSchema;
+}
 
 async function main() {
   const schema = await initKeystoneSchema();
@@ -46,12 +62,6 @@ main().catch((err) => {
   console.error("Failed to initialize subscription server:", err);
   process.exit(1);
 });
-
-// Fully initialize Keystone
-async function initKeystoneSchema() {
-  const ctx = await getContext(keystoneConfig, PrismaModule);
-  return ctx.graphql.schema;
-}
 
 /*
     Augment the keystone context used in graphql subscription resolvers
