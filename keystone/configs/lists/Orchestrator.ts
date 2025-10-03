@@ -37,7 +37,7 @@ export const Orchestrator = list({
         },
         linkToItem: true,
         inlineCreate: { fields: ["order", "agent"] },
-        //views: "./admin/fields/orderedStepsRelationship",
+        views: "./admin/fields/orderedStepsRelationship",
       },
     }),
     isEnabled: checkbox({ defaultValue: true }),
