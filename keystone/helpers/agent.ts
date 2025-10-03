@@ -11,6 +11,7 @@ import { createInvoice } from "./agents/createInvoice";
 import { createInvoiceVerification } from "./agents/createInvoiceVerification";
 import { retrieveAgentOutput } from "./agents/retrieveAgentOutput";
 import { createEntry } from "./agents/createEntry";
+import { setInvoiceType } from "./agents/setInvoiceType";
 
 export async function runAgent({ ...args }) {
   const { agent } = args;
@@ -41,6 +42,8 @@ async function runToolAgent({ ...args }) {
       return getAttachmentFromId(agent, input, context, agentOutputId);
     case "setInvoiceStatus":
       return setInvoiceStatus(args);
+    case "setInvoiceType":
+      return setInvoiceType(args);
     case "createInvoice":
       return createInvoice(args);
     case "createInvoiceVerification":
