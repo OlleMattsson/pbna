@@ -2,6 +2,9 @@
 
     Create entry from inferred invoice data
 
+    TODO: the shape of entryData is not enforced in the input schema for this agent
+    It is assumed that entryData has the "correct" shape 
+
 */
 import { agentRunner } from "../agentRunner";
 
@@ -11,16 +14,13 @@ export const createEntry = async ({ agent, input, context, agentOutputId }) => {
 
     const { invoiceId, entryData } = input;
 
-    console.log(invoiceId, entryData, context.session.data);
-
     const user = await context.query.User.findOne({
-      where: { id: context.session.data.id }, // wrong session id - we're running this as admin, not as the user
+      where: { id: context.session.data.id },
       query: "organization {id}",
     });
 
-    console.log("user: ", user);
-
     // retrieve accountingPeriod
+    // TODO: there can only ever be one active accountingPeriod or everything goes south
     const accountingPeriod = await context.query.AccountingPeriod.findMany({
       where: {
         AND: [
@@ -41,8 +41,6 @@ export const createEntry = async ({ agent, input, context, agentOutputId }) => {
 
     const accountingPeriodId = accountingPeriod[0].id;
 
-    console.log("accountingPeriod id: ", accountingPeriodId);
-
     // retrieve account ids
     const accounts = await context.query.Account.findMany({
       query: "id account",
@@ -56,8 +54,6 @@ export const createEntry = async ({ agent, input, context, agentOutputId }) => {
         }),
       },
     });
-
-    console.log("accounts: ", accounts);
 
     // retrieve invoice attachment
     const invoice = await context.query.Invoice.findOne({
@@ -73,6 +69,7 @@ export const createEntry = async ({ agent, input, context, agentOutputId }) => {
       date: entryData.date,
     };
 
+    // construct the lines
     const lines = entryData.lines.map((item) => {
       const matchedAccount = accounts.find(
         (a) => item.account_no === String(a.account)
@@ -83,16 +80,17 @@ export const createEntry = async ({ agent, input, context, agentOutputId }) => {
         account: { connect: { id: matchedAccount.id } },
         debit: item.debit.toString() || "",
         credit: item.credit.toString() || "",
+        description: item.evidence,
       };
     });
 
     console.log("lines", lines);
 
+    // create the entry
     const newEntry = await context.db.Entry.createOne({
       data: {
         ...commonProps,
         description: entryData.description,
-
         attachments: { connect: [{ id: invoice.attachment.id }] },
         lineItems: {
           create: lines,
