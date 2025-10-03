@@ -129,6 +129,8 @@ export async function openAiInvoiceToEntries({
 
       response.parsed_output_text = JSON.parse(response.output_text);
 
+      console.log("inference done!");
+
       return response;
     };
 
