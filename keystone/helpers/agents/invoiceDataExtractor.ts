@@ -71,7 +71,6 @@ export async function runInvoiceDataExtractor({
 Context:
 - Locale hint: fi-FI / sv-FI
 - Currency hint: EUR
-- Note: Extract facts only. Do not assign roles or direction.
 
 Known truths:
 - Invoice direction classification has been approved and verified by user upstreams

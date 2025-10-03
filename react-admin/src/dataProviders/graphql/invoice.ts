@@ -68,6 +68,7 @@ export function invoice({ raFetchType, builtQuery, params }) {
               createdAt
               due_date
               description
+              label
               total_amount
               status
               sender_name

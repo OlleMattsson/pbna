@@ -4,12 +4,17 @@
   "required": [
     "document_meta",
     "dates",
-    "parties",
+    "sender",
+    "recipient",
     "payment_terms",
     "amounts",
-    "line_items"
+    "line_items",
+    "label",
+    "description"
   ],
   "properties": {
+    "label": { "type": "string" },
+    "description": { "type": "string" },
     "document_meta": {
       "type": "object",
       "additionalProperties": false,
@@ -40,43 +45,76 @@
         "delivery_date": { "type": "string", "format": "date" }
       }
     },
-    "parties": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "name",
-          "business_id",
-          "vat_id",
-          "address",
-          "emails",
-          "phones",
-          "bank_accounts",
-          "raw_block"
-        ],
-        "properties": {
-          "name": { "type": "string" },
-          "business_id": { "type": "string" },
-          "vat_id": { "type": "string" },
-          "address": { "type": "string" },
-          "emails": { "type": "array", "items": { "type": "string" } },
-          "phones": { "type": "array", "items": { "type": "string" } },
-          "bank_accounts": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "additionalProperties": false,
-              "required": ["iban", "bic", "label"],
-              "properties": {
-                "iban": { "type": "string" },
-                "bic": { "type": "string" },
-                "label": { "type": "string" }
-              }
+    "sender": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "business_id",
+        "vat_id",
+        "address",
+        "emails",
+        "phones",
+        "bank_accounts",
+        "raw_block"
+      ],
+      "properties": {
+        "name": { "type": "string" },
+        "business_id": { "type": "string" },
+        "vat_id": { "type": "string" },
+        "address": { "type": "string" },
+        "emails": { "type": "array", "items": { "type": "string" } },
+        "phones": { "type": "array", "items": { "type": "string" } },
+        "bank_accounts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["iban", "bic", "label"],
+            "properties": {
+              "iban": { "type": "string" },
+              "bic": { "type": "string" },
+              "label": { "type": "string" }
             }
-          },
-          "raw_block": { "type": "string" }
-        }
+          }
+        },
+        "raw_block": { "type": "string" }
+      }
+    },
+    "recipient": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "business_id",
+        "vat_id",
+        "address",
+        "emails",
+        "phones",
+        "bank_accounts",
+        "raw_block"
+      ],
+      "properties": {
+        "name": { "type": "string" },
+        "business_id": { "type": "string" },
+        "vat_id": { "type": "string" },
+        "address": { "type": "string" },
+        "emails": { "type": "array", "items": { "type": "string" } },
+        "phones": { "type": "array", "items": { "type": "string" } },
+        "bank_accounts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["iban", "bic", "label"],
+            "properties": {
+              "iban": { "type": "string" },
+              "bic": { "type": "string" },
+              "label": { "type": "string" }
+            }
+          }
+        },
+        "raw_block": { "type": "string" }
       }
     },
     "payment_terms": {

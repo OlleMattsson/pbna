@@ -53,22 +53,22 @@ export function InvoiceDashboard() {
     { field: 'status', headerName: 'Status', editable: false },
     { field: 'sender_name', headerName: 'Sender', editable: false },
     { field: 'recipient_name', headerName: 'Recipient', editable: false },
-    { field: 'description', headerName: 'Descriptuion', type: 'text', editable: false, flex: 4 },
+    { field: 'label', headerName: 'Label', type: 'text', editable: false, flex: 4 },
     { field: 'total_amount', headerName: 'Total', type: 'number', editable: false },
   ];
 
   const incomingCols = [
-    { field: 'due_date', headerName: 'Due Date' },
-    { field: 'sender_name', headerName: 'Sender' },
-    { field: 'description', headerName: 'Description', type: 'text' },
-    { field: 'total_amount', headerName: 'Total', type: 'number' },
+    { field: 'due_date', headerName: 'Due Date', editable: false },
+    { field: 'sender_name', headerName: 'Sender', editable: false },
+    { field: 'label', headerName: 'Label', type: 'text', editable: false, flex: 4 },
+    { field: 'total_amount', headerName: 'Total', type: 'number', editable: false },
   ];
 
   const outgoingCols = [
-    { field: 'due_date', headerName: 'Due Date' },
-    { field: 'recipient_name', headerName: 'Sender' },
-    { field: 'description', headerName: 'Description', type: 'text' },
-    { field: 'total_amount', headerName: 'Total', type: 'number' },
+    { field: 'due_date', headerName: 'Due Date', editable: false },
+    { field: 'recipient_name', headerName: 'Sender', editable: false },
+    { field: 'label', headerName: 'Label', type: 'text', editable: false, flex: 4 },
+    { field: 'total_amount', headerName: 'Total', type: 'number', editable: false },
   ];
 
   const [openAssistantDialog, setOpenAssistantDialog] = React.useState(false);
