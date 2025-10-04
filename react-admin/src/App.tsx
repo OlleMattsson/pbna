@@ -50,6 +50,7 @@ import { TransactionManager } from './pbna-core/Transaction/TransactionManager';
 import keystoneRealtimeDataProvider from './dataProviders/keystoneRealtime';
 
 import { attachmentDataProvider } from './dataProviders/graphql/attachments';
+import { TransactionList } from './transaction/TransactionList';
 
 export const App = () => {
   // init the pbna model
@@ -130,6 +131,7 @@ export const App = () => {
         <Route path="/income" element={<IncomeStatement ledger={ledger} />} />
         <Route path="/Journal" element={<Journal />} />
         <Route path="/invoice" element={<InvoiceDashboard />} />
+        <Route path="/transaction" element={<TransactionList />} />
 
         {/*
          */}
@@ -153,6 +155,11 @@ export const MyMenu = () => (
       <Menu.Item to="/income" primaryText="Income Statement" leftIcon={<PaidIcon />} />
       <Menu.Item to="/journal" primaryText="Journal BETA" leftIcon={<FormatListBulletedIcon />} />
       <Menu.Item to="/invoice" primaryText="Invoices" leftIcon={<AssistantIcon />} />
+      <Menu.Item
+        to="/transaction"
+        primaryText="Transactions"
+        leftIcon={<FormatListBulletedIcon />}
+      />
     </Menu>
   </Paper>
 );

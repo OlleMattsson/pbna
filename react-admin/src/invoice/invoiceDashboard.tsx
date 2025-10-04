@@ -1,23 +1,9 @@
 import * as React from 'react';
 import { ListBase, useNotify, useRefresh } from 'react-admin';
-import {
-  TextField,
-  DateField,
-  EditBase,
-  SimpleForm,
-  TextInput,
-  SimpleShowLayout,
-  DateInput,
-} from 'react-admin';
-
 import { ListLiveUpdate } from '@mattssoft/ra-realtime';
 import { DatagridAG } from '@mattssoft/ra-datagrid-ag';
 import { Card, CardContent, Stack, Typography, Paper } from '@mui/material';
-import { Dialog, DialogTitle, DialogContent } from '@mui/material';
-import { ShowDialog, EditDialog } from '@mattssoft/ra-form-layout';
-
 import { useTheme } from '@mui/material/styles';
-
 import { CreateInvoiceAssistantDialog } from './createInvoiceAssistantDialog';
 import { AddInvoiceButton } from './AddInvoiceButton';
 import { ApproveInvoiceDialog } from './approveInvoiceDialog';
@@ -66,7 +52,7 @@ export function InvoiceDashboard() {
 
   const outgoingCols = [
     { field: 'due_date', headerName: 'Due Date', editable: false },
-    { field: 'recipient_name', headerName: 'Sender', editable: false },
+    { field: 'recipient_name', headerName: 'Recipient', editable: false },
     { field: 'label', headerName: 'Label', type: 'text', editable: false, flex: 4 },
     { field: 'total_amount', headerName: 'Total', type: 'number', editable: false },
   ];

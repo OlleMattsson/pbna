@@ -10,6 +10,10 @@ export const Orchestrator = list({
     description: text(),
     triggerEvent: select({
       options: [
+        {
+          label: "None",
+          value: "none",
+        },
         { label: "Attachment OCR", value: "attachment.ocrAction:run" },
         {
           label: "Invoice AfterOperation Create",
