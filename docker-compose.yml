@@ -160,3 +160,19 @@ services:
       - "5173:5173"
     expose:
       - 5173
+
+  docparser:
+    build:
+      context: ./docparser
+      dockerfile: docparser.Dockerfile
+    image: pbna/docparser:latest
+    environment:
+      REDIS_URL: redis://redis:6379
+      PORT: 3001
+    volumes:
+      - ./data/attachments:/data/attachments:ro # incoming files
+      - ./data/ingest-out:/data/ingest-out # optional outputs
+      - ./common:/code/common
+      - ./tesseract/src:/code/src
+    depends_on:
+      - redis

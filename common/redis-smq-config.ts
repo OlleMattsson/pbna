@@ -2,20 +2,21 @@
 // set to false when running in the container
 
 export const config = {
-    redis: {
-        client: "redis_v4",
-        options: {
-            socket: {
-                host:"redis"
-            }
-        }
-    }   
- }
+  redis: {
+    client: "redis_v4",
+    options: {
+      socket: {
+        host: "redis",
+      },
+    },
+  },
+};
 
- export const queueNames = {
-    llamaDataExtraction: "llama-data-extraction",
-    tesseract: "tesseract",
-    emailverifyer: "emailverifyer"
- }
+export const queueNames = {
+  llamaDataExtraction: "llama-data-extraction",
+  tesseract: "tesseract",
+  emailverifyer: "emailverifyer",
+  docParser: "docParser",
+};
 
- export default { config, queueNames };
+export default { config, queueNames };
