@@ -173,6 +173,7 @@ services:
       - ./data/attachments:/data/attachments:ro # incoming files
       - ./data/ingest-out:/data/ingest-out # optional outputs
       - ./common:/code/common
-      - ./tesseract/src:/code/src
+      - ./docparser/src:/code/src
     depends_on:
       - redis
+    command: npm run start
