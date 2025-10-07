@@ -44,8 +44,8 @@ const messageHandler = async (msg, cb) => {
   const pubsub = getRedisPubSub();
 
   // parse the doc!
-  const docparser = new DocumentParser();
-  const res = await docparser.parse(`./files/${msgBody.file}`);
+  const docparser = new DocumentParser({ logger: console.log });
+  const res = await docparser.parse(msgBody.file);
 
   // send back the result
   await pubsub.redisPublisher.publish(channel, JSON.stringify({ ...res }));

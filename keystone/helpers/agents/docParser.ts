@@ -103,6 +103,8 @@ export async function docParser({ agent, input, context, agentOutputId }) {
       // listener resolves the result
       const result = await resultPromise;
 
+      console.log(result);
+
       console.log("[DocParser] done");
 
       return { ...result };

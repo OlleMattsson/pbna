@@ -17,6 +17,11 @@ import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { extname, join } from "node:path";
 
+import { onResult } from "../common/onResult";
+import { Message } from "redis-smq";
+import { config, queueNames } from "../common/redis-smq-config";
+import { smqRun } from "../common/smq";
+
 const execFileP = promisify(execFile);
 
 export type PageResult = {
@@ -67,7 +72,11 @@ export class DocumentParser {
   async parse(filePath: string, mimeType?: string): Promise<ParseResult> {
     const { logger } = this.opts;
 
-    console.log("filePath", filePath);
+    // keystones files folder is mounted in in docparser's container
+    const mountPath = "./files/";
+
+    const _filePath = filePath;
+    filePath = mountPath + filePath;
 
     // --- Route by type (path ext OR provided mimetype) ---
     const looksImage = mimeType?.startsWith("image/") || isImagePath(filePath);
@@ -75,7 +84,7 @@ export class DocumentParser {
 
     if (looksImage) {
       logger(`DocumentParser: image detected → Tesseract (scaffold).`);
-      const text = await this.ocrImageWithYourExistingCode(filePath); // scaffold
+      const text = await this.ocrImageWithYourExistingCode(_filePath); // scaffold
       return {
         method: "image-tesseract",
         pages: [{ page: 1, text, source: "tesseract", imagePath: filePath }],
@@ -187,9 +196,29 @@ export class DocumentParser {
   private async ocrImageWithYourExistingCode(
     imagePath: string
   ): Promise<string> {
-    // TODO: call your current Tesseract pipeline for a single image.
-    // e.g., return await myTesseract.run({ imagePath, langs: this.opts.tesseractLangs });
-    return "[Tesseract OCR text for image]";
+    console.log("[Tesseract OCR text for image]");
+
+    const IDENTIFYER = "caller_id"; // hmmm...
+    const resultPromise = onResult(IDENTIFYER);
+    const msg = new Message();
+    msg
+      .setBody({
+        imagePath: imagePath,
+        language: "fin", // TODO: maybe use fin+eng+swe or something like that
+        agentId: IDENTIFYER,
+      })
+      .setTTL(1000 * 60) // in millis
+      .setQueue(queueNames.tesseract);
+
+    // send work to tesseract queue
+    smqRun(msg, config);
+
+    // listener resolves the result
+    const result = await resultPromise;
+
+    console.log(`[DocParser} tesseract result: `, result);
+
+    return JSON.stringify(result.ocrData);
   }
 
   /** Plug your existing per-page OCR here (returns plain text). */
