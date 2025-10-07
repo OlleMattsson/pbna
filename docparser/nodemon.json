@@ -1,0 +1,8 @@
+{
+  "watch": ["src", "common", ".restart"],
+  "ext": "ts,tsx,js,json",
+  "exec": "sh -c 'npx ts-node --transpile-only ./src/main.ts || touch .restart'",
+  "events": {
+    "crash": "sh -c 'echo App crashed; touch .restart'"
+  }
+}

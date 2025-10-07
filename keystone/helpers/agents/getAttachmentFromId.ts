@@ -45,7 +45,7 @@ export async function getAttachmentFromId(
     // input is validated and guaranteed
     const { attachmentId } = input;
 
-    console.log("[invoiceAgent] ", input);
+    console.log("[getAttachmentFromId] ", input);
 
     const attachment = await context.query.Attachment.findOne({
       where: { id: attachmentId },
@@ -54,9 +54,8 @@ export async function getAttachmentFromId(
 
     const attachmentFilename = attachment.file.filename;
 
-    console.log(attachmentFilename);
+    console.log("[getAttachmentFromId] retrieved file: ", attachmentFilename);
 
-    // output must conform to the output schema
     return attachmentFilename;
   };
 

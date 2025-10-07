@@ -39,7 +39,7 @@ export async function agentRunner({
 
     await onSuccess(context, agentOutputId, output, agent);
   } catch (err) {
-    console.log(err);
+    console.log("agentRunner error", err);
   }
 }
 

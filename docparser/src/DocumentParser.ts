@@ -34,9 +34,9 @@ export type ParseResult = {
 };
 
 export type DocumentParserOptions = {
-  tesseractLangs?: string;   // e.g. "eng+fin+swe"
-  rasterDpi?: number;        // e.g. 300–400
-  minTextProbeChars?: number;// detect weak text layer
+  tesseractLangs?: string; // e.g. "eng+fin+swe"
+  rasterDpi?: number; // e.g. 300–400
+  minTextProbeChars?: number; // detect weak text layer
   logger?: (msg: string) => void;
 };
 
@@ -47,7 +47,15 @@ const DEFAULTS: Required<DocumentParserOptions> = {
   logger: () => {},
 };
 
-const IMAGE_EXTS = new Set([".png", ".jpg", ".jpeg", ".tif", ".tiff", ".webp", ".bmp"]);
+const IMAGE_EXTS = new Set([
+  ".png",
+  ".jpg",
+  ".jpeg",
+  ".tif",
+  ".tiff",
+  ".webp",
+  ".bmp",
+]);
 const isImagePath = (p: string) => IMAGE_EXTS.has(extname(p).toLowerCase());
 const isPdfPath = (p: string) => extname(p).toLowerCase() === ".pdf";
 
@@ -58,6 +66,8 @@ export class DocumentParser {
 
   async parse(filePath: string, mimeType?: string): Promise<ParseResult> {
     const { logger } = this.opts;
+
+    console.log("filePath", filePath);
 
     // --- Route by type (path ext OR provided mimetype) ---
     const looksImage = mimeType?.startsWith("image/") || isImagePath(filePath);
@@ -109,7 +119,7 @@ export class DocumentParser {
   // ---------- Internals ----------
 
   private joinPages(pages: PageResult[]): string {
-    return pages.map(p => `---- PAGE ${p.page} ----\n${p.text}`).join("\n\n");
+    return pages.map((p) => `---- PAGE ${p.page} ----\n${p.text}`).join("\n\n");
   }
 
   private async getPdfPageCount(pdfPath: string): Promise<number> {
@@ -121,16 +131,37 @@ export class DocumentParser {
 
   private async pdftotextPage(pdfPath: string, page: number): Promise<string> {
     // -layout keeps columns aligned which is valuable for statements
-    const args = ["-layout", "-enc", "UTF-8", "-f", String(page), "-l", String(page), pdfPath, "-"];
-    const { stdout } = await execFileP("pdftotext", args, { maxBuffer: 50 * 1024 * 1024 });
+    const args = [
+      "-layout",
+      "-enc",
+      "UTF-8",
+      "-f",
+      String(page),
+      "-l",
+      String(page),
+      pdfPath,
+      "-",
+    ];
+    const { stdout } = await execFileP("pdftotext", args, {
+      maxBuffer: 50 * 1024 * 1024,
+    });
     return stdout ?? "";
   }
 
-  private async ocrPdfFallback(pdfPath: string, pageCount: number): Promise<ParseResult> {
+  private async ocrPdfFallback(
+    pdfPath: string,
+    pageCount: number
+  ): Promise<ParseResult> {
     const tmp = await mkdtemp(join(tmpdir(), "pbna-raster-"));
     try {
       // Rasterize all pages → out like: tmp/page-1.pgm, page-2.pgm, …
-      await execFileP("pdftoppm", ["-gray", "-r", String(this.opts.rasterDpi), pdfPath, join(tmp, "page")]);
+      await execFileP("pdftoppm", [
+        "-gray",
+        "-r",
+        String(this.opts.rasterDpi),
+        pdfPath,
+        join(tmp, "page"),
+      ]);
 
       const pages: PageResult[] = [];
       for (let p = 1; p <= pageCount; p++) {
@@ -153,14 +184,18 @@ export class DocumentParser {
   // ---------- Scaffold points (plug your existing OCR here) ----------
 
   /** Plug your existing single-image OCR here (returns plain text). */
-  private async ocrImageWithYourExistingCode(imagePath: string): Promise<string> {
+  private async ocrImageWithYourExistingCode(
+    imagePath: string
+  ): Promise<string> {
     // TODO: call your current Tesseract pipeline for a single image.
     // e.g., return await myTesseract.run({ imagePath, langs: this.opts.tesseractLangs });
     return "[Tesseract OCR text for image]";
   }
 
   /** Plug your existing per-page OCR here (returns plain text). */
-  private async ocrImagePageWithYourExistingCode(imagePath: string): Promise<string> {
+  private async ocrImagePageWithYourExistingCode(
+    imagePath: string
+  ): Promise<string> {
     // TODO: call your current Tesseract pipeline for a single page image.
     // e.g., return await myTesseract.run({ imagePath, langs: this.opts.tesseractLangs, psm: 4 });
     return `[Tesseract OCR text for ${imagePath}]`;

@@ -6,7 +6,8 @@
   "scripts": {
     "start": "npx ts-node --transpile-only ./src/main.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "noop": "tail -f /dev/null"
+    "noop": "tail -f /dev/null",
+    "nodemon": "npx nodemon"
   },
   "author": "Olle Mattsson",
   "license": "ISC",

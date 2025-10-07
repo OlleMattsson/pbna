@@ -12,6 +12,7 @@ import { createInvoiceVerification } from "./agents/createInvoiceVerification";
 import { retrieveAgentOutput } from "./agents/retrieveAgentOutput";
 import { createEntry } from "./agents/createEntry";
 import { setInvoiceType } from "./agents/setInvoiceType";
+import { docParser } from "./agents/docParser";
 
 export async function runAgent({ ...args }) {
   const { agent } = args;
@@ -51,7 +52,9 @@ async function runToolAgent({ ...args }) {
     case "retrieveAgentOutput":
       return retrieveAgentOutput(args);
     case "createEntry":
-      createEntry(args);
+      return createEntry(args);
+    case "docParser":
+      return docParser(args);
 
     default:
       throw new Error(`Unknown tool agent function: ${agent}`);
