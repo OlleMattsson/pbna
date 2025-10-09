@@ -21,6 +21,7 @@ import { onResult } from "../common/onResult";
 import { Message } from "redis-smq";
 import { config, queueNames } from "../common/redis-smq-config";
 import { smqRun } from "../common/smq";
+import { cleanPdfText } from "./cleanPdfText";
 
 const execFileP = promisify(execFile);
 
@@ -110,7 +111,9 @@ export class DocumentParser {
       const pages: PageResult[] = [];
       for (let p = 1; p <= pageCount; p++) {
         const text = await this.pdftotextPage(filePath, p);
-        pages.push({ page: p, text, source: "pdftotext" });
+        // clean up the result
+        const cleanedText = cleanPdfText(text);
+        pages.push({ page: p, text: cleanedText, source: "pdftotext" });
       }
       return {
         method: "pdf-pdftotext",
