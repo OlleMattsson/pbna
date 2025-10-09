@@ -14,6 +14,7 @@ import { createEntry } from "./agents/createEntry";
 import { setInvoiceType } from "./agents/setInvoiceType";
 import { docParser } from "./agents/docParser";
 import { openAIBankstatementToTransactions } from "./agents/openAIBankstatementToTransactions";
+import { createTransactions } from "./agents/createTransactions";
 
 export async function runAgent({ ...args }) {
   const { agent } = args;
@@ -56,6 +57,8 @@ async function runToolAgent({ ...args }) {
       return createEntry(args);
     case "docParser":
       return docParser(args);
+    case "createTransactions":
+      return createTransactions(args);
 
     default:
       throw new Error(`Unknown tool agent function: ${agent}`);

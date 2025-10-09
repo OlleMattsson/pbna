@@ -13,6 +13,8 @@ import { OrchestrationStep } from "./OrchestrationStep";
 import { AgentOutput } from "./AgentOutput";
 import { Invoice } from "./Invoice";
 import { InvoiceVerification } from "./InvoiceVerification";
+import { Transaction } from "./Transaction";
+import { TransactionVerification } from "./TransactionVerification";
 
 const lists: Lists = {
   Entry,
@@ -29,6 +31,8 @@ const lists: Lists = {
   AgentOutput,
   Invoice,
   InvoiceVerification,
+  Transaction,
+  TransactionVerification,
 };
 
 export default lists;
