@@ -1,0 +1,37 @@
+{
+  "type": "object",
+  "required": ["transactions"],
+  "additionalProperties": false,
+  "properties": {
+    "transactions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "date",
+          "description",
+          "amount",
+          "counterparty",
+          "reference",
+          "message",
+          "uncertain",
+          "reasoning"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "date": {
+            "type": "string",
+            "pattern": "^20\\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$"
+          },
+          "description": { "type": "string" },
+          "amount": { "type": "number" },
+          "counterparty": { "type": "string" },
+          "reference": { "type": "string" },
+          "message": { "type": "string" },
+          "uncertain": { "type": "boolean", "default": false },
+          "reasoning": { "type": "string" }
+        }
+      }
+    }
+  }
+}

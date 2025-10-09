@@ -13,6 +13,7 @@ import { retrieveAgentOutput } from "./agents/retrieveAgentOutput";
 import { createEntry } from "./agents/createEntry";
 import { setInvoiceType } from "./agents/setInvoiceType";
 import { docParser } from "./agents/docParser";
+import { openAIBankstatementToTransactions } from "./agents/openAIBankstatementToTransactions";
 
 export async function runAgent({ ...args }) {
   const { agent } = args;
@@ -75,6 +76,8 @@ async function runLlmAgent({ ...args }) {
       return runInvoiceDataExtractor(args);
     case "openAiInvoice2Entries":
       return openAiInvoiceToEntries(args);
+    case "openAIBankstatementToTransactions":
+      return openAIBankstatementToTransactions(args);
     default:
       throw new Error(`Unknown llm agent function: ${agent.function}`);
   }
